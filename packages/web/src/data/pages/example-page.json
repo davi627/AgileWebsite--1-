@@ -1,0 +1,12 @@
+{
+  "slug": "example-page",
+  "title": "Simple Page",
+  "description": "This is a simple page loaded dynamically.",
+  "images": [
+    "https://via.placeholder.com/600x400",
+    "https://via.placeholder.com/600x400",
+    "https://via.placeholder.com/600x400"
+  ],
+  "content": "<p>This is a simple paragraph of text for the simple page. It demonstrates how to use HTML content within JSON data. You can include <strong>bold</strong> text, <em>italicized</em> text, and even <a href='https://example.com'>links</a>.</p>",
+  "tags": ["simple", "page"]
+}

@@ -1,0 +1,10 @@
+{
+  "slug": "example-blog",
+  "title": "Example Blog Post",
+  "description": "This is an example blog post loaded dynamically.",
+  "images": ["img1.jpg", "img2.jpg"],
+  "content": "<p>This is some HTML content for the example blog post.</p>",
+  "tags": ["example", "blog"],
+  "date": "2024-05-08",
+  "author": "Author Name"
+}
