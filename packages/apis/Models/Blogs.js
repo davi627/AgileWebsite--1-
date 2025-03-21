@@ -14,10 +14,7 @@ const BlogsSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  href: {
-    type: String,
-    default: '#'
-  },
+
   date: {
     type: Date,
     default: Date.now

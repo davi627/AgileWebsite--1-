@@ -14,7 +14,11 @@ const CommentSchema = new mongoose.Schema({
     },
     products: {
       type: [String],
-      required: true,
+      required: false,
+    },
+    image:{
+      type: String,
+      required: false,
     },
     status: {
       type: String,

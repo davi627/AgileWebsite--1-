@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-// Define the interface for blog posts
 interface BlogPost {
   _id: string;
   title: string;
   description: string;
   imageUrl: string;
-  href: string;
-  datetime: string;
   formattedDate: string;
   author: {
     name: string;
@@ -18,6 +16,7 @@ const Blogs = () => {
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   // Fetch blogs from the backend
   useEffect(() => {
@@ -39,6 +38,10 @@ const Blogs = () => {
 
     fetchBlogs();
   }, []);
+
+  const handleReadMore = (id: string) => {
+    navigate(`/blog/${id}`);
+  };
 
   if (loading) {
     return <div className="text-center py-10">Loading...</div>;
@@ -63,33 +66,38 @@ const Blogs = () => {
               key={blog._id}
               className="relative flex flex-col overflow-hidden rounded-lg bg-white shadow-md hover:shadow-lg transition-shadow duration-300"
             >
-              <div className="h-40 overflow-hidden"> 
+              <div className="h-40 overflow-hidden">
                 <img
                   src={blog.imageUrl}
                   alt={blog.title}
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="flex flex-1 flex-col p-4"> 
+              <div className="flex flex-1 flex-col p-4">
                 <h3 className="mt-1 text-lg font-semibold text-gray-900">
-                  <a href={blog.href} className="hover:text-indigo-600">
-                    {blog.title}
-                  </a>
+                  {blog.title}
                 </h3>
                 <time
-                  dateTime={blog.datetime}
-                  className="mt-1 text-xs text-gray-500" 
+                  dateTime={blog.formattedDate}
+                  className="mt-1 text-xs text-gray-500"
                 >
                   {blog.formattedDate}
                 </time>
-                <p className="mt-2 text-xs text-gray-600 line-clamp-3"> 
-                  {blog.description}
-                </p>
+                <p
+                  className="mt-2 text-xs text-gray-600 line-clamp-3"
+                  dangerouslySetInnerHTML={{ __html: blog.description }}
+                />
                 <div className="mt-2">
-                  <p className="text-xs font-medium text-gray-900"> 
+                  <p className="text-xs font-medium text-gray-900">
                     By {blog.author.name}
                   </p>
                 </div>
+                <button
+                  onClick={() => handleReadMore(blog._id)}
+                  className="mt-4 text-sm text-indigo-600 hover:text-indigo-500"
+                >
+                  Read More →
+                </button>
               </div>
             </article>
           ))}

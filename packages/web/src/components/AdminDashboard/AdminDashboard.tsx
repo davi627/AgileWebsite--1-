@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { isAuthenticated, getUserRole } from 'services/AuthService';
 import axios from 'axios';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
@@ -12,6 +14,13 @@ const AdminDashboard: React.FC = () => {
   const [selectedComment, setSelectedComment] = useState<Comment | null>(null); 
   const [isPopupOpen, setIsPopupOpen] = useState(false); 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [newTestimonial, setNewTestimonial] = useState({
+    logo: null as File | null,
+    description: '',
+    author: '',
+    products: '',
+    image: null as File | null,
+  });
 
   const [statistics, setStatistics] = useState({
     successfulProjects: 0,
@@ -36,7 +45,6 @@ const [newBlog, setNewBlog] = useState({
   title: '',
   description: '',
   imageUrl: '',
-  href: '#',
   author: {
     name: '',
   },
@@ -100,6 +108,56 @@ interface Comment {
         console.error('Failed to fetch comments:', error);
       }
     };
+
+    const handleTestimonialInputChange = (
+  e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLInputElement>
+) => {
+  const { name, value, files } = e.target as HTMLInputElement;
+  if (files) {
+    setNewTestimonial({
+      ...newTestimonial,
+      [name]: files[0],
+    });
+  } else {
+    setNewTestimonial({
+      ...newTestimonial,
+      [name]: value,
+    });
+  }
+};
+    //Handling Testimonials Submition
+
+    const handleSubmitTestimonial = async (e: React.FormEvent) => {
+      e.preventDefault();
+    
+      const formData = new FormData();
+      formData.append('description', newTestimonial.description);
+      formData.append('author', newTestimonial.author); 
+      formData.append('products', newTestimonial.products);
+      if (newTestimonial.logo) formData.append('logo', newTestimonial.logo);
+      if (newTestimonial.image) formData.append('image', newTestimonial.image);
+    
+      try {
+        const response = await axios.post(`${API_BASE_URL}/comments/comments`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        if (response.status === 201) {
+          alert('Testimonial created successfully!');
+          setNewTestimonial({
+            logo: null,
+            description: '',
+            author: '',
+            products: '',
+            image: null,
+          });
+        }
+      } catch (error) {
+        console.error('Failed to create testimonial:', error);
+        alert('Failed to create testimonial. Please try again.');
+      }
+    };
   
     // Fetch comments on component mount
     useEffect(() => {
@@ -122,6 +180,18 @@ interface Comment {
       } catch (error) {
         console.error('Failed to approve comment:', error);
         alert('Failed to approve comment. Please try again.');
+      }
+    };
+    const handleDelete = async (commentId: string) => {
+      try {
+        const response = await axios.delete(`${API_BASE_URL}/comments/comments/${commentId}`);
+        if (response.status === 200) {
+          alert('Comment deleted successfully!');
+          fetchComments(); 
+        }
+      } catch (error) {
+        console.error('Failed to delete comment:', error);
+        alert('Failed to delete comment. Please try again.');
       }
     };
 
@@ -169,7 +239,6 @@ const handleSubmitBlog = async (e: React.FormEvent) => {
         title: '',
         description: '',
         imageUrl: '',
-        href: '#',
         author: {
           name: '',
         },
@@ -347,6 +416,16 @@ const handleSubmitBlog = async (e: React.FormEvent) => {
                 }`}
               >
                 Create Blogs
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => setActiveSection('create-testimonials')}
+                className={`block w-full text-left p-4 hover:bg-indigo-500 transition duration-200 ${
+                  activeSection === 'create-testmonials' ? 'bg-indigo-500' : ''
+                }`}
+              >
+                Create Testimonials
               </button>
             </li>
           </ul>
@@ -688,6 +767,12 @@ const handleSubmitBlog = async (e: React.FormEvent) => {
                   >
                     Reject
                   </button>
+                  <button
+                  onClick={() => handleDelete(comment._id)}
+                    className="bg-red-800 text-white px-2 py-1 rounded-md hover:bg-red-900 transition duration-200"
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))
@@ -734,7 +819,7 @@ const handleSubmitBlog = async (e: React.FormEvent) => {
           type="text"
           name="title"
           value={newBlog.title}
-          onChange={handleBlogInputChange}
+          onChange={(e) => setNewBlog({ ...newBlog, title: e.target.value })}
           className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           required
         />
@@ -745,13 +830,25 @@ const handleSubmitBlog = async (e: React.FormEvent) => {
         <label className="block text-sm font-medium text-gray-700">
           Description
         </label>
-        <textarea
-          name="description"
+        <ReactQuill
           value={newBlog.description}
-          onChange={handleBlogInputChange}
-          className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          rows={4}
-          required
+          onChange={(value) => setNewBlog({ ...newBlog, description: value })}
+          className="mt-1 block w-full rounded-md border border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          modules={{
+            toolbar: [
+              [{ header: [1, 2, 3, false] }],
+              ['bold', 'italic', 'underline', 'strike'],
+              [{ list: 'ordered' }, { list: 'bullet' }],
+              ['link', 'image'],
+              ['clean'],
+            ],
+          }}
+          formats={[
+            'header',
+            'bold', 'italic', 'underline', 'strike',
+            'list', 'bullet',
+            'link', 'image',
+          ]}
         />
       </div>
 
@@ -764,22 +861,7 @@ const handleSubmitBlog = async (e: React.FormEvent) => {
           type="text"
           name="imageUrl"
           value={newBlog.imageUrl}
-          onChange={handleBlogInputChange}
-          className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          required
-        />
-      </div>
-
-      {/* Href */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Href
-        </label>
-        <input
-          type="text"
-          name="href"
-          value={newBlog.href}
-          onChange={handleBlogInputChange}
+          onChange={(e) => setNewBlog({ ...newBlog, imageUrl: e.target.value })}
           className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           required
         />
@@ -794,7 +876,7 @@ const handleSubmitBlog = async (e: React.FormEvent) => {
           type="text"
           name="authorName"
           value={newBlog.author.name}
-          onChange={handleBlogInputChange}
+          onChange={(e) => setNewBlog({ ...newBlog, author: { name: e.target.value } })}
           className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           required
         />
@@ -806,6 +888,84 @@ const handleSubmitBlog = async (e: React.FormEvent) => {
         className="bg-primary hover:bg-indigo-600 text-white px-4 py-2 rounded-md transition duration-200 w-full sm:w-auto"
       >
         Create Blog
+      </button>
+    </form>
+  </div>
+)}
+
+{activeSection === 'create-testimonials' && (
+  <div className="bg-white rounded-lg shadow-md p-6">
+    <h2 className="text-2xl font-bold mb-6">Create Testimonials</h2>
+    <form onSubmit={handleSubmitTestimonial} className="space-y-4" encType="multipart/form-data">
+      {/* Logo Input */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">Logo</label>
+        <input
+          type="file"
+          name="logo"
+          onChange={handleTestimonialInputChange}
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          required
+        />
+      </div>
+
+      {/* Description Input */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">Description</label>
+        <textarea
+          name="description"
+          value={newTestimonial.description}
+          onChange={handleTestimonialInputChange}
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          rows={4}
+          required
+        />
+      </div>
+
+      {/* Name Input */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">Name</label>
+        <input
+          type="text"
+          name="author"
+          value={newTestimonial.author}
+          onChange={handleTestimonialInputChange}
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          required
+        />
+      </div>
+
+      {/* Products Input */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">Products</label>
+        <input
+          type="text"
+          name="products"
+          value={newTestimonial.products}
+          onChange={handleTestimonialInputChange}
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+         
+        />
+      </div>
+
+      {/* Image Input */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">Image</label>
+        <input
+          type="file"
+          name="image"
+          onChange={handleTestimonialInputChange}
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          required
+        />
+      </div>
+
+      {/* Submit Button */}
+      <button
+        type="submit"
+        className="bg-primary hover:bg-indigo-600 text-white px-4 py-2 rounded-md transition duration-200 w-full sm:w-auto"
+      >
+        Create Testimonial
       </button>
     </form>
   </div>

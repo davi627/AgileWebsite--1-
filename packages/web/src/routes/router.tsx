@@ -16,6 +16,7 @@ import Blogs from 'components/Blogs/Blogs'
 import UserDashboard from 'components/UserDashboard/UserDashboard'
 import { isAuthenticated, getUserRole } from 'services/AuthService'
 import AllCommentsPage from 'components/AllComments/AllComments'
+import BlogDetail from 'components/BlogDetails/BlogDetail'
 
 const AppRouter: React.FC = () => {
   return (
@@ -38,6 +39,7 @@ const AppRouter: React.FC = () => {
           <Route path="/blogs" element={<Blogs />} />
           <Route path='/dashboard' element={<AdminDashboard/>}/>
           <Route path='/all-comments' element={<AllCommentsPage />} />
+          <Route path='/blog/:id' element={<BlogDetail/>}/>
 
           {/* Protected Routes */}
 
