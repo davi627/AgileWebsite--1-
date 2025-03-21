@@ -18,7 +18,6 @@ const navigation = [
   { name: 'Solutions', href: '#erp-solutions' },
   { name: 'About Us', href: '/about-us' },
   { name: 'Contact Us', href: '/contact-us' },
-  { name: 'login', href: '/login' },
   {name: 'Blogs', href:'/blogs'}
  
 

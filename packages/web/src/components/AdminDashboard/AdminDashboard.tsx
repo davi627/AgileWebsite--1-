@@ -7,7 +7,12 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000
 
 const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
-  const [activeSection, setActiveSection] = useState<string>('overview');
+  const [activeSection, setActiveSection] = useState<string>('statistics');
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [selectedComment, setSelectedComment] = useState<Comment | null>(null); 
+  const [isPopupOpen, setIsPopupOpen] = useState(false); 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   const [statistics, setStatistics] = useState({
     successfulProjects: 0,
     happyCustomers: 0,
@@ -36,6 +41,15 @@ const [newBlog, setNewBlog] = useState({
     name: '',
   },
 });
+interface Comment {
+  _id: string;
+  logo: string;
+  description: string;
+  author: string;
+  products: string[];
+  status: 'pending' | 'approved' | 'rejected'; 
+  
+}
 
   // Check authentication and role on component mount
   useEffect(() => {
@@ -76,6 +90,53 @@ const [newBlog, setNewBlog] = useState({
       alert('Failed to update statistics. Please try again.');
     }
   };
+    // Fetch comments from the backend
+    const fetchComments = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/comments/comments`);
+       
+        setComments(response.data);
+      } catch (error) {
+        console.error('Failed to fetch comments:', error);
+      }
+    };
+  
+    // Fetch comments on component mount
+    useEffect(() => {
+      fetchComments();
+    }, []);
+  
+    // Handle view action
+    const handleView = (comment: Comment) => {
+     
+      setSelectedComment(comment);
+      setIsPopupOpen(true); 
+    };
+  
+    // Handle approve action
+    const handleApprove = async (commentId: string) => {
+      try {
+        await axios.put(`${API_BASE_URL}/comments/comments/${commentId}/approve`);
+        fetchComments(); 
+        alert('Comment approved successfully!');
+      } catch (error) {
+        console.error('Failed to approve comment:', error);
+        alert('Failed to approve comment. Please try again.');
+      }
+    };
+
+      // Handle reject action
+  const handleReject = async (commentId: string) => {
+    try {
+      await axios.put(`${API_BASE_URL}/comments/comments/${commentId}/reject`);
+      fetchComments(); 
+      alert('Comment rejected successfully!');
+    } catch (error) {
+      console.error('Failed to reject comment:', error);
+      alert('Failed to reject comment. Please try again.');
+    }
+  };
+  
 
 
 // Handle input change for the new blog form
@@ -215,36 +276,29 @@ const handleSubmitBlog = async (e: React.FormEvent) => {
     }
   };
 
+   // Close the popup
+   const closePopup = () => {
+    setIsPopupOpen(false);
+    setSelectedComment(null);
+  };
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
-      <div className="w-64 bg-primary text-white flex flex-col">
+      <div
+        className={`fixed lg:relative lg:translate-x-0 transform ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        } w-64 bg-primary text-white flex flex-col transition-transform duration-200 ease-in-out z-30`}
+      >
         {/* Sidebar Header */}
         <div className="p-6 text-xl font-bold">Admin Panel</div>
 
         {/* Sidebar Menu */}
         <nav className="flex-1">
           <ul className="space-y-2">
-            <li>
-              <button
-                onClick={() => setActiveSection('overview')}
-                className={`block w-full text-left p-4 hover:bg-indigo-500 transition duration-200 ${
-                  activeSection === 'overview' ? 'bg-indigo-500' : ''
-                }`}
-              >
-                Overview
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => setActiveSection('blogs')}
-                className={`block w-full text-left p-4 hover:bg-indigo-500 transition duration-200 ${
-                  activeSection === 'blogs' ? 'bg-indigo-500' : ''
-                }`}
-              >
-                Blogs
-              </button>
-            </li>
             <li>
               <button
                 onClick={() => setActiveSection('statistics')}
@@ -300,11 +354,33 @@ const handleSubmitBlog = async (e: React.FormEvent) => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col overflow-hidden">
         {/* Navbar */}
         <header className="bg-primary text-white p-4 shadow-md">
           <div className="flex justify-between items-center">
-            <h1 className="text-xl font-bold">Dashboard</h1>
+            <div className="flex items-center">
+              {/* Hamburger Menu Button */}
+              <button
+                onClick={toggleSidebar}
+                className="lg:hidden p-2 focus:outline-none"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16m-7 6h7"
+                  />
+                </svg>
+              </button>
+              <h1 className="text-xl font-bold ml-2">Dashboard</h1>
+            </div>
             <div className="flex items-center space-x-4">
               <span>Welcome, {getUserRole()}</span>
               <button
@@ -323,305 +399,411 @@ const handleSubmitBlog = async (e: React.FormEvent) => {
 
         {/* Dashboard Content */}
         <main className="flex-1 p-6 overflow-y-auto">
-          {/* Overview Section */}
-          {activeSection === 'overview' && (
-            <>
-              <h2 className="text-2xl font-bold mb-6">Overview</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* Statistics Cards */}
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h3 className="text-lg font-semibold">Total Blogs</h3>
-                  <p className="text-2xl font-bold">45</p>
-                </div>
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h3 className="text-lg font-semibold">Total Partners</h3>
-                  <p className="text-2xl font-bold">12</p>
-                </div>
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h3 className="text-lg font-semibold">Total Solutions</h3>
-                  <p className="text-2xl font-bold">8</p>
-                </div>
-              </div>
-            </>
-          )}
 
-          {/* Blogs Section */}
-          {activeSection === 'blogs' && (
-            <div>
-              <h2 className="text-2xl font-bold mb-6">Blogs</h2>
-              <p>This is the Blogs section. Add your blog content here.</p>
-            </div>
-          )}
 
-          {/* Statistics Section */}
-          {activeSection === 'statistics' && (
-            <div>
-              <h2 className="text-2xl font-bold mb-6">Statistics</h2>
-              <form onSubmit={handleSubmitStatistics} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Successful Projects
-                  </label>
-                  <input
-                    type="text"
-                    name="successfulProjects"
-                    value={statistics.successfulProjects}
-                    onChange={handleInputChange}
-                    className="mt-1 block w-full rounded-md border border-gray-300 p-2"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Happy Customers
-                  </label>
-                  <input
-                    type="text"
-                    name="happyCustomers"
-                    value={statistics.happyCustomers}
-                    onChange={handleInputChange}
-                    className="mt-1 block w-full rounded-md border border-gray-300 p-2"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Customer Satisfaction
-                  </label>
-                  <input
-                    type="text"
-                    name="customerSatisfaction"
-                    value={statistics.customerSatisfaction}
-                    onChange={handleInputChange}
-                    className="mt-1 block w-full rounded-md border border-gray-300 p-2"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Experience
-                  </label>
-                  <input
-                    type="text"
-                    name="experience"
-                    value={statistics.experience}
-                    onChange={handleInputChange}
-                    className="mt-1 block w-full rounded-md border border-gray-300 p-2"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="bg-primary hover:bg-indigo-600 text-white px-4 py-2 rounded-md"
-                >
-                  Update Statistics
-                </button>
-              </form>
-            </div>
-          )}
 
-          {/* Add Partners Section */}
+        {activeSection === 'statistics' && (
+  <div className="bg-white rounded-lg shadow-md p-6">
+    <h2 className="text-2xl font-bold mb-6">Statistics</h2>
+    <form onSubmit={handleSubmitStatistics} className="space-y-4">
+      {/* Successful Projects */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Successful Projects
+        </label>
+        <input
+          type="text"
+          name="successfulProjects"
+          value={statistics.successfulProjects}
+          onChange={handleInputChange}
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+        />
+      </div>
+
+      {/* Happy Customers */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Happy Customers
+        </label>
+        <input
+          type="text"
+          name="happyCustomers"
+          value={statistics.happyCustomers}
+          onChange={handleInputChange}
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+        />
+      </div>
+
+      {/* Customer Satisfaction */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Customer Satisfaction
+        </label>
+        <input
+          type="text"
+          name="customerSatisfaction"
+          value={statistics.customerSatisfaction}
+          onChange={handleInputChange}
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+        />
+      </div>
+
+      {/* Experience */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Experience
+        </label>
+        <input
+          type="text"
+          name="experience"
+          value={statistics.experience}
+          onChange={handleInputChange}
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+        />
+      </div>
+
+      {/* Submit Button */}
+      <button
+        type="submit"
+        className="bg-primary hover:bg-indigo-600 text-white px-4 py-2 rounded-md transition duration-200 w-full sm:w-auto"
+      >
+        Update Statistics
+      </button>
+    </form>
+  </div>
+)}
           {activeSection === 'add-partners' && (
-            <div>
-              <h2 className="text-2xl font-bold mb-6">Add Partners</h2>
-              <form onSubmit={handleSubmitPartner} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Partner Name</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={newPartner.name}
-                    onChange={handlePartnerInputChange}
-                    className="mt-1 block w-full rounded-md border border-gray-300 p-2"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Black & White Logo</label>
-                  <input
-                    type="file"
-                    name="bwLogo"
-                    onChange={handlePartnerInputChange}
-                    className="mt-1 block w-full rounded-md border border-gray-300 p-2"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Colored Logo</label>
-                  <input
-                    type="file"
-                    name="colorLogo"
-                    onChange={handlePartnerInputChange}
-                    className="mt-1 block w-full rounded-md border border-gray-300 p-2"
-                    required
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="bg-primary hover:bg-indigo-600 text-white px-4 py-2 rounded-md"
-                >
-                  Upload Partner Logo
-                </button>
-              </form>
-            </div>
-          )}
+  <div className="bg-white rounded-lg shadow-md p-6">
+    <h2 className="text-2xl font-bold mb-6">Add Partners</h2>
+    <form onSubmit={handleSubmitPartner} className="space-y-4">
+      {/* Partner Name */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Partner Name
+        </label>
+        <input
+          type="text"
+          name="name"
+          value={newPartner.name}
+          onChange={handlePartnerInputChange}
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          required
+        />
+      </div>
 
-          {/* Add Solutions Section */}
-          {activeSection === 'add-solutions' && (
-            <div>
-              <h2 className="text-2xl font-bold mb-6">Add Solutions</h2>
-              <form onSubmit={handleSubmitSolution} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Title</label>
-                  <input
-                    type="text"
-                    name="title"
-                    value={newSolution.title}
-                    onChange={handleSolutionInputChange}
-                    className="mt-1 block w-full rounded-md border border-gray-300 p-2"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Solution Key</label>
-                  <input
-                    type="text"
-                    name="soln"
-                    value={newSolution.soln}
-                    onChange={handleSolutionInputChange}
-                    className="mt-1 block w-full rounded-md border border-gray-300 p-2"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Image URL</label>
-                  <input
-                    type="text"
-                    name="img"
-                    value={newSolution.img}
-                    onChange={handleSolutionInputChange}
-                    className="mt-1 block w-full rounded-md border border-gray-300 p-2"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Route</label>
-                  <input
-                    type="text"
-                    name="route"
-                    value={newSolution.route}
-                    onChange={handleSolutionInputChange}
-                    className="mt-1 block w-full rounded-md border border-gray-300 p-2"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">FAQs</label>
-                  {newSolution.faqs.map((faq, index) => (
-                    <div key={index} className="space-y-2">
-                      <input
-                        type="text"
-                        name="q"
-                        value={faq.q}
-                        onChange={(e) => handleFaqChange(index, e)}
-                        placeholder="Question"
-                        className="mt-1 block w-full rounded-md border border-gray-300 p-2"
-                        required
-                      />
-                      <textarea
-                        name="a"
-                        value={faq.a}
-                        onChange={(e) => handleFaqChange(index, e)}
-                        placeholder="Answer"
-                        className="mt-1 block w-full rounded-md border border-gray-300 p-2"
-                        required
-                      />
-                    </div>
-                  ))}
+      {/* Black & White Logo */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Black & White Logo
+        </label>
+        <input
+          type="file"
+          name="bwLogo"
+          onChange={handlePartnerInputChange}
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          required
+        />
+      </div>
+
+      {/* Colored Logo */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Colored Logo
+        </label>
+        <input
+          type="file"
+          name="colorLogo"
+          onChange={handlePartnerInputChange}
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          required
+        />
+      </div>
+
+      {/* Submit Button */}
+      <button
+        type="submit"
+        className="bg-primary hover:bg-indigo-600 text-white px-4 py-2 rounded-md transition duration-200 w-full sm:w-auto"
+      >
+        Upload Partner Logo
+      </button>
+    </form>
+  </div>
+)}
+{activeSection === 'add-solutions' && (
+  <div className="bg-white rounded-lg shadow-md p-6">
+    <h2 className="text-2xl font-bold mb-6">Add Solutions</h2>
+    <form onSubmit={handleSubmitSolution} className="space-y-4">
+      {/* Title */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Title
+        </label>
+        <input
+          type="text"
+          name="title"
+          value={newSolution.title}
+          onChange={handleSolutionInputChange}
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          required
+        />
+      </div>
+
+      {/* Solution Key */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Solution Key
+        </label>
+        <input
+          type="text"
+          name="soln"
+          value={newSolution.soln}
+          onChange={handleSolutionInputChange}
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          required
+        />
+      </div>
+
+      {/* Image URL */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Image URL
+        </label>
+        <input
+          type="text"
+          name="img"
+          value={newSolution.img}
+          onChange={handleSolutionInputChange}
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          required
+        />
+      </div>
+
+      {/* Route */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Route
+        </label>
+        <input
+          type="text"
+          name="route"
+          value={newSolution.route}
+          onChange={handleSolutionInputChange}
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          required
+        />
+      </div>
+
+      {/* FAQs */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          FAQs
+        </label>
+        {newSolution.faqs.map((faq, index) => (
+          <div key={index} className="space-y-2">
+            {/* Question */}
+            <input
+              type="text"
+              name="q"
+              value={faq.q}
+              onChange={(e) => handleFaqChange(index, e)}
+              placeholder="Question"
+              className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              required
+            />
+            {/* Answer */}
+            <textarea
+              name="a"
+              value={faq.a}
+              onChange={(e) => handleFaqChange(index, e)}
+              placeholder="Answer"
+              className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              required
+            />
+          </div>
+        ))}
+        {/* Add FAQ Button */}
+        <button
+          type="button"
+          onClick={addFaq}
+          className="mt-2 bg-primary text-white px-4 py-2 rounded-md hover:bg-indigo-600 transition duration-200"
+        >
+          Add FAQ
+        </button>
+      </div>
+
+      {/* Submit Button */}
+      <button
+        type="submit"
+        className="bg-primary hover:bg-indigo-600 text-white px-4 py-2 rounded-md transition duration-200 w-full sm:w-auto"
+      >
+        Add Solution
+      </button>
+    </form>
+  </div>
+)}
+{activeSection === 'view-testimonials' && (
+  <div className="bg-white rounded-lg shadow-md p-6">
+    <h2 className="text-2xl font-bold mb-6">View Testimonials</h2>
+    <div className="overflow-x-auto">
+      <table className="min-w-full bg-white border border-gray-300">
+        <thead>
+          <tr>
+            <th className="py-2 px-4 border-b text-left">Author</th>
+            <th className="py-2 px-4 border-b text-left">Products</th>
+            <th className="py-2 px-4 border-b text-left">Status</th>
+            <th className="py-2 px-4 border-b text-left">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {comments.length === 0 ? (
+            <tr>
+              <td colSpan={4} className="py-2 px-4 border-b text-center">
+                No comments found.
+              </td>
+            </tr>
+          ) : (
+            comments.map((comment) => (
+              <tr key={comment._id}>
+                <td className="py-2 px-4 border-b">{comment.author}</td>
+                <td className="py-2 px-4 border-b">{comment.products.join(', ')}</td>
+                <td className="py-2 px-4 border-b">{comment.status}</td>
+                <td className="py-2 px-4 border-b space-x-2">
                   <button
-                    type="button"
-                    onClick={addFaq}
-                    className="mt-2 bg-primary text-white px-4 py-2 rounded-md"
+                    onClick={() => handleView(comment)}
+                    className="bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600 transition duration-200"
                   >
-                    Add FAQ
+                    View
                   </button>
-                </div>
-                <button
-                  type="submit"
-                  className="bg-primary hover:bg-indigo-600 text-white px-4 py-2 rounded-md"
-                >
-                  Add Solution
-                </button>
-              </form>
-            </div>
+                  <button
+                    onClick={() => handleApprove(comment._id)}
+                    className="bg-green-500 text-white px-2 py-1 rounded-md hover:bg-green-600 transition duration-200"
+                    disabled={comment.status === 'approved' || comment.status === 'rejected'}
+                  >
+                    Approve
+                  </button>
+                  <button
+                    onClick={() => handleReject(comment._id)}
+                    className="bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600 transition duration-200"
+                    disabled={comment.status === 'approved' || comment.status === 'rejected'}
+                  >
+                    Reject
+                  </button>
+                </td>
+              </tr>
+            ))
           )}
+        </tbody>
+      </table>
+    </div>
+  </div>
+)}
 
-          {/* View Testimonials Section */}
-          {activeSection === 'view-testimonials' && (
-            <div>
-              <h2 className="text-2xl font-bold mb-6">View Testimonials</h2>
-              <p>This is the View Testimonials section. Display testimonials here.</p>
-            </div>
-          )}
+{/* Popup for Viewing Description */}
+{isPopupOpen && selectedComment && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold">Comment Details</h2>
+        <button
+          onClick={closePopup}
+          className="text-gray-500 hover:text-gray-700"
+        >
+          ✕
+        </button>
+      </div>
+      <div>
+        <p className="text-gray-700">{selectedComment.description}</p>
+      </div>
+    </div>
+  </div>
+)}
+    
 
-          {/* Create Blogs Section */}
-          {activeSection === 'create-blogs' && (
-  <div>
+
+
+    {activeSection === 'create-blogs' && (
+  <div className="bg-white rounded-lg shadow-md p-6">
     <h2 className="text-2xl font-bold mb-6">Create Blogs</h2>
     <form onSubmit={handleSubmitBlog} className="space-y-4">
+      {/* Title */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">Title</label>
+        <label className="block text-sm font-medium text-gray-700">
+          Title
+        </label>
         <input
           type="text"
           name="title"
           value={newBlog.title}
           onChange={handleBlogInputChange}
-          className="mt-1 block w-full rounded-md border border-gray-300 p-2"
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           required
         />
       </div>
+
+      {/* Description */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">Description</label>
+        <label className="block text-sm font-medium text-gray-700">
+          Description
+        </label>
         <textarea
           name="description"
           value={newBlog.description}
           onChange={handleBlogInputChange}
-          className="mt-1 block w-full rounded-md border border-gray-300 p-2"
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          rows={4}
           required
         />
       </div>
+
+      {/* Image URL */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">Image URL</label>
+        <label className="block text-sm font-medium text-gray-700">
+          Image URL
+        </label>
         <input
           type="text"
           name="imageUrl"
           value={newBlog.imageUrl}
           onChange={handleBlogInputChange}
-          className="mt-1 block w-full rounded-md border border-gray-300 p-2"
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           required
         />
       </div>
+
+      {/* Href */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">Href</label>
+        <label className="block text-sm font-medium text-gray-700">
+          Href
+        </label>
         <input
           type="text"
           name="href"
           value={newBlog.href}
           onChange={handleBlogInputChange}
-          className="mt-1 block w-full rounded-md border border-gray-300 p-2"
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           required
         />
       </div>
+
+      {/* Author Name */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">Author Name</label>
+        <label className="block text-sm font-medium text-gray-700">
+          Author Name
+        </label>
         <input
           type="text"
           name="authorName"
           value={newBlog.author.name}
           onChange={handleBlogInputChange}
-          className="mt-1 block w-full rounded-md border border-gray-300 p-2"
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           required
         />
       </div>
+
+      {/* Submit Button */}
       <button
         type="submit"
-        className="bg-primary hover:bg-indigo-600 text-white px-4 py-2 rounded-md"
+        className="bg-primary hover:bg-indigo-600 text-white px-4 py-2 rounded-md transition duration-200 w-full sm:w-auto"
       >
         Create Blog
       </button>

@@ -56,9 +56,9 @@ const handleApiError = (error: unknown): never => {
 export const login = async (
   email: string,
   password: string,
-  role: string
+  
 ): Promise<LoginResponse> => {
-  const payload: LoginPayload = { email, password, role }
+  const payload: LoginPayload = { email, password, role:'Admin' }
 
   try {
     const response = await axios.post<LoginResponse>(

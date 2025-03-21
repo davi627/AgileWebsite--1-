@@ -1,19 +1,28 @@
-// routes/logoRoutes.js
 import express from 'express';
 import multer from 'multer';
 import Logo from '../Models/Logo.js';
-import fs from 'fs';
 import path from 'path';
 
 const router = express.Router();
-const upload = multer({ dest: 'uploads/' }); 
+
+// Configure Multer for file uploads (logos)
+const logoStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/logos/'); // Save logos in a separate directory
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
+const uploadLogo = multer({ storage: logoStorage });
 
 // Upload a logo
-router.post('/logo', upload.fields([{ name: 'bwLogo' }, { name: 'colorLogo' }]), async (req, res) => {
+router.post('/logo', uploadLogo.fields([{ name: 'bwLogo' }, { name: 'colorLogo' }]), async (req, res) => {
   try {
     const { name } = req.body;
-    const bwLogoUrl = `/logos/${req.files['bwLogo'][0].filename}`;
-    const colorLogoUrl = `/logos/${req.files['colorLogo'][0].filename}`;
+    const bwLogoUrl = `/uploads/logos/${req.files['bwLogo'][0].filename}`;
+    const colorLogoUrl = `/uploads/logos/${req.files['colorLogo'][0].filename}`;
 
     // Save the logo details in the database
     const newLogo = new Logo({ name, bwLogoUrl, colorLogoUrl });
@@ -35,4 +44,4 @@ router.get('/logo', async (req, res) => {
   }
 });
 
-export {router as logoRouter}
+export { router as logoRouter };

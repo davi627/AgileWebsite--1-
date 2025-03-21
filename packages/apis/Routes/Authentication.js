@@ -62,7 +62,7 @@ router.post('/Register', async (req, res) => {
 //Login route
 
 router.post('/login', async (req, res) => {
-    const { email, password, role } = req.body;
+    const { email, password, role='Admin' } = req.body;
     console.log('Role sent in request:', role);
 
     if (!email || !password || !role) {
