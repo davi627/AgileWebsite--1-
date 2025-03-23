@@ -8,9 +8,7 @@ const container = document.getElementById('root') as HTMLDivElement
 const root = createRoot(container)
 
 root.render(
-  <React.StrictMode>
-    {/* <GoogleAnalyticsProvider> */}
+
     <AppRouter />
-    {/* </GoogleAnalyticsProvider> */}
-  </React.StrictMode>
+
 )

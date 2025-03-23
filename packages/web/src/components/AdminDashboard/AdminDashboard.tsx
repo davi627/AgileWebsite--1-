@@ -1,11 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { isAuthenticated, getUserRole } from 'services/AuthService';
 import axios from 'axios';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import striptags from "striptags";
+
+
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
+interface BlogContent {
+  type: "text" | "image";
+  data: string; 
+}
 
 const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -14,6 +22,11 @@ const AdminDashboard: React.FC = () => {
   const [selectedComment, setSelectedComment] = useState<Comment | null>(null); 
   const [isPopupOpen, setIsPopupOpen] = useState(false); 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [title, setTitle] = useState(""); // Blog title
+  const [content, setContent] = useState<BlogContent[]>([]); 
+  const [author, setAuthor] = useState(""); // 
+  const [loading, setLoading] = useState(false); 
+  const [imageUrl, setImageUrl] = useState("");
   const [newTestimonial, setNewTestimonial] = useState({
     logo: null as File | null,
     description: '',
@@ -41,14 +54,8 @@ const AdminDashboard: React.FC = () => {
     colorLogo: null as File | null,
   });
     // State for the new blog
-const [newBlog, setNewBlog] = useState({
-  title: '',
-  description: '',
-  imageUrl: '',
-  author: {
-    name: '',
-  },
-});
+
+const quillRef = useRef<ReactQuill>(null);
 interface Comment {
   _id: string;
   logo: string;
@@ -209,46 +216,71 @@ interface Comment {
   
 
 
-// Handle input change for the new blog form
-const handleBlogInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-  const { name, value } = e.target;
-  if (name === 'authorName') {
-    setNewBlog({
-      ...newBlog,
-      author: {
-        name: value,
-      },
-    });
-  } else {
-    setNewBlog({
-      ...newBlog,
-      [name]: value,
-    });
-  }
-};
+  const addText = (text: string) => {
+    if (text.trim()) {
+      setContent((prevContent) => [
+        ...prevContent,
+        { type: "text", data: text },
+      ]);
+    }
+  };
 
-// Handle form submission for adding a new blog
-const handleSubmitBlog = async (e: React.FormEvent) => {
-  e.preventDefault();
+  // Add image to the content
+  const addImage = async (file: File) => {
+    const formData = new FormData();
+    formData.append("image", file);
 
-  try {
-    const response = await axios.post(`${API_BASE_URL}/blog/blogs`, newBlog);
-    if (response.status === 201) {
-      alert('Blog created successfully!');
-      setNewBlog({
-        title: '',
-        description: '',
-        imageUrl: '',
-        author: {
-          name: '',
+    try {
+      const response = await axios.post(`${API_BASE_URL}/blog/upload-image`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
         },
       });
+
+      if (response.data.imageUrl) {
+        setContent((prevContent) => [
+          ...prevContent,
+          { type: "image", data: response.data.imageUrl },
+        ]);
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      alert("Failed to upload image. Please try again.");
+    }
+  };
+
+// Handle form submission for adding a new blog
+const handleBlogSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
+
+  try {
+    const response = await axios.post(`${API_BASE_URL}/blog/blogs`, {
+      title,
+      content,
+      author: { name: author },
+      imageUrl,
+    });
+
+    if (response.status === 201) {
+      alert("Blog created successfully!");
+      setTitle("");
+      setContent([]);
+      setAuthor("");
+      setImageUrl("");
     }
   } catch (error) {
-    console.error('Failed to create blog:', error);
-    alert('Failed to create blog. Please try again.');
+    console.error("Failed to create blog:", error);
+    alert("Failed to create blog. Please try again.");
+  } finally {
+    setLoading(false);
   }
 };
+
+const [isEditorReady, setIsEditorReady] = useState(false);
+useEffect(() => {
+  setIsEditorReady(true);
+}, []);
 
   // Handle input change for the new solution form
   const handleSolutionInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -353,6 +385,7 @@ const handleSubmitBlog = async (e: React.FormEvent) => {
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -807,64 +840,77 @@ const handleSubmitBlog = async (e: React.FormEvent) => {
 
 
     {activeSection === 'create-blogs' && (
-  <div className="bg-white rounded-lg shadow-md p-6">
-    <h2 className="text-2xl font-bold mb-6">Create Blogs</h2>
-    <form onSubmit={handleSubmitBlog} className="space-y-4">
+    <div className="bg-white rounded-lg shadow-md p-6">
+    <h2 className="text-2xl font-bold mb-6">Create Blog</h2>
+    <form onSubmit={handleBlogSubmit} className="space-y-4">
+
+    <div>
+  <label className="block text-sm font-medium text-gray-700">Image URL</label>
+  <input
+    type="text"
+    value={imageUrl}
+    onChange={(e) => setImageUrl(e.target.value)}
+    className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+    required
+  />
+</div>
       {/* Title */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Title
-        </label>
+        <label className="block text-sm font-medium text-gray-700">Title</label>
         <input
           type="text"
-          name="title"
-          value={newBlog.title}
-          onChange={(e) => setNewBlog({ ...newBlog, title: e.target.value })}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
           className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           required
         />
       </div>
 
-      {/* Description */}
+      {/* Text Input */}
       <div>
         <label className="block text-sm font-medium text-gray-700">
-          Description
+          Add Text
         </label>
-        <ReactQuill
-          value={newBlog.description}
-          onChange={(value) => setNewBlog({ ...newBlog, description: value })}
-          className="mt-1 block w-full rounded-md border border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          modules={{
-            toolbar: [
-              [{ header: [1, 2, 3, false] }],
-              ['bold', 'italic', 'underline', 'strike'],
-              [{ list: 'ordered' }, { list: 'bullet' }],
-              ['link', 'image'],
-              ['clean'],
-            ],
+        <textarea
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          rows={3}
+          placeholder="Write your text here..."
+          onBlur={(e) => addText(e.target.value)} // Add text when the textarea loses focus
+        />
+      </div>
+
+      {/* Image Upload */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Add Image
+        </label>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => {
+            if (e.target.files && e.target.files[0]) {
+              addImage(e.target.files[0]);
+            }
           }}
-          formats={[
-            'header',
-            'bold', 'italic', 'underline', 'strike',
-            'list', 'bullet',
-            'link', 'image',
-          ]}
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
         />
       </div>
 
-      {/* Image URL */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Image URL
-        </label>
-        <input
-          type="text"
-          name="imageUrl"
-          value={newBlog.imageUrl}
-          onChange={(e) => setNewBlog({ ...newBlog, imageUrl: e.target.value })}
-          className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          required
-        />
+      {/* Preview Content */}
+      <div className="mt-6 space-y-4">
+        {content.map((item, index) => (
+          <div key={index} className="border p-4 rounded-md">
+            {item.type === "text" ? (
+              <p>{item.data}</p>
+            ) : (
+              <img
+                src={item.data}
+                alt={`Uploaded ${index}`}
+                className="w-full h-32 object-cover rounded-md"
+              />
+            )}
+          </div>
+        ))}
       </div>
 
       {/* Author Name */}
@@ -874,9 +920,8 @@ const handleSubmitBlog = async (e: React.FormEvent) => {
         </label>
         <input
           type="text"
-          name="authorName"
-          value={newBlog.author.name}
-          onChange={(e) => setNewBlog({ ...newBlog, author: { name: e.target.value } })}
+          value={author}
+          onChange={(e) => setAuthor(e.target.value)}
           className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           required
         />
@@ -885,14 +930,14 @@ const handleSubmitBlog = async (e: React.FormEvent) => {
       {/* Submit Button */}
       <button
         type="submit"
-        className="bg-primary hover:bg-indigo-600 text-white px-4 py-2 rounded-md transition duration-200 w-full sm:w-auto"
+        disabled={loading}
+        className="mt-4 bg-primary hover:bg-indigo-600 text-white px-4 py-2 rounded-md transition duration-200 w-full sm:w-auto"
       >
-        Create Blog
+        {loading ? "Creating..." : "Create Blog"}
       </button>
     </form>
   </div>
-)}
-
+          )}
 {activeSection === 'create-testimonials' && (
   <div className="bg-white rounded-lg shadow-md p-6">
     <h2 className="text-2xl font-bold mb-6">Create Testimonials</h2>

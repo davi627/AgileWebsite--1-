@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 // Define the interface for blog posts
 interface BlogPost {
   _id: string;
   title: string;
-  description: string;
+  content: { type: string; data: string }[]; 
   imageUrl: string;
-  href: string;
-  datetime: string;
   formattedDate: string;
   author: {
     name: string;
@@ -59,39 +58,52 @@ export default function Blog() {
           </p>
         </div>
         <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {blogs.map((blog) => (
-            <article
-              key={blog._id}
-              className="relative flex flex-col overflow-hidden rounded-lg bg-white shadow"
-            >
-              <div className="h-36 overflow-hidden">
-                <img
-                  src={blog.imageUrl}
-                  alt={blog.title}
-                  className="size-full object-cover"
-                />
-              </div>
-              <div className="flex flex-1 flex-col p-4">
-                <h3 className="mt-2 text-lg font-semibold text-gray-900">
-                  <a href={blog.href}>{blog.title}</a>
-                </h3>
-                <time
-                  dateTime={blog.datetime}
-                  className="mt-1 text-sm text-gray-500"
-                >
-                  {blog.formattedDate}
-                </time>
-                <p className="mt-2 text-sm text-gray-600">
-                  {blog.description}
-                </p>
-                <div className="mt-2">
-                  <p className="text-sm font-medium">
-                    {blog.author.name}
-                  </p>
+          {blogs.map((blog) => {
+            // Extract the first text content from the blog
+            const textContent = blog.content.find((item) => item.type === 'text')?.data || '';
+            // Limit the content to two lines
+            const truncatedContent = textContent.split('\n').slice(0, 2).join(' ');
+
+            return (
+              <article
+                key={blog._id}
+                className="relative flex flex-col overflow-hidden rounded-lg bg-white shadow"
+              >
+                <div className="h-36 overflow-hidden">
+                  <img
+                    src={blog.imageUrl}
+                    alt={blog.title}
+                    className="size-full object-cover"
+                  />
                 </div>
-              </div>
-            </article>
-          ))}
+                <div className="flex flex-1 flex-col p-4">
+                  <h3 className="mt-2 text-lg font-semibold text-gray-900">
+                    {blog.title}
+                  </h3>
+                  <time
+                    dateTime={blog.formattedDate}
+                    className="mt-1 text-sm text-gray-500"
+                  >
+                    {blog.formattedDate}
+                  </time>
+                  <p className="mt-2 text-sm text-gray-600 line-clamp-2">
+                    {truncatedContent}
+                  </p>
+                  <div className="mt-2">
+                    <p className="text-sm font-medium">
+                      {blog.author.name}
+                    </p>
+                  </div>
+                  <Link
+                    to={`/blog/${blog._id}`}
+                    className="mt-4 bg-primary text-white px-4 py-2 rounded-md text-center"
+                  >
+                    Read More
+                  </Link>
+                </div>
+              </article>
+            );
+          })}
         </div>
       </div>
     </div>
