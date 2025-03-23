@@ -23,7 +23,7 @@ const BlogDetail = () => {
   const navigate = useNavigate();
   const [blog, setBlog] = useState<BlogPost | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
-  const [name, setName] = useState(""); // New state for name input
+  const [name, setName] = useState("");
   const [newComment, setNewComment] = useState("");
   const [showAllComments, setShowAllComments] = useState(false);
 
@@ -60,167 +60,202 @@ const BlogDetail = () => {
     try {
       const response = await axios.post(`http://localhost:5000/blog/${id}/comments`, {
         text: newComment,
-        author: name, // Save the entered name
+        author: name,
       });
 
       setComments([...comments, response.data]);
       setNewComment("");
-      setName(""); // Reset name field after submission
+      setName("");
     } catch (error) {
       console.error("Error submitting comment:", error);
     }
   };
 
   if (!blog) {
-    return <div className="text-center py-10 text-gray-600">Loading...</div>;
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+        <div className="animate-pulse text-xl text-gray-600">Loading...</div>
+      </div>
+    );
   }
 
   return (
-    <div className="bg-gray-100 min-h-screen">
+    <div className="bg-gradient-to-b from-gray-50 to-gray-100 min-h-screen">
       {/* Navigation Bar */}
-      <nav className="bg-white shadow-md py-4 px-6 flex justify-between items-center">
+      <nav className="bg-white shadow-md py-4 px-6 sm:px-8 flex justify-between items-center sticky top-0 z-10">
         <h1 className="text-xl font-bold text-gray-800">Blog Details</h1>
         <button
           onClick={() => navigate("/")}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors duration-200 shadow-sm"
         >
           Home
         </button>
       </nav>
 
-      <div className="mx-auto max-w-5xl px-6 lg:px-12 py-12">
-        {/* Blog Header */}
-        <header className="text-center">
-          <h1 className="text-5xl font-bold text-gray-900">{blog.title}</h1>
-          <div className="flex justify-center space-x-4 text-gray-500 mt-4 text-sm">
-            <time dateTime={blog.formattedDate}>{blog.formattedDate}</time>
-            <span>•</span>
-            <p className="font-medium text-gray-900">By {blog.author.name}</p>
+      {/* Background Decoration */}
+      <div className="absolute top-0 inset-x-0 h-64 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 opacity-70 -z-10"></div>
+
+      <div className="container mx-auto px-4 sm:px-6 py-12 relative">
+        {/* Blog Content Area */}
+        <div className="grid grid-cols-12 gap-8">
+          {/* Left Decorative Line */}
+          <div className="hidden lg:block col-span-1 relative">
+            <div className="sticky top-24 h-full">
+              <div className="w-px h-full bg-gradient-to-b from-gray-200 to-transparent mx-auto"></div>
+            </div>
           </div>
-        </header>
 
+          {/* Main Content */}
+          <main className="col-span-12 lg:col-span-10">
+            {/* Blog Header */}
+            <header className="text-center mb-12">
+              <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 leading-tight">{blog.title}</h1>
+              <div className="flex justify-center space-x-4 text-gray-500 mt-4 text-sm">
+                <time dateTime={blog.formattedDate} className="italic">{blog.formattedDate}</time>
+                <span>•</span>
+                <p className="font-medium text-gray-900">By {blog.author.name}</p>
+              </div>
+            </header>
 
+            {/* Blog Content */}
+            <article className="prose prose-lg max-w-none bg-white rounded-xl shadow-sm p-6 sm:p-8 mb-12">
+              {blog.content.map((item, index) => {
+                if (item.type === "text") {
+                  const cleanedText = item.data.replace(/(https?:\/\/[^\s]+)/g, "");
+                  return cleanedText.split("\n\n").map((paragraph, idx) => (
+                    <p key={`${index}-${idx}`} className="text-gray-800 leading-relaxed mb-6">{paragraph}</p>
+                  ));
+                } else if (item.type === "image") {
+                  return (
+                    <figure key={index} className="my-8">
+                      <img
+                        src={item.data}
+                        alt={`Content Image ${index}`}
+                        className="w-full max-h-96 object-contain rounded-lg shadow-md"
+                      />
+                      <figcaption className="text-center text-sm text-gray-500 mt-2">
+                        Image {index + 1}
+                      </figcaption>
+                    </figure>
+                  );
+                }
+                return null;
+              })}
+            </article>
 
-        {/* Blog Content */}
-{/* Blog Content */}
-{/* Blog Content */}
-<article className="mt-12 mx-auto w-3/4 text-gray-800 leading-relaxed space-y-6">
-  {blog.content.map((item, index) => {
-    if (item.type === "text") {
-      // Remove any URLs (including image URLs) from the text
-      const cleanedText = item.data.replace(/(https?:\/\/[^\s]+)/g, "");
-
-      return cleanedText.split("\n\n").map((paragraph, idx) => (
-        <p key={`${index}-${idx}`} className="text-lg mb-4">{paragraph}</p>
-      ));
-    } else if (item.type === "image") {
-      return (
-        <img
-          key={index}
-          src={item.data}
-          alt={`Content Image ${index}`}
-          className="w-full h-auto rounded-xl shadow-lg my-6"
-        />
-      );
-    }
-    return null;
-  })}
-</article>
-
-
-        {/* Comments Preview */}
-        <div className="mt-16 w-3/4 mx-auto">
-          {comments.length > 0 && (
-            <div className="bg-white p-6 rounded-lg shadow">
-              {!showAllComments ? (
-                <>
-                  {/* Show Only One Comment */}
-                  <p className="text-gray-700">{comments[0].text}</p>
-                  <p className="mt-2 text-xs text-gray-500">
-                    By {comments[0].author} •{" "}
-                    {new Date(comments[0].date).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </p>
-
-                  {/* "View All Comments" Button */}
-                  {comments.length > 1 && (
-                    <button
-                      onClick={() => setShowAllComments(true)}
-                      className="mt-4 text-blue-600 font-semibold hover:underline"
-                    >
-                      View All Comments
-                    </button>
-                  )}
-                </>
+            {/* Comments Section */}
+            <section className="bg-white rounded-xl shadow-sm p-6 sm:p-8 mb-12">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Comments</h2>
+              
+              {comments.length === 0 ? (
+                <p className="text-gray-500 italic">Be the first to comment on this article!</p>
               ) : (
-                <>
-                  {/* All Comments in One Card */}
-                  <h2 className="text-xl font-bold mb-4">All Comments</h2>
-                  <div className="space-y-4">
-                    {comments.map((comment) => (
-                      <div key={comment._id}>
-                        <p className="text-gray-700">{comment.text}</p>
-                        <p className="text-xs text-gray-500">
-                          By {comment.author} •{" "}
-                          {new Date(comment.date).toLocaleDateString("en-US", {
+                <div className="space-y-6">
+                  {!showAllComments ? (
+                    <>
+                      <div className="bg-gray-50 p-4 rounded-lg">
+                        <p className="text-gray-700">{comments[0].text}</p>
+                        <p className="mt-2 text-xs text-gray-500">
+                          By <span className="font-medium">{comments[0].author}</span> •{" "}
+                          {new Date(comments[0].date).toLocaleDateString("en-US", {
                             year: "numeric",
                             month: "short",
                             day: "numeric",
                           })}
                         </p>
-                        <hr className="border-gray-200 my-2" />
                       </div>
-                    ))}
-                  </div>
 
-                  {/* Hide Comments Button */}
-                  <button
-                    onClick={() => setShowAllComments(false)}
-                    className="mt-4 text-blue-600 font-semibold hover:underline"
-                  >
-                    Hide Comments
-                  </button>
-                </>
+                      {comments.length > 1 && (
+                        <button
+                          onClick={() => setShowAllComments(true)}
+                          className="text-blue-600 font-semibold hover:text-blue-800 transition-colors flex items-center"
+                        >
+                          <span>View All {comments.length} Comments</span>
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </button>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <div className="space-y-4 divide-y divide-gray-200">
+                        {comments.map((comment) => (
+                          <div key={comment._id} className="pt-4 first:pt-0">
+                            <p className="text-gray-700">{comment.text}</p>
+                            <p className="text-xs text-gray-500 mt-2">
+                              By <span className="font-medium">{comment.author}</span> •{" "}
+                              {new Date(comment.date).toLocaleDateString("en-US", {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                              })}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+
+                      <button
+                        onClick={() => setShowAllComments(false)}
+                        className="text-blue-600 font-semibold hover:text-blue-800 transition-colors flex items-center"
+                      >
+                        <span>Show Less</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                        </svg>
+                      </button>
+                    </>
+                  )}
+                </div>
               )}
+            </section>
+
+            {/* Comments Form */}
+            <section className="bg-white rounded-xl shadow-sm p-6 sm:p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Leave a Comment</h2>
+              <form onSubmit={handleCommentSubmit} className="space-y-4">
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+                  <input
+                    id="name"
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Enter your name"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="comment" className="block text-sm font-medium text-gray-700 mb-1">Your Comment</label>
+                  <textarea
+                    id="comment"
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    rows={4}
+                    placeholder="Share your thoughts..."
+                    required
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors duration-200 font-medium shadow-sm"
+                >
+                  Submit Comment
+                </button>
+              </form>
+            </section>
+          </main>
+
+          {/* Right Decorative Line */}
+          <div className="hidden lg:block col-span-1 relative">
+            <div className="sticky top-24 h-full">
+              <div className="w-px h-full bg-gradient-to-b from-gray-200 to-transparent mx-auto"></div>
             </div>
-          )}
-        </div>
-
-        {/* Comments Form */}
-        <div className="mt-12 w-3/4 mx-auto">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Add a Comment</h2>
-          <form onSubmit={handleCommentSubmit} className="mb-8 space-y-4">
-            {/* Name Input Field */}
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-              placeholder="Your Name"
-              required
-            />
-
-            {/* Comment Input Field */}
-            <textarea
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-              rows={4}
-              placeholder="Write a comment..."
-              required
-            />
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              className="mt-2 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Submit Comment
-            </button>
-          </form>
+          </div>
         </div>
       </div>
     </div>
