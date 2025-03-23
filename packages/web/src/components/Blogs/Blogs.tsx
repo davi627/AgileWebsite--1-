@@ -33,7 +33,7 @@ export default function Blog() {
           views: storedViews[blog._id] || blog.views || 0, 
         }));
   
-        // Store all blogs in localStorage for TopBlogs component
+        // Store all blogs in localStorage for Index component
         localStorage.setItem("allBlogs", JSON.stringify(data));
   
         setBlogs(data);

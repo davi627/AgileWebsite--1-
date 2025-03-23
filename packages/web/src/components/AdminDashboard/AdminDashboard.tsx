@@ -4,7 +4,9 @@ import { isAuthenticated, getUserRole } from 'services/AuthService';
 import axios from 'axios';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import striptags from "striptags";
+import SecurityKeyModal from 'components/SercurityKeyModal/SercurityKeyModal';
+
+
 
 
 
@@ -15,6 +17,7 @@ interface BlogContent {
   data: string; 
 }
 
+
 const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState<string>('statistics');
@@ -22,11 +25,14 @@ const AdminDashboard: React.FC = () => {
   const [selectedComment, setSelectedComment] = useState<Comment | null>(null); 
   const [isPopupOpen, setIsPopupOpen] = useState(false); 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [title, setTitle] = useState(""); // Blog title
+  const [title, setTitle] = useState(""); 
   const [content, setContent] = useState<BlogContent[]>([]); 
   const [author, setAuthor] = useState(""); // 
   const [loading, setLoading] = useState(false); 
   const [imageUrl, setImageUrl] = useState("");
+  const [isSecurityKeyModalOpen, setIsSecurityKeyModalOpen] = useState(false);
+  const [pendingAction, setPendingAction] = useState<() => void>(() => {});
+
   const [newTestimonial, setNewTestimonial] = useState({
     logo: null as File | null,
     description: '',
@@ -53,7 +59,22 @@ const AdminDashboard: React.FC = () => {
     bwLogo: null as File | null,
     colorLogo: null as File | null,
   });
-    // State for the new blog
+  
+
+  const validateSecurityKey = async (key: string) => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/validate-security-key`, { key });
+      return response.data.isValid;
+    } catch (error) {
+      console.error('Failed to validate security key:', error);
+      return false;
+    }
+  };
+
+  const handleActionWithSecurityKey = (action: () => void) => {
+    setPendingAction(() => action);
+    setIsSecurityKeyModalOpen(true);
+  };
 
 const quillRef = useRef<ReactQuill>(null);
 interface Comment {
@@ -96,15 +117,20 @@ interface Comment {
   // Handle form submission for statistics (POST/UPDATE)
   const handleSubmitStatistics = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    try {
-      await axios.post(`${API_BASE_URL}/stats/statistics`, statistics);
-      alert('Statistics updated successfully!');
-    } catch (error) {
-      console.error('Failed to update statistics:', error);
-      alert('Failed to update statistics. Please try again.');
-    }
+  
+    const action = async () => {
+      try {
+        await axios.post(`${API_BASE_URL}/stats/statistics`, statistics);
+        alert('Statistics updated successfully!');
+      } catch (error) {
+        console.error('Failed to update statistics:', error);
+        alert('Failed to update statistics. Please try again.');
+      }
+    };
+  
+    handleActionWithSecurityKey(action);
   };
+
     // Fetch comments from the backend
     const fetchComments = async () => {
       try {
@@ -137,35 +163,40 @@ interface Comment {
     const handleSubmitTestimonial = async (e: React.FormEvent) => {
       e.preventDefault();
     
-      const formData = new FormData();
-      formData.append('description', newTestimonial.description);
-      formData.append('author', newTestimonial.author); 
-      formData.append('products', newTestimonial.products);
-      if (newTestimonial.logo) formData.append('logo', newTestimonial.logo);
-      if (newTestimonial.image) formData.append('image', newTestimonial.image);
+      const action = async () => {
+        const formData = new FormData();
+        formData.append('description', newTestimonial.description);
+        formData.append('author', newTestimonial.author);
+        formData.append('products', newTestimonial.products);
+        if (newTestimonial.logo) formData.append('logo', newTestimonial.logo);
+        if (newTestimonial.image) formData.append('image', newTestimonial.image);
     
-      try {
-        const response = await axios.post(`${API_BASE_URL}/comments/comments`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-        if (response.status === 201) {
-          alert('Testimonial created successfully!');
-          setNewTestimonial({
-            logo: null,
-            description: '',
-            author: '',
-            products: '',
-            image: null,
+        try {
+          const response = await axios.post(`${API_BASE_URL}/comments/comments`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
           });
+          if (response.status === 201) {
+            alert('Testimonial created successfully!');
+            setNewTestimonial({
+              logo: null,
+              description: '',
+              author: '',
+              products: '',
+              image: null,
+            });
+          }
+        } catch (error) {
+          console.error('Failed to create testimonial:', error);
+          alert('Failed to create testimonial. Please try again.');
         }
-      } catch (error) {
-        console.error('Failed to create testimonial:', error);
-        alert('Failed to create testimonial. Please try again.');
-      }
+      };
+    
+      handleActionWithSecurityKey(action);
+
+
     };
-  
     // Fetch comments on component mount
     useEffect(() => {
       fetchComments();
@@ -180,39 +211,51 @@ interface Comment {
   
     // Handle approve action
     const handleApprove = async (commentId: string) => {
-      try {
-        await axios.put(`${API_BASE_URL}/comments/comments/${commentId}/approve`);
-        fetchComments(); 
-        alert('Comment approved successfully!');
-      } catch (error) {
-        console.error('Failed to approve comment:', error);
-        alert('Failed to approve comment. Please try again.');
-      }
-    };
-    const handleDelete = async (commentId: string) => {
-      try {
-        const response = await axios.delete(`${API_BASE_URL}/comments/comments/${commentId}`);
-        if (response.status === 200) {
-          alert('Comment deleted successfully!');
-          fetchComments(); 
+      const action = async () => {
+        try {
+          await axios.put(`${API_BASE_URL}/comments/comments/${commentId}/approve`);
+          fetchComments();
+          alert('Comment approved successfully!');
+        } catch (error) {
+          console.error('Failed to approve comment:', error);
+          alert('Failed to approve comment. Please try again.');
         }
-      } catch (error) {
-        console.error('Failed to delete comment:', error);
-        alert('Failed to delete comment. Please try again.');
-      }
+      };
+      handleActionWithSecurityKey(action);
+    };
+
+    
+
+    const handleDelete = async (commentId: string) => {
+      const action = async () => {
+        try {
+          const response = await axios.delete(`${API_BASE_URL}/comments/comments/${commentId}`);
+          if (response.status === 200) {
+            alert('Comment deleted successfully!');
+            fetchComments();
+          }
+        } catch (error) {
+          console.error('Failed to delete comment:', error);
+          alert('Failed to delete comment. Please try again.');
+        }
+      };
+      handleActionWithSecurityKey(action);
     };
 
       // Handle reject action
-  const handleReject = async (commentId: string) => {
-    try {
-      await axios.put(`${API_BASE_URL}/comments/comments/${commentId}/reject`);
-      fetchComments(); 
-      alert('Comment rejected successfully!');
-    } catch (error) {
-      console.error('Failed to reject comment:', error);
-      alert('Failed to reject comment. Please try again.');
-    }
-  };
+      const handleReject = async (commentId: string) => {
+        const action = async () => {
+          try {
+            await axios.put(`${API_BASE_URL}/comments/comments/${commentId}/reject`);
+            fetchComments();
+            alert('Comment rejected successfully!');
+          } catch (error) {
+            console.error('Failed to reject comment:', error);
+            alert('Failed to reject comment. Please try again.');
+          }
+        };
+        handleActionWithSecurityKey(action);
+      };
   
 
 
@@ -252,29 +295,33 @@ interface Comment {
 // Handle form submission for adding a new blog
 const handleBlogSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
-  setLoading(true);
 
-  try {
-    const response = await axios.post(`${API_BASE_URL}/blog/blogs`, {
-      title,
-      content,
-      author: { name: author },
-      imageUrl,
-    });
+  const action = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.post(`${API_BASE_URL}/blog/blogs`, {
+        title,
+        content,
+        author: { name: author },
+        imageUrl,
+      });
 
-    if (response.status === 201) {
-      alert("Blog created successfully!");
-      setTitle("");
-      setContent([]);
-      setAuthor("");
-      setImageUrl("");
+      if (response.status === 201) {
+        alert('Blog created successfully!');
+        setTitle('');
+        setContent([]);
+        setAuthor('');
+        setImageUrl('');
+      }
+    } catch (error) {
+      console.error('Failed to create blog:', error);
+      alert('Failed to create blog. Please try again.');
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error("Failed to create blog:", error);
-    alert("Failed to create blog. Please try again.");
-  } finally {
-    setLoading(false);
-  }
+  };
+
+  handleActionWithSecurityKey(action);
 };
 
 const [isEditorReady, setIsEditorReady] = useState(false);
@@ -313,23 +360,29 @@ useEffect(() => {
   // Handle form submission for adding a new solution
   const handleSubmitSolution = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    try {
-      const response = await axios.post(`${API_BASE_URL}/solns/solution`, newSolution);
-      if (response.status === 201) {
-        alert('Solution added successfully!');
-        setNewSolution({
-          title: '',
-          soln: '',
-          img: '',
-          route: '',
-          faqs: [{ q: '', a: '' }],
-        });
+  
+    
+    const action = async () => {
+      try {
+        const response = await axios.post(`${API_BASE_URL}/solns/solution`, newSolution);
+        if (response.status === 201) {
+          alert('Solution added successfully!');
+          setNewSolution({
+            title: '',
+            soln: '',
+            img: '',
+            route: '',
+            faqs: [{ q: '', a: '' }],
+          });
+        }
+      } catch (error) {
+        console.error('Failed to add solution:', error);
+        alert('Failed to add solution. Please try again.');
       }
-    } catch (error) {
-      console.error('Failed to add solution:', error);
-      alert('Failed to add solution. Please try again.');
-    }
+    };
+  
+    
+    handleActionWithSecurityKey(action);
   };
 
   // Handle input change for the new partner form
@@ -351,30 +404,34 @@ useEffect(() => {
   // Handle form submission for adding a new partner
   const handleSubmitPartner = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const formData = new FormData();
-    formData.append('name', newPartner.name);
-    if (newPartner.bwLogo) formData.append('bwLogo', newPartner.bwLogo);
-    if (newPartner.colorLogo) formData.append('colorLogo', newPartner.colorLogo);
-
-    try {
-      const response = await axios.post(`${API_BASE_URL}/log/logo`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      if (response.status === 201) {
-        alert('Partner logo uploaded successfully!');
-        setNewPartner({
-          name: '',
-          bwLogo: null,
-          colorLogo: null,
+  
+    const action = async () => {
+      const formData = new FormData();
+      formData.append('name', newPartner.name);
+      if (newPartner.bwLogo) formData.append('bwLogo', newPartner.bwLogo);
+      if (newPartner.colorLogo) formData.append('colorLogo', newPartner.colorLogo);
+  
+      try {
+        const response = await axios.post(`${API_BASE_URL}/log/logo`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
         });
+        if (response.status === 201) {
+          alert('Partner logo uploaded successfully!');
+          setNewPartner({
+            name: '',
+            bwLogo: null,
+            colorLogo: null,
+          });
+        }
+      } catch (error) {
+        console.error('Failed to upload partner logo:', error);
+        alert('Failed to upload partner logo. Please try again.');
       }
-    } catch (error) {
-      console.error('Failed to upload partner logo:', error);
-      alert('Failed to upload partner logo. Please try again.');
-    }
+    };
+  
+    handleActionWithSecurityKey(action);
   };
 
    // Close the popup
@@ -386,128 +443,134 @@ useEffect(() => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  const handleMenuItemClick = (section: string) => {
+    setActiveSection(section);
+    setIsSidebarOpen(false); 
+  };
+
+
 
   return (
     <div className="flex h-screen bg-gray-100">
-      {/* Sidebar */}
-      <div
-        className={`fixed lg:relative lg:translate-x-0 transform ${
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } w-64 bg-primary text-white flex flex-col transition-transform duration-200 ease-in-out z-30`}
-      >
-        {/* Sidebar Header */}
-        <div className="p-6 text-xl font-bold">Admin Panel</div>
+    {/* Sidebar */}
+    <div
+      className={`fixed lg:relative lg:translate-x-0 transform ${
+        isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      } w-64 bg-primary text-white flex flex-col transition-transform duration-200 ease-in-out z-30`}
+    >
+      {/* Sidebar Header */}
+      <div className="p-6 text-xl font-bold">Admin Panel</div>
 
-        {/* Sidebar Menu */}
-        <nav className="flex-1">
-          <ul className="space-y-2">
-            <li>
-              <button
-                onClick={() => setActiveSection('statistics')}
-                className={`block w-full text-left p-4 hover:bg-indigo-500 transition duration-200 ${
-                  activeSection === 'statistics' ? 'bg-indigo-500' : ''
-                }`}
-              >
-                Statistics
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => setActiveSection('add-partners')}
-                className={`block w-full text-left p-4 hover:bg-indigo-500 transition duration-200 ${
-                  activeSection === 'add-partners' ? 'bg-indigo-500' : ''
-                }`}
-              >
-                Add Partners
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => setActiveSection('add-solutions')}
-                className={`block w-full text-left p-4 hover:bg-indigo-500 transition duration-200 ${
-                  activeSection === 'add-solutions' ? 'bg-indigo-500' : ''
-                }`}
-              >
-                Add Solutions
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => setActiveSection('view-testimonials')}
-                className={`block w-full text-left p-4 hover:bg-indigo-500 transition duration-200 ${
-                  activeSection === 'view-testimonials' ? 'bg-indigo-500' : ''
-                }`}
-              >
-                View Testimonials
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => setActiveSection('create-blogs')}
-                className={`block w-full text-left p-4 hover:bg-indigo-500 transition duration-200 ${
-                  activeSection === 'create-blogs' ? 'bg-indigo-500' : ''
-                }`}
-              >
-                Create Blogs
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => setActiveSection('create-testimonials')}
-                className={`block w-full text-left p-4 hover:bg-indigo-500 transition duration-200 ${
-                  activeSection === 'create-testmonials' ? 'bg-indigo-500' : ''
-                }`}
-              >
-                Create Testimonials
-              </button>
-            </li>
-          </ul>
-        </nav>
-      </div>
+      {/* Sidebar Menu */}
+      <nav className="flex-1">
+        <ul className="space-y-2">
+          <li>
+            <button
+              onClick={() => handleMenuItemClick('statistics')}
+              className={`block w-full text-left p-4 hover:bg-indigo-500 transition duration-200 ${
+                activeSection === 'statistics' ? 'bg-indigo-500' : ''
+              }`}
+            >
+              Statistics
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => handleMenuItemClick('add-partners')}
+              className={`block w-full text-left p-4 hover:bg-indigo-500 transition duration-200 ${
+                activeSection === 'add-partners' ? 'bg-indigo-500' : ''
+              }`}
+            >
+              Add Partners
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => handleMenuItemClick('add-solutions')}
+              className={`block w-full text-left p-4 hover:bg-indigo-500 transition duration-200 ${
+                activeSection === 'add-solutions' ? 'bg-indigo-500' : ''
+              }`}
+            >
+              Add Solutions
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => handleMenuItemClick('view-testimonials')}
+              className={`block w-full text-left p-4 hover:bg-indigo-500 transition duration-200 ${
+                activeSection === 'view-testimonials' ? 'bg-indigo-500' : ''
+              }`}
+            >
+              View Testimonials
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => handleMenuItemClick('create-blogs')}
+              className={`block w-full text-left p-4 hover:bg-indigo-500 transition duration-200 ${
+                activeSection === 'create-blogs' ? 'bg-indigo-500' : ''
+              }`}
+            >
+              Create Blogs
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => handleMenuItemClick('create-testimonials')}
+              className={`block w-full text-left p-4 hover:bg-indigo-500 transition duration-200 ${
+                activeSection === 'create-testimonials' ? 'bg-indigo-500' : ''
+              }`}
+            >
+              Create Testimonials
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Navbar */}
-        <header className="bg-primary text-white p-4 shadow-md">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              {/* Hamburger Menu Button */}
-              <button
-                onClick={toggleSidebar}
-                className="lg:hidden p-2 focus:outline-none"
+    {/* Main Content */}
+    <div className="flex-1 flex flex-col overflow-hidden">
+      {/* Navbar */}
+      <header className="bg-primary text-white p-4 shadow-md">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center">
+            {/* Hamburger Menu Button */}
+            <button
+              onClick={toggleSidebar}
+              className="lg:hidden p-2 focus:outline-none"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16m-7 6h7"
-                  />
-                </svg>
-              </button>
-              <h1 className="text-xl font-bold ml-2">Dashboard</h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <span>Welcome, {getUserRole()}</span>
-              <button
-                onClick={() => {
-                  localStorage.removeItem('token');
-                  localStorage.removeItem('userRole');
-                  navigate('/login');
-                }}
-                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition duration-200"
-              >
-                Logout
-              </button>
-            </div>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16m-7 6h7"
+                />
+              </svg>
+            </button>
+            <h1 className="text-xl font-bold ml-2">Dashboard</h1>
           </div>
-        </header>
+          <div className="flex items-center space-x-4">
+            <span>Welcome, {getUserRole()}</span>
+            <button
+              onClick={() => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('userRole');
+                navigate('/login');
+              }}
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition duration-200"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      </header>
 
         {/* Dashboard Content */}
         <main className="flex-1 p-6 overflow-y-auto">
@@ -1017,6 +1080,18 @@ useEffect(() => {
 )}
         </main>
       </div>
+
+      <SecurityKeyModal
+        isOpen={isSecurityKeyModalOpen}
+        onClose={() => setIsSecurityKeyModalOpen(false)}
+        onValidate={async (key) => {
+          const isValid = await validateSecurityKey(key);
+          if (isValid) {
+            pendingAction();
+          }
+          return isValid;
+        }}
+      />
     </div>
   );
 };

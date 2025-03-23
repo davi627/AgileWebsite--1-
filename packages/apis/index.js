@@ -11,6 +11,7 @@ import { logoRouter } from './Routes/Logo.js';
 import { BlogsRouter } from './Routes/Blogs.js';
 import { CommentRouter } from './Routes/Comment.js';
 import { emailRouter } from './Routes/Email.js';
+import bodyParser from 'body-parser'
 
 dotenv.config();
 
@@ -32,6 +33,21 @@ app.use(
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
+app.use(bodyParser.json());
+
+let securityKey = '1234'; // Default security key
+
+app.post('/validate-security-key', (req, res) => {
+  const { key } = req.body;
+  res.json({ isValid: key === securityKey });
+});
+
+app.post('/update-security-key', (req, res) => {
+  const { newKey } = req.body;
+  securityKey = newKey;
+  res.json({ success: true });
+});
+
 
 // Routes
 app.use('/api', UserRouter);
