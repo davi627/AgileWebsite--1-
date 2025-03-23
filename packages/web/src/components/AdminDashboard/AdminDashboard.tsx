@@ -5,7 +5,9 @@ import axios from 'axios';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import SecurityKeyModal from 'components/SercurityKeyModal/SercurityKeyModal';
-
+import ViewBlogs from 'components/ViewBlogs/ViewBlogs';
+import ViewSolutions from 'components/ViewSolutions/ViewSolutions';
+import UpdateSecurityKey from 'components/UpdateSercurityKey/UpdateSercurityKey';
 
 
 
@@ -523,6 +525,40 @@ useEffect(() => {
             >
               Create Testimonials
             </button>
+
+            <li>
+        <button
+        onClick={() => handleMenuItemClick('view-blogs')}
+        className={`block w-full text-left p-4 hover:bg-indigo-700 transition duration-200 ${
+         activeSection === 'view-blogs' ? 'bg-indigo-700' : ''
+       }`}
+       >
+    View Blogs
+  </button>
+
+
+  <li>
+  <button
+    onClick={() => handleMenuItemClick('view-solutions')}
+    className={`block w-full text-left p-4 hover:bg-indigo-700 transition duration-200 ${
+      activeSection === 'view-solutions' ? 'bg-indigo-700' : ''
+    }`}
+  >
+    View Solutions
+  </button>
+
+  <li>
+  <button
+    onClick={() => handleMenuItemClick('update-security-key')}
+    className={`block w-full text-left p-4 hover:bg-indigo-700 transition duration-200 ${
+      activeSection === 'update-security-key' ? 'bg-indigo-700' : ''
+    }`}
+  >
+    Update Security Key
+  </button>
+</li>
+</li>
+</li>
           </li>
         </ul>
       </nav>
@@ -938,7 +974,7 @@ useEffect(() => {
           className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           rows={3}
           placeholder="Write your text here..."
-          onBlur={(e) => addText(e.target.value)} // Add text when the textarea loses focus
+          onBlur={(e) => addText(e.target.value)} 
         />
       </div>
 
@@ -1078,6 +1114,10 @@ useEffect(() => {
     </form>
   </div>
 )}
+
+{activeSection === 'view-blogs' && <ViewBlogs />}
+{activeSection === 'view-solutions' && <ViewSolutions />}
+{activeSection === 'update-security-key' && <UpdateSecurityKey />}
         </main>
       </div>
 

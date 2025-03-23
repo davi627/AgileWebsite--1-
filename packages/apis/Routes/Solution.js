@@ -25,4 +25,17 @@ router.get('/solution', async (req, res) => {
   }
 });
 
+// DELETE route to delete a solution by ID
+router.delete('/solution/:id', async (req, res) => {
+  try {
+    const solution = await Solution.findByIdAndDelete(req.params.id);
+    if (!solution) {
+      return res.status(404).json({ message: 'Solution not found' });
+    }
+    res.status(200).json({ message: 'Solution deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to delete solution', error });
+  }
+});
+
 export {router as solutionsRouter}

@@ -111,4 +111,19 @@ router.post('/:id/comments', async (req, res) => {
   }
 });
 
+router.post('/:id/comments', async (req, res) => {
+  const { text, author } = req.body;
+  try {
+    const newComment = new Comments({
+      text,
+      author,
+      blogId: req.params.id,
+    });
+    const savedComment = await newComment.save();
+    res.status(201).json(savedComment);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
 export { router as BlogsRouter };
