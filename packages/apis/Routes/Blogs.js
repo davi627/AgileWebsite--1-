@@ -126,4 +126,26 @@ router.post('/:id/comments', async (req, res) => {
   }
 });
 
+
+router.delete('/blogs/:id', async (req, res) => {
+  const { id } = req.params;
+
+  // Regular expression to check if ID is a valid MongoDB ObjectId (24 hex characters)
+  const isValidObjectId = /^[0-9a-fA-F]{24}$/.test(id);
+
+  if (!isValidObjectId) {
+    return res.status(400).json({ message: "Invalid blog ID format" });
+  }
+
+  try {
+    const blog = await Blogs.findByIdAndDelete(id);
+    if (!blog) {
+      return res.status(404).json({ message: 'Blog not found' });
+    }
+    res.status(200).json({ message: 'Blog deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to delete Blog', error });
+  }
+});
+
 export { router as BlogsRouter };

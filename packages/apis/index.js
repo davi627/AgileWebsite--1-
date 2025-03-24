@@ -12,7 +12,7 @@ import { BlogsRouter } from './Routes/Blogs.js';
 import { CommentRouter } from './Routes/Comment.js';
 import { emailRouter } from './Routes/Email.js';
 import bodyParser from 'body-parser'
-
+import { SecurityKey } from './Models/SercurityKey.js';
 dotenv.config();
 
 const app = express();
@@ -35,18 +35,41 @@ app.use(
 );
 app.use(bodyParser.json());
 
-let securityKey = '1234'; // Default security key
+// Initialize security key if not present
+const initializeSecurityKey = async () => {
+  const existingKey = await SecurityKey.findOne();
+  if (!existingKey) {
+    await SecurityKey.create({ key: '1234' }); 
+    console.log('Default security key set.');
+  }
+};
 
-app.post('/validate-security-key', (req, res) => {
+app.post('/validate-security-key', async (req, res) => {
   const { key } = req.body;
-  res.json({ isValid: key === securityKey });
+  try {
+    const storedKey = await SecurityKey.findOne();
+    if (!storedKey) {
+      return res.status(500).json({ error: 'Security key not found' });
+    }
+    res.json({ isValid: key === storedKey.key });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
-app.post('/update-security-key', (req, res) => {
+
+app.post('/update-security-key', async (req, res) => {
   const { newKey } = req.body;
-  securityKey = newKey;
-  res.json({ success: true });
+  try {
+    const updatedKey = await SecurityKey.findOneAndUpdate({}, { key: newKey }, { new: true, upsert: true });
+    res.json({ success: true, updatedKey });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to update security key' });
+  }
 });
+
 
 
 // Routes

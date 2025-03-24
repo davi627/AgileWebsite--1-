@@ -17,6 +17,8 @@ import UserDashboard from 'components/UserDashboard/UserDashboard'
 import { isAuthenticated, getUserRole } from 'services/AuthService'
 import AllCommentsPage from 'components/AllComments/AllComments'
 import BlogDetail from 'components/BlogDetails/BlogDetail'
+import Reset from 'components/Authentication/Reset'
+import ResetPassword from 'components/ResetPassword/ResetPassword'
 
 const AppRouter: React.FC = () => {
   return (
@@ -40,6 +42,8 @@ const AppRouter: React.FC = () => {
           <Route path='/dashboard' element={<AdminDashboard/>}/>
           <Route path='/all-comments' element={<AllCommentsPage />} />
           <Route path='/blog/:id' element={<BlogDetail/>}/>
+          <Route path='/reset' element={<Reset/>}/>
+          <Route path='/reset-password' element={<ResetPassword/>}/>
 
           {/* Protected Routes */}
 

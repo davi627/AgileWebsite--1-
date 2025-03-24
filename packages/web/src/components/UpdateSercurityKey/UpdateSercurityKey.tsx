@@ -30,7 +30,7 @@ const UpdateSecurityKey: React.FC = () => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 max-w-md mx-auto"> {/* Added max-w-md and mx-auto */}
+    <div className="bg-white rounded-lg shadow-md p-6 max-w-md mx-auto"> 
       <h2 className="text-2xl font-bold mb-6">Update Security Key</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>

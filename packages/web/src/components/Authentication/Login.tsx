@@ -109,7 +109,7 @@ const Login: React.FC = () => {
 
               <div className="text-sm leading-6">
                 <a
-                  href="#"
+                  href="/reset"
                   className="text-primary font-semibold hover:text-indigo-500"
                 >
                   Forgot password?

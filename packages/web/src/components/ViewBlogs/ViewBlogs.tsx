@@ -44,7 +44,7 @@ const ViewBlogs: React.FC = () => {
         const response = await axios.delete(`${API_BASE_URL}/blog/blogs/${blogId}`);
         if (response.status === 200) {
           alert('Blog deleted successfully!');
-          fetchBlogs(); // Refresh the list after deletion
+          fetchBlogs(); 
         }
       } catch (error) {
         console.error('Failed to delete blog:', error);

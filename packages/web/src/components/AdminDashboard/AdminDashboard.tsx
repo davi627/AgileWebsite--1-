@@ -590,10 +590,9 @@ useEffect(() => {
                 />
               </svg>
             </button>
-            <h1 className="text-xl font-bold ml-2">Dashboard</h1>
           </div>
           <div className="flex items-center space-x-4">
-            <span>Welcome, {getUserRole()}</span>
+            <span> {getUserRole()}</span>
             <button
               onClick={() => {
                 localStorage.removeItem('token');
