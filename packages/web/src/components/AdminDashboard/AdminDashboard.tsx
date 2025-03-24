@@ -877,34 +877,35 @@ useEffect(() => {
                 <td className="py-2 px-4 border-b">{comment.author}</td>
                 <td className="py-2 px-4 border-b">{comment.products.join(', ')}</td>
                 <td className="py-2 px-4 border-b">{comment.status}</td>
-                <td className="py-2 px-4 border-b space-x-2">
-                  <button
-                    onClick={() => handleView(comment)}
-                    className="bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600 transition duration-200"
-                  >
-                    View
-                  </button>
-                  <button
-                    onClick={() => handleApprove(comment._id)}
-                    className="bg-green-500 text-white px-2 py-1 rounded-md hover:bg-green-600 transition duration-200"
-                    disabled={comment.status === 'approved' || comment.status === 'rejected'}
-                  >
-                    Approve
-                  </button>
-                  <button
-                    onClick={() => handleReject(comment._id)}
-                    className="bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600 transition duration-200"
-                    disabled={comment.status === 'approved' || comment.status === 'rejected'}
-                  >
-                    Reject
-                  </button>
-                  <button
-                  onClick={() => handleDelete(comment._id)}
-                    className="bg-red-800 text-white px-2 py-1 rounded-md hover:bg-red-900 transition duration-200"
-                  >
-                    Delete
-                  </button>
-                </td>
+                <td className="py-2 px-4 border-b flex flex-wrap gap-2">
+  <button
+    onClick={() => handleView(comment)}
+    className="bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600 transition duration-200"
+  >
+    View
+  </button>
+  <button
+    onClick={() => handleApprove(comment._id)}
+    className="bg-green-500 text-white px-2 py-1 rounded-md hover:bg-green-600 transition duration-200"
+    disabled={comment.status === 'approved' || comment.status === 'rejected'}
+  >
+    Approve
+  </button>
+  <button
+    onClick={() => handleReject(comment._id)}
+    className="bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600 transition duration-200"
+    disabled={comment.status === 'approved' || comment.status === 'rejected'}
+  >
+    Reject
+  </button>
+  <button
+    onClick={() => handleDelete(comment._id)}
+    className="bg-red-800 text-white px-2 py-1 rounded-md hover:bg-red-900 transition duration-200"
+  >
+    Delete
+  </button>
+</td>
+
               </tr>
             ))
           )}
