@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -12,13 +12,13 @@ interface Comment {
   author: string;
   products: string[];
   status: 'pending' | 'approved' | 'rejected';
-  image: string; // Add image to the Comment interface
+  image: string;
 }
 
 function Testimonials() {
   const [comments, setComments] = useState<Comment[]>([]);
+  const sliderRef = useRef<Slider>(null);
 
-  // Fetch approved comments from the backend
   const fetchApprovedComments = async () => {
     try {
       const response = await fetch('http://localhost:5000/comments/comments');
@@ -30,21 +30,61 @@ function Testimonials() {
     }
   };
 
-  // Fetch comments on component mount
   useEffect(() => {
     fetchApprovedComments();
   }, []);
 
-  // Slider settings
+  // Custom arrow components
+  const NextArrow = (props: any) => {
+    const { onClick } = props;
+    return (
+      <button
+        onClick={onClick}
+        className="absolute right-0 top-1/2 z-10 -translate-y-1/2 transform rounded-full bg-white p-2 shadow-md hover:bg-gray-100"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    );
+  };
+
+  const PrevArrow = (props: any) => {
+    const { onClick } = props;
+    return (
+      <button
+        onClick={onClick}
+        className="absolute left-0 top-1/2 z-10 -translate-y-1/2 transform rounded-full bg-white p-2 shadow-md hover:bg-gray-100"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+    );
+  };
+
   const sliderSettings = {
     dots: true,
     infinite: true,
-    speed: 900,
+    speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 3000,
+    autoplay: true, // Disabled automatic sliding
     arrows: true,
+    nextArrow: <NextArrow />,
+    prevArrow: <PrevArrow />,
     appendDots: (dots: React.ReactNode) => (
       <div className="absolute bottom-0 w-full">
         <ul className="m-0 flex justify-center p-0">{dots}</ul>
@@ -65,7 +105,7 @@ function Testimonials() {
 
         {comments.length > 0 ? (
           <div className="relative mt-14">
-            <Slider {...sliderSettings}>
+            <Slider ref={sliderRef} {...sliderSettings}>
               {comments.map((comment) => (
                 <div key={comment._id} className="shadow-top-bottom rounded-xl p-6 md:p-10">
                   <div className="flex flex-col gap-5 md:flex-row">
@@ -94,7 +134,6 @@ function Testimonials() {
                       </div>
                     </div>
 
-                    {/* Display the testimonial image */}
                     <div className="hidden h-[28rem] w-1/2 rounded-xl md:block">
                       <img
                         src={`http://localhost:5000${comment.image}`}

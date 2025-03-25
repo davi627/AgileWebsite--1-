@@ -36,7 +36,8 @@ const AdminDashboard: React.FC = () => {
   const [isSecurityKeyModalOpen, setIsSecurityKeyModalOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<() => void>(() => {});
   const [pendingComments, setPendingComments] = useState<Comment[]>([]);
-
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [currentAction, setCurrentAction] = useState<() => void>(() => {});
   const [newTestimonial, setNewTestimonial] = useState({
     logo: null as File | null,
     description: '',
@@ -92,7 +93,22 @@ const AdminDashboard: React.FC = () => {
     setIsSecurityKeyModalOpen(true);
   };
 
-const quillRef = useRef<ReactQuill>(null);
+  // Handle form submission with confirmation
+  const handleWithConfirmation = (action: () => void, message?: string) => {
+    setCurrentAction(() => action);
+    setShowConfirmation(true);
+  };
+
+  const executeAction = () => {
+    setShowConfirmation(false);
+    currentAction();
+  };
+
+  const cancelAction = () => {
+    setShowConfirmation(false);
+  };
+
+
 interface Comment {
   _id: string;
   logo: string;
@@ -130,11 +146,10 @@ interface Comment {
     });
   };
 
-  // Handle form submission for statistics (POST/UPDATE)
+   // Handle form submission for statistics
   const handleSubmitStatistics = async (e: React.FormEvent) => {
     e.preventDefault();
-  
-    const action = async () => {
+    handleWithConfirmation(async () => {
       try {
         await axios.post(`${API_BASE_URL}/stats/statistics`, statistics);
         alert('Statistics updated successfully!');
@@ -142,10 +157,9 @@ interface Comment {
         console.error('Failed to update statistics:', error);
         alert('Failed to update statistics. Please try again.');
       }
-    };
-  
-    handleActionWithSecurityKey(action);
+    }, "Are you sure you want to update statistics?");
   };
+
 
     // Fetch comments from the backend
     const fetchComments = async () => {
@@ -174,45 +188,40 @@ interface Comment {
     });
   }
 };
-    //Handling Testimonials Submition
+    
+ // Handle testimonial submission
+  const handleSubmitTestimonial = async (e: React.FormEvent) => {
+    e.preventDefault();
+    handleWithConfirmation(async () => {
+      const formData = new FormData();
+      formData.append('description', newTestimonial.description);
+      formData.append('author', newTestimonial.author);
+      formData.append('products', newTestimonial.products);
+      if (newTestimonial.logo) formData.append('logo', newTestimonial.logo);
+      if (newTestimonial.image) formData.append('image', newTestimonial.image);
 
-    const handleSubmitTestimonial = async (e: React.FormEvent) => {
-      e.preventDefault();
-    
-      const action = async () => {
-        const formData = new FormData();
-        formData.append('description', newTestimonial.description);
-        formData.append('author', newTestimonial.author);
-        formData.append('products', newTestimonial.products);
-        if (newTestimonial.logo) formData.append('logo', newTestimonial.logo);
-        if (newTestimonial.image) formData.append('image', newTestimonial.image);
-    
-        try {
-          const response = await axios.post(`${API_BASE_URL}/comments/comments`, formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
+      try {
+        const response = await axios.post(`${API_BASE_URL}/comments/comments`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        if (response.status === 201) {
+          alert('Testimonial created successfully!');
+          setNewTestimonial({
+            logo: null,
+            description: '',
+            author: '',
+            products: '',
+            image: null,
           });
-          if (response.status === 201) {
-            alert('Testimonial created successfully!');
-            setNewTestimonial({
-              logo: null,
-              description: '',
-              author: '',
-              products: '',
-              image: null,
-            });
-          }
-        } catch (error) {
-          console.error('Failed to create testimonial:', error);
-          alert('Failed to create testimonial. Please try again.');
         }
-      };
-    
-      handleActionWithSecurityKey(action);
-
-
-    };
+      } catch (error) {
+        console.error('Failed to create testimonial:', error);
+        alert('Failed to create testimonial. Please try again.');
+      }
+    }, "Are you sure you want to create this testimonial?");
+  };
     // Fetch comments on component mount
     useEffect(() => {
       fetchComments();
@@ -225,53 +234,51 @@ interface Comment {
       setIsPopupOpen(true); 
     };
   
-    // Handle approve action
-    const handleApprove = async (commentId: string) => {
-      const action = async () => {
-        try {
-          await axios.put(`${API_BASE_URL}/comments/comments/${commentId}/approve`);
-          fetchComments();
-          alert('Comment approved successfully!');
-        } catch (error) {
-          console.error('Failed to approve comment:', error);
-          alert('Failed to approve comment. Please try again.');
-        }
-      };
-      handleActionWithSecurityKey(action);
-    };
+   // Handle approve action
+  const handleApprove = async (commentId: string) => {
+    handleWithConfirmation(async () => {
+      try {
+        await axios.put(`${API_BASE_URL}/comments/comments/${commentId}/approve`);
+        fetchComments();
+        alert('Comment approved successfully!');
+      } catch (error) {
+        console.error('Failed to approve comment:', error);
+        alert('Failed to approve comment. Please try again.');
+      }
+    }, "Are you sure you want to approve this comment?");
+  };
 
     
 
-    const handleDelete = async (commentId: string) => {
-      const action = async () => {
-        try {
-          const response = await axios.delete(`${API_BASE_URL}/comments/comments/${commentId}`);
-          if (response.status === 200) {
-            alert('Comment deleted successfully!');
-            fetchComments();
-          }
-        } catch (error) {
-          console.error('Failed to delete comment:', error);
-          alert('Failed to delete comment. Please try again.');
+    // Handle delete action
+  const handleDelete = async (commentId: string) => {
+    handleWithConfirmation(async () => {
+      try {
+        const response = await axios.delete(`${API_BASE_URL}/comments/comments/${commentId}`);
+        if (response.status === 200) {
+          alert('Comment deleted successfully!');
+          fetchComments();
         }
-      };
-      handleActionWithSecurityKey(action);
-    };
+      } catch (error) {
+        console.error('Failed to delete comment:', error);
+        alert('Failed to delete comment. Please try again.');
+      }
+    }, "Are you sure you want to delete this comment?");
+  };
 
-      // Handle reject action
-      const handleReject = async (commentId: string) => {
-        const action = async () => {
-          try {
-            await axios.put(`${API_BASE_URL}/comments/comments/${commentId}/reject`);
-            fetchComments();
-            alert('Comment rejected successfully!');
-          } catch (error) {
-            console.error('Failed to reject comment:', error);
-            alert('Failed to reject comment. Please try again.');
-          }
-        };
-        handleActionWithSecurityKey(action);
-      };
+     // Handle reject action
+  const handleReject = async (commentId: string) => {
+    handleWithConfirmation(async () => {
+      try {
+        await axios.put(`${API_BASE_URL}/comments/comments/${commentId}/reject`);
+        fetchComments();
+        alert('Comment rejected successfully!');
+      } catch (error) {
+        console.error('Failed to reject comment:', error);
+        alert('Failed to reject comment. Please try again.');
+      }
+    }, "Are you sure you want to reject this comment?");
+  };
   
 
 
@@ -312,7 +319,7 @@ interface Comment {
 const handleBlogSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
 
-  const action = async () => {
+  handleWithConfirmation(async () => {
     setLoading(true);
     try {
       const response = await axios.post(`${API_BASE_URL}/blog/blogs`, {
@@ -335,9 +342,7 @@ const handleBlogSubmit = async (e: React.FormEvent) => {
     } finally {
       setLoading(false);
     }
-  };
-
-  handleActionWithSecurityKey(action);
+  }, "Are you sure you want to create this blog post?");
 };
 
 const [isEditorReady, setIsEditorReady] = useState(false);
@@ -373,12 +378,10 @@ useEffect(() => {
     });
   };
 
-  // Handle form submission for adding a new solution
   const handleSubmitSolution = async (e: React.FormEvent) => {
     e.preventDefault();
   
-    
-    const action = async () => {
+    handleWithConfirmation(async () => {
       try {
         const response = await axios.post(`${API_BASE_URL}/solns/solution`, newSolution);
         if (response.status === 201) {
@@ -395,10 +398,7 @@ useEffect(() => {
         console.error('Failed to add solution:', error);
         alert('Failed to add solution. Please try again.');
       }
-    };
-  
-    
-    handleActionWithSecurityKey(action);
+    }, "Are you sure you want to add this solution?");
   };
 
   // Handle input change for the new partner form
@@ -417,11 +417,10 @@ useEffect(() => {
     }
   };
 
-  // Handle form submission for adding a new partner
   const handleSubmitPartner = async (e: React.FormEvent) => {
     e.preventDefault();
   
-    const action = async () => {
+    handleWithConfirmation(async () => {
       const formData = new FormData();
       formData.append('name', newPartner.name);
       if (newPartner.bwLogo) formData.append('bwLogo', newPartner.bwLogo);
@@ -445,9 +444,7 @@ useEffect(() => {
         console.error('Failed to upload partner logo:', error);
         alert('Failed to upload partner logo. Please try again.');
       }
-    };
-  
-    handleActionWithSecurityKey(action);
+    }, "Are you sure you want to upload this partner logo?");
   };
 
    // Close the popup
@@ -476,7 +473,7 @@ useEffect(() => {
     try {
       await axios.patch(`${API_BASE_URL}/blog/comments/${commentId}/approve`);
       fetchPendingComments();
-      alert('Comment approved successfully!');
+      alert('Testimonial approved successfully!');
     } catch (error) {
       console.error('Failed to approve comment:', error);
       alert('Failed to approve comment. Please try again.');
@@ -487,7 +484,7 @@ useEffect(() => {
     try {
       await axios.patch(`${API_BASE_URL}/blog/comments/${commentId}/reject`);
       fetchPendingComments();
-      alert('Comment rejected successfully!');
+      alert('Testimonial rejected successfully!');
     } catch (error) {
       console.error('Failed to reject comment:', error);
       alert('Failed to reject comment. Please try again.');
@@ -498,7 +495,7 @@ useEffect(() => {
     try {
       await axios.delete(`${API_BASE_URL}/blog/comments/${commentId}`);
       fetchPendingComments();
-      alert('Comment deleted successfully!');
+      alert('Testimonial deleted successfully!');
     } catch (error) {
       console.error('Failed to delete comment:', error);
       alert('Failed to delete comment. Please try again.');
@@ -621,16 +618,6 @@ useEffect(() => {
     View Solutions
   </button>
 
-  <li>
-  <button
-    onClick={() => handleMenuItemClick('update-security-key')}
-    className={`block w-full text-left p-4 hover:bg-indigo-700 transition duration-200 ${
-      activeSection === 'update-security-key' ? 'bg-indigo-700' : ''
-    }`}
-  >
-    Update Security Key
-  </button>
-</li>
 </li>
 </li>
           </li>
@@ -684,7 +671,28 @@ useEffect(() => {
         {/* Dashboard Content */}
         <main className="flex-1 p-6 overflow-y-auto">
 
-
+        {showConfirmation && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-medium mb-4">Confirm Action</h3>
+            <p className="mb-6">Are you sure you want to perform this action?</p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={cancelAction}
+                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={executeAction}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
         {activeSection === 'statistics' && (
   <div className="bg-white rounded-lg shadow-md p-6">
@@ -958,26 +966,7 @@ useEffect(() => {
   >
     View
   </button>
-  <button
-    onClick={() => handleApprove(comment._id)}
-    className="bg-green-500 text-white px-2 py-1 rounded-md hover:bg-green-600 transition duration-200"
-    disabled={comment.status === 'approved' || comment.status === 'rejected'}
-  >
-    Approve
-  </button>
-  <button
-    onClick={() => handleReject(comment._id)}
-    className="bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600 transition duration-200"
-    disabled={comment.status === 'approved' || comment.status === 'rejected'}
-  >
-    Reject
-  </button>
-  <button
-    onClick={() => handleDelete(comment._id)}
-    className="bg-red-800 text-white px-2 py-1 rounded-md hover:bg-red-900 transition duration-200"
-  >
-    Delete
-  </button>
+
 </td>
 
               </tr>
@@ -990,20 +979,83 @@ useEffect(() => {
 )}
 
 {/* Popup for Viewing Description */}
+{/* Enhanced Popup for Viewing Description with Action Buttons */}
 {isPopupOpen && selectedComment && (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-    <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">Comment Details</h2>
+    <div className="w-full max-w-2xl rounded-lg bg-white shadow-lg overflow-hidden">
+      <div className="flex justify-between items-center p-6 border-b">
+        <h2 className="text-xl font-semibold">Testimonial Details</h2>
         <button
           onClick={closePopup}
-          className="text-gray-500 hover:text-gray-700"
+          className="text-gray-500 hover:text-gray-700 text-2xl"
         >
-          ✕
+          &times;
         </button>
       </div>
-      <div>
-        <p className="text-gray-700">{selectedComment.description}</p>
+      
+      <div className="p-6 max-h-[70vh] overflow-y-auto">
+        <div className="mb-4">
+          <h3 className="font-medium text-gray-900">Author:</h3>
+          <p className="text-gray-700">{selectedComment.author}</p>
+        </div>
+        
+        <div className="mb-4">
+          <h3 className="font-medium text-gray-900">Description:</h3>
+          <p className="text-gray-700 whitespace-pre-line max-h-[200px] overflow-y-auto">
+            {selectedComment.description}
+          </p>
+        </div>
+        
+        <div className="mb-4">
+          <h3 className="font-medium text-gray-900">Products:</h3>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {selectedComment.products.map((product, index) => (
+              <span key={index} className="bg-gray-100 px-3 py-1 rounded-full text-sm">
+                {product}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+      
+      <div className="p-4 border-t flex justify-end space-x-3">
+        <button
+          onClick={() => {
+            closePopup();
+            handleApprove(selectedComment._id);
+          }}
+          className={`px-4 py-2 rounded-md transition duration-200 ${
+            selectedComment.status === 'approved' || selectedComment.status === 'rejected'
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : 'bg-green-500 text-white hover:bg-green-600'
+          }`}
+          disabled={selectedComment.status === 'approved' || selectedComment.status === 'rejected'}
+        >
+          Approve
+        </button>
+        <button
+          onClick={() => {
+            closePopup();
+            handleReject(selectedComment._id);
+          }}
+          className={`px-4 py-2 rounded-md transition duration-200 ${
+            selectedComment.status === 'approved' || selectedComment.status === 'rejected'
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : 'bg-red-500 text-white hover:bg-red-600'
+          }`}
+          disabled={selectedComment.status === 'approved' || selectedComment.status === 'rejected'}
+        >
+          Reject
+        </button>
+        <button
+          onClick={() => {
+            closePopup();
+            handleDelete(selectedComment._id);
+          }}
+          className="px-4 py-2 bg-red-800 text-white rounded-md hover:bg-red-900 transition duration-200"
+        >
+          Delete
+        </button>
       </div>
     </div>
   </div>
