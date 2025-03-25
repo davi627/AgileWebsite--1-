@@ -13,6 +13,7 @@ import { CommentRouter } from './Routes/Comment.js';
 import { emailRouter } from './Routes/Email.js';
 import bodyParser from 'body-parser'
 import { SecurityKey } from './Models/SercurityKey.js';
+import './Models/Blogs.js'; 
 dotenv.config();
 
 const app = express();
@@ -80,6 +81,7 @@ app.use('/log', logoRouter);
 app.use('/blog', BlogsRouter);
 app.use('/comments', CommentRouter);
 app.use('/email', emailRouter)
+
 
 // Connect to the database
 mongoose

@@ -32,7 +32,20 @@ const BlogsSchema = new mongoose.Schema({
       required: true,
     },
   },
+  views: {
+    type: Number,
+    default: 0,
+  }
+
 });
+
+
+BlogsSchema.virtual('comments', {
+  ref: 'Comments', 
+  localField: '_id', 
+  foreignField: 'blogId' 
+});
+
 
 // Format the date for display
 BlogsSchema.virtual("formattedDate").get(function () {

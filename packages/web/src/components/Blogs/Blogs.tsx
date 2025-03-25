@@ -8,7 +8,7 @@ interface BlogPost {
   imageUrl: string;
   formattedDate: string;
   author: { name: string };
-  views?: number;
+  views: number;
 }
 
 export default function Blog() {
@@ -22,20 +22,7 @@ export default function Blog() {
         const response = await fetch("http://localhost:5000/blog/blogs");
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
   
-        let data: BlogPost[] = await response.json();
-  
-        // Retrieve views from localStorage
-        const storedViews = JSON.parse(localStorage.getItem("blogViews") || "{}");
-  
-        // Merge stored views into fetched data
-        data = data.map((blog) => ({
-          ...blog,
-          views: storedViews[blog._id] || blog.views || 0, 
-        }));
-  
-        // Store all blogs in localStorage for Index component
-        localStorage.setItem("allBlogs", JSON.stringify(data));
-  
+        const data: BlogPost[] = await response.json();
         setBlogs(data);
       } catch (error) {
         console.error("Error fetching posts:", error);
@@ -48,22 +35,24 @@ export default function Blog() {
     fetchBlogs();
   }, []);
   
-  const handleViewBlog = (blogId: string) => {
-    // Retrieve stored views
-    const storedViews = JSON.parse(localStorage.getItem("blogViews") || "{}");
-
-    // Increment views for the selected blog
-    storedViews[blogId] = (storedViews[blogId] || 0) + 1;
-
-    // Save back to localStorage
-    localStorage.setItem("blogViews", JSON.stringify(storedViews));
-
-    // Update state to reflect new views
-    setBlogs((prevBlogs) =>
-      prevBlogs.map((blog) =>
-        blog._id === blogId ? { ...blog, views: storedViews[blogId] } : blog
-      )
-    );
+  const handleViewBlog = async (blogId: string) => {
+    try {
+      // Increment views in the backend
+      const response = await fetch(`http://localhost:5000/blog/blogs/${blogId}/view`, {
+        method: 'PATCH'
+      });
+      
+      if (!response.ok) throw new Error('Failed to update views');
+      
+      // Update the local state to reflect the new view count
+      setBlogs(prevBlogs =>
+        prevBlogs.map(blog =>
+          blog._id === blogId ? { ...blog, views: blog.views + 1 } : blog
+        )
+      );
+    } catch (error) {
+      console.error("Error updating views:", error);
+    }
   };
 
   if (loading) return <div className="text-center py-10">Loading...</div>;

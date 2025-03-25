@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
 interface BlogPost {
   _id: string;
   title: string;
@@ -8,32 +11,35 @@ interface BlogPost {
   imageUrl: string;
   formattedDate: string;
   author: { name: string };
-  views?: number;
+  views: number;
 }
 
 export default function TopBlogs() {
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const storedBlogs = localStorage.getItem("blogViews");
-    const allBlogs = localStorage.getItem("allBlogs"); 
+    const fetchTopBlogs = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/blog/blogs/top`);
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        
+        const data: BlogPost[] = await response.json();
+        setBlogs(data);
+      } catch (error) {
+        console.error("Error fetching top blogs:", error);
+        setError("Failed to fetch top blogs. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    if (storedBlogs && allBlogs) {
-      const blogViews = JSON.parse(storedBlogs);
-      let blogsData: BlogPost[] = JSON.parse(allBlogs);
-
-      // Attach views to blogs
-      blogsData = blogsData.map((blog) => ({
-        ...blog,
-        views: blogViews[blog._id] || 0, 
-      }));
-
-      // Sort blogs by views in descending order and pick top 8
-      const topViewedBlogs = blogsData.sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 8);
-
-      setBlogs(topViewedBlogs);
-    }
+    fetchTopBlogs();
   }, []);
+
+  if (loading) return <div className="text-center py-10">Loading...</div>;
+  if (error) return <div className="text-center py-10 text-red-500">{error}</div>;
 
   return (
     <div className="mt-10 bg-gray-100 py-10">

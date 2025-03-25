@@ -56,21 +56,19 @@ const BlogDetail = () => {
       alert("Please enter your name before submitting a comment.");
       return;
     }
-
+  
     try {
-      const response = await axios.post(`http://localhost:5000/blog/${id}/comments`, {
+      await axios.post(`http://localhost:5000/blog/${id}/comments`, {
         text: newComment,
         author: name,
       });
-
-      setComments([...comments, response.data]);
+  
       setNewComment("");
       setName("");
     } catch (error) {
       console.error("Error submitting comment:", error);
     }
   };
-
   if (!blog) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-50">

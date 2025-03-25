@@ -3,6 +3,7 @@ import multer from "multer";
 import path from "path";
 import Blogs from "../Models/Blogs.js";
 import Comments from "../Models/Comments.js";
+import mongoose from 'mongoose'
 
 const router = express.Router();
 
@@ -51,7 +52,7 @@ router.post("/blogs", async (req, res) => {
     const newBlog = new Blogs({
       title,
       content,
-      imageUrl, // Include the imageUrl field
+      imageUrl,
       author: {
         name: author.name,
       },
@@ -75,6 +76,17 @@ router.get("/blogs", async (req, res) => {
 });
 
 
+router.get('/blogs/top', async (req, res) => {
+  try {
+    const limit = Math.min(parseInt(req.query.limit) || 8, 8); // Max limit of 8
+    const blogs = await Blogs.find().sort({ views: -1 }).limit(limit);
+    res.json(blogs);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Get single blog post by ID
 router.get('/blogs/:id', async (req, res) => {
   try {
     const blog = await Blogs.findById(req.params.id);
@@ -87,50 +99,135 @@ router.get('/blogs/:id', async (req, res) => {
   }
 });
 
+// Increment views for a blog
+router.patch('/blogs/:id/view', async (req, res) => {
+  try {
+    const blog = await Blogs.findByIdAndUpdate(
+      req.params.id,
+      { $inc: { views: 1 } },
+      { new: true }
+    );
+    
+    if (!blog) {
+      return res.status(404).json({ message: 'Blog not found' });
+    }
+    
+    res.json(blog);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Get comments for a blog
+// In your blog routes (routes/Blogs.js)
+
+// Get approved comments for a blog
 router.get('/:id/comments', async (req, res) => {
   try {
-    const comments = await Comments.find({ blogId: req.params.id });
+    const comments = await Comments.find({ 
+      blogId: req.params.id,
+      status: 'approved'
+    }).sort({ date: -1 });
     res.json(comments);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
+// Add comment (goes to pending)
+// POST /:id/comments - Add a new comment (pending moderation)
 router.post('/:id/comments', async (req, res) => {
   const { text, author } = req.body;
+  const { id } = req.params;
+
+  // Validate the blog ID
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: 'Invalid blog ID' });
+  }
+
   try {
     const newComment = new Comments({
       text,
       author,
-      blogId: req.params.id,
+      blogId: id,
+      status: 'pending',
+      date: req.body.date || new Date() 
     });
+
     const savedComment = await newComment.save();
     res.status(201).json(savedComment);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 });
-
-router.post('/:id/comments', async (req, res) => {
-  const { text, author } = req.body;
+// Admin routes for moderation
+router.get('/comments/pending', async (req, res) => {
   try {
-    const newComment = new Comments({
-      text,
-      author,
-      blogId: req.params.id,
+    const comments = await Comments.find({ status: 'pending' })
+      .populate('blogId', 'title')
+      .sort({ date: -1 })
+      .lean(); // Convert to plain JavaScript objects
+    
+    const formattedComments = comments.map(comment => {
+      // Safely handle date formatting
+      let formattedDate;
+      try {
+        formattedDate = comment.date 
+          ? new Date(comment.date).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            })
+          : 'No date';
+      } catch (e) {
+        formattedDate = 'Invalid date';
+      }
+      
+      return {
+        ...comment,
+        formattedDate
+      };
     });
-    const savedComment = await newComment.save();
-    res.status(201).json(savedComment);
+    
+    res.json(formattedComments);
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Failed to fetch comments',
+      error: error.message 
+    });
+  }
+});
+
+router.patch('/comments/:id/approve', async (req, res) => {
+  try {
+    const comment = await Comments.findByIdAndUpdate(
+      req.params.id,
+      { status: 'approved' },
+      { new: true }
+    );
+    res.json(comment);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 });
 
-
+router.patch('/comments/:id/reject', async (req, res) => {
+  try {
+    const comment = await Comments.findByIdAndUpdate(
+      req.params.id,
+      { status: 'rejected' },
+      { new: true }
+    );
+    res.json(comment);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+// Delete a blog post
 router.delete('/blogs/:id', async (req, res) => {
   const { id } = req.params;
 
-  // Regular expression to check if ID is a valid MongoDB ObjectId (24 hex characters)
+  // Regular expression to check if ID is a valid MongoDB ObjectId
   const isValidObjectId = /^[0-9a-fA-F]{24}$/.test(id);
 
   if (!isValidObjectId) {

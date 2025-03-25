@@ -20,6 +20,7 @@ interface BlogContent {
 }
 
 
+
 const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState<string>('statistics');
@@ -34,6 +35,7 @@ const AdminDashboard: React.FC = () => {
   const [imageUrl, setImageUrl] = useState("");
   const [isSecurityKeyModalOpen, setIsSecurityKeyModalOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<() => void>(() => {});
+  const [pendingComments, setPendingComments] = useState<Comment[]>([]);
 
   const [newTestimonial, setNewTestimonial] = useState({
     logo: null as File | null,
@@ -61,6 +63,18 @@ const AdminDashboard: React.FC = () => {
     bwLogo: null as File | null,
     colorLogo: null as File | null,
   });
+  interface Comment {
+    _id: string;
+    text: string;
+    author: string;
+    blogId: {
+      _id: string;
+      title: string;
+    };
+    status: 'pending' | 'approved' | 'rejected';
+    date: string;
+    formattedDate?: string;
+  }
   
 
   const validateSecurityKey = async (key: string) => {
@@ -449,6 +463,55 @@ useEffect(() => {
     setActiveSection(section);
     setIsSidebarOpen(false); 
   };
+  const fetchPendingComments = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/blog/comments/pending`);
+      setPendingComments(response.data);
+    } catch (error) {
+      console.error('Failed to fetch pending comments:', error);
+    }
+  };
+  
+  const handleApproveComment = async (commentId: string) => {
+    try {
+      await axios.patch(`${API_BASE_URL}/blog/comments/${commentId}/approve`);
+      fetchPendingComments();
+      alert('Comment approved successfully!');
+    } catch (error) {
+      console.error('Failed to approve comment:', error);
+      alert('Failed to approve comment. Please try again.');
+    }
+  };
+  
+  const handleRejectComment = async (commentId: string) => {
+    try {
+      await axios.patch(`${API_BASE_URL}/blog/comments/${commentId}/reject`);
+      fetchPendingComments();
+      alert('Comment rejected successfully!');
+    } catch (error) {
+      console.error('Failed to reject comment:', error);
+      alert('Failed to reject comment. Please try again.');
+    }
+  };
+  
+  const handleDeleteComment = async (commentId: string) => {
+    try {
+      await axios.delete(`${API_BASE_URL}/blog/comments/${commentId}`);
+      fetchPendingComments();
+      alert('Comment deleted successfully!');
+    } catch (error) {
+      console.error('Failed to delete comment:', error);
+      alert('Failed to delete comment. Please try again.');
+    }
+  };
+  
+  // Call fetchPendingComments in useEffect
+  useEffect(() => {
+    if (activeSection === 'moderate-comments') {
+      fetchPendingComments();
+    }
+  }, [activeSection]);
+  
 
 
 
@@ -535,6 +598,17 @@ useEffect(() => {
        >
     View Blogs
   </button>
+
+  <li>
+  <button
+    onClick={() => handleMenuItemClick('moderate-comments')}
+    className={`block w-full text-left p-4 hover:bg-indigo-500 transition duration-200 ${
+      activeSection === 'moderate-comments' ? 'bg-indigo-500' : ''
+    }`}
+  >
+    Moderate Comments
+  </button>
+</li>
 
 
   <li>
@@ -1116,6 +1190,45 @@ useEffect(() => {
 )}
 
 {activeSection === 'view-blogs' && <ViewBlogs />}
+{activeSection === 'moderate-comments' && (
+  <div className="bg-white rounded-lg shadow-md p-6">
+    <h2 className="text-2xl font-bold mb-6">Pending Comments</h2>
+    {pendingComments.length === 0 ? (
+      <p className="text-gray-500">No pending comments to review.</p>
+    ) : (
+      <div className="space-y-4">
+        {pendingComments.map((comment) => (
+          <div key={comment._id} className="border p-4 rounded-lg">
+            <p className="font-semibold">Blog: {comment.blogId?.title || 'Unknown Blog'}</p>
+            <p className="text-gray-700 mt-2">{comment.text}</p>
+            <p className="text-sm text-gray-500 mt-1">By: {comment.author}</p>
+            <p className="text-sm text-gray-500">{comment.formattedDate || new Date(comment.date).toLocaleDateString()}</p>
+            <div className="flex gap-2 mt-3">
+              <button
+                onClick={() => handleApproveComment(comment._id)}
+                className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+              >
+                Approve
+              </button>
+              <button
+                onClick={() => handleRejectComment(comment._id)}
+                className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+              >
+                Reject
+              </button>
+              <button
+                onClick={() => handleDeleteComment(comment._id)}
+                className="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+)}
 {activeSection === 'view-solutions' && <ViewSolutions />}
 {activeSection === 'update-security-key' && <UpdateSecurityKey />}
         </main>
