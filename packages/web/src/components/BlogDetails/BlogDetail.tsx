@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
+
 interface BlogPost {
   _id: string;
   title: string;
@@ -30,7 +33,7 @@ const BlogDetail = () => {
   useEffect(() => {
     const fetchBlog = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/blog/blogs/${id}`);
+        const response = await axios.get(`${API_BASE_URL}/blog/blogs/${id}`);
         setBlog(response.data);
       } catch (error) {
         console.error("Error fetching blog:", error);
@@ -39,7 +42,7 @@ const BlogDetail = () => {
 
     const fetchComments = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/blog/${id}/comments`);
+        const response = await axios.get(`${API_BASE_URL}/blog/${id}/comments`);
         setComments(response.data);
       } catch (error) {
         console.error("Error fetching comments:", error);
@@ -58,7 +61,7 @@ const BlogDetail = () => {
     }
   
     try {
-      await axios.post(`http://localhost:5000/blog/${id}/comments`, {
+      await axios.post(`${API_BASE_URL}/blog/${id}/comments`, {
         text: newComment,
         author: name,
       });

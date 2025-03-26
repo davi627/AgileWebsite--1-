@@ -22,7 +22,7 @@ const ContactForm: React.FC = () => {
 
     try {
       await sendMail({
-        to: 'sales@agilebiz.co.ke',
+        to: 'sales@agilebiz.co.ke',  
         subject: `New message from ${formData.name}`,
         text: formData.message,
         html: `<p>${formData.message}</p><p>From: ${formData.name} (${formData.email})</p>`

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 interface BlogPost {
   _id: string;
   title: string;
@@ -19,7 +19,7 @@ export default function Blog() {
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const response = await fetch("http://localhost:5000/blog/blogs");
+        const response = await fetch(`${API_BASE_URL}/blog/blogs`);
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
   
         const data: BlogPost[] = await response.json();
@@ -38,7 +38,7 @@ export default function Blog() {
   const handleViewBlog = async (blogId: string) => {
     try {
       // Increment views in the backend
-      const response = await fetch(`http://localhost:5000/blog/blogs/${blogId}/view`, {
+      const response = await fetch(`${API_BASE_URL}/blog/blogs/${blogId}/view`, {
         method: 'PATCH'
       });
       

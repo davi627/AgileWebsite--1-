@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
 interface Comment {
   _id: string;
   logo: string;
@@ -17,7 +19,7 @@ function AllCommentsPage() {
   // Fetch approved comments from the backend
   const fetchApprovedComments = async () => {
     try {
-      const response = await fetch('http://localhost:5000/comments/comments');
+      const response = await fetch(`${API_BASE_URL}/comments/comments`);
       const data = await response.json();
       const approvedComments = data.filter((comment: Comment) => comment.status === 'approved');
       setComments(approvedComments);
@@ -41,7 +43,7 @@ function AllCommentsPage() {
           >
             <div>
             <img
-            src={`http://localhost:5000${comment.logo}`} 
+            src={`${API_BASE_URL}${comment.logo}`} 
             alt="logo"
             className="h-10 w-auto mb-2"
 />

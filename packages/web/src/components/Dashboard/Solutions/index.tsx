@@ -15,7 +15,7 @@ import {
 } from '@heroicons/react/20/solid'
 import SolutionForm from './SolutionsForm'
 import ImageUploader from '../../../components/ImageUploader'
-import Loader from '../../../components/Loader' // Import the loader component
+import Loader from '../../../components/Loader' 
 
 const Solutions: React.FC = () => {
   const [solutions, setSolutions] = useState<Solution[]>([])
@@ -24,7 +24,7 @@ const Solutions: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true)
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
   const [imageUrl, setImageUrl] = useState<string>('')
-  const [isFormOpen, setIsFormOpen] = useState<boolean>(false) // New state variable
+  const [isFormOpen, setIsFormOpen] = useState<boolean>(false) 
 
   useEffect(() => {
     const getSolutions = async () => {

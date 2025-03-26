@@ -5,6 +5,8 @@ import 'slick-carousel/slick/slick-theme.css';
 import SidePadding from 'components/Shared/SidePadding.Component';
 import { useNavigate } from 'react-router-dom';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
 interface Comment {
   _id: string;
   logo: string;
@@ -21,7 +23,7 @@ function Testimonials() {
 
   const fetchApprovedComments = async () => {
     try {
-      const response = await fetch('http://localhost:5000/comments/comments');
+      const response = await fetch(`${API_BASE_URL}/comments/comments`);
       const data = await response.json();
       const approvedComments = data.filter((comment: Comment) => comment.status === 'approved');
       setComments(approvedComments);
@@ -81,7 +83,7 @@ function Testimonials() {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    autoplay: true, // Disabled automatic sliding
+    autoplay: true, 
     arrows: true,
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
@@ -111,7 +113,7 @@ function Testimonials() {
                   <div className="flex flex-col gap-5 md:flex-row">
                     <div className="flex w-full flex-col items-start justify-evenly gap-6 md:w-1/2">
                       <img
-                        src={`http://localhost:5000${comment.logo}`}
+                        src={`${API_BASE_URL}${comment.logo}`}
                         alt="logo"
                         className="h-10 w-auto"
                       />

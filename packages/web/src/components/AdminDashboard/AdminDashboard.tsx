@@ -240,7 +240,7 @@ interface Comment {
       try {
         await axios.put(`${API_BASE_URL}/comments/comments/${commentId}/approve`);
         fetchComments();
-        alert('Comment approved successfully!');
+        alert('Testimonial approved successfully!');
       } catch (error) {
         console.error('Failed to approve comment:', error);
         alert('Failed to approve comment. Please try again.');
@@ -256,7 +256,7 @@ interface Comment {
       try {
         const response = await axios.delete(`${API_BASE_URL}/comments/comments/${commentId}`);
         if (response.status === 200) {
-          alert('Comment deleted successfully!');
+          alert('Testimonial deleted successfully!');
           fetchComments();
         }
       } catch (error) {
@@ -272,7 +272,7 @@ interface Comment {
       try {
         await axios.put(`${API_BASE_URL}/comments/comments/${commentId}/reject`);
         fetchComments();
-        alert('Comment rejected successfully!');
+        alert('Testimonial rejected successfully!');
       } catch (error) {
         console.error('Failed to reject comment:', error);
         alert('Failed to reject comment. Please try again.');
@@ -473,7 +473,7 @@ useEffect(() => {
     try {
       await axios.patch(`${API_BASE_URL}/blog/comments/${commentId}/approve`);
       fetchPendingComments();
-      alert('Testimonial approved successfully!');
+      alert('Comment approved successfully!');
     } catch (error) {
       console.error('Failed to approve comment:', error);
       alert('Failed to approve comment. Please try again.');
@@ -484,7 +484,7 @@ useEffect(() => {
     try {
       await axios.patch(`${API_BASE_URL}/blog/comments/${commentId}/reject`);
       fetchPendingComments();
-      alert('Testimonial rejected successfully!');
+      alert('Comment rejected successfully!');
     } catch (error) {
       console.error('Failed to reject comment:', error);
       alert('Failed to reject comment. Please try again.');
@@ -495,7 +495,7 @@ useEffect(() => {
     try {
       await axios.delete(`${API_BASE_URL}/blog/comments/${commentId}`);
       fetchPendingComments();
-      alert('Testimonial deleted successfully!');
+      alert('Comment deleted successfully!');
     } catch (error) {
       console.error('Failed to delete comment:', error);
       alert('Failed to delete comment. Please try again.');
