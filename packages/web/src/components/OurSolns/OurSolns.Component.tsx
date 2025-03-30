@@ -79,6 +79,11 @@ function OurSolns() {
     }
   };
 
+  // Navigation handler
+  const handleReadMore = () => {
+    navigate('/solns'); 
+  };
+
   if (!selectedSoln) {
     return <div>Loading...</div>;
   }
@@ -123,7 +128,15 @@ function OurSolns() {
                   />
                 </button>
                 <div className={selected === i ? 'content show' : 'content'}>
-                  <p className="text-gray-700">{qn.a}</p>
+                  <p className="text-gray-700">
+                    {qn.a}
+                    <button 
+                      onClick={handleReadMore}
+                      className="ml-2 text-blue-600 hover:underline"
+                    >
+                      Read more
+                    </button>
+                  </p>
                 </div>
                 <hr className="mt-4" />
               </div>
@@ -137,8 +150,6 @@ function OurSolns() {
             />
           </div>
         </div>
-
-       
       </div>
     </SidePadding>
   );

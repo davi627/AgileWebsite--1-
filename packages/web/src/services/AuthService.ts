@@ -39,6 +39,7 @@ interface AuthenticatedUser {
   id: string
   email: string
   password: string
+  name:string
 }
 
 // Centralized error handling function

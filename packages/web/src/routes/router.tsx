@@ -19,6 +19,8 @@ import AllCommentsPage from 'components/AllComments/AllComments'
 import BlogDetail from 'components/BlogDetails/BlogDetail'
 import Reset from 'components/Authentication/Reset'
 import ResetPassword from 'components/ResetPassword/ResetPassword'
+import Soltns from 'components/Soltns/Soltns'
+
 
 const AppRouter: React.FC = () => {
   return (
@@ -44,9 +46,7 @@ const AppRouter: React.FC = () => {
           <Route path='/blog/:id' element={<BlogDetail/>}/>
           <Route path='/reset' element={<Reset/>}/>
           <Route path='/reset-password' element={<ResetPassword/>}/>
-
-          {/* Protected Routes */}
-
+          <Route path='/solns' element={<Soltns/>}/>
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

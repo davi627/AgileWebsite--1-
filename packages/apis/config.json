@@ -1,0 +1,16 @@
+{
+    "MONGO_URI": "mongodb+srv://davidmbita001:Jamadova1234@cluster0.ssxheop.mongodb.net/AgileWebsite",
+    "JWT_SECRET": "secret",
+    "PORT": 5000,
+    "CLIENT_URL": "http://localhost:5173",
+    "SMTP_HOST": "smtp.office365.com",
+    "SMTP_PORT": 587,
+    "SMTP_USER": "erp@agilebiz.co.ke",
+    "SMTP_PASS": "cykmtyqtnxvrmnhp",
+    "SMTP_FROM": "erp@agilebiz.co.ke",
+    "CLOUDINARY_CLOUD_NAME": "dwznosrjj",
+    "CLOUDINARY_API_KEY": "824394576126654",
+    "CLOUDINARY_API_SECRET": "c57F1xPeXmeZNeyD5EUrm2GRXOk",
+    "CLOUDINARY_UPLOAD_PRESET": "ml_default",
+    "AZURE_STORAGE_CONNECTION_STRING": "DefaultEndpointsProtocol=https;AccountName=agilevmdiag;AccountKey=z2HcXiNWAYeMxWuTlI0taBj84tuqJeZf92gT+hR5eNXjfSQNRVMVdOjYseAbJ6tTW5cfxOK7noQ2dYsGH9laTg==;EndpointSuffix=core.windows.net"
+  }

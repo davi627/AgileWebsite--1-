@@ -2,8 +2,11 @@ import express from 'express'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken';
 import { User } from '../Models/Authentication.js'
-const app = express()
-const router=express.Router()
+import { getConfig } from '../configManager.js';
+import crypto from 'crypto';
+import nodemailer from 'nodemailer';
+
+const router = express.Router()
 
 router.post('/Register', async (req, res) => {
     try {
@@ -11,7 +14,6 @@ router.post('/Register', async (req, res) => {
 
         const { email, password, firstName, lastName, role } = req.body;
         
-
         // Validate input fields
         if (!email || !password || !firstName || !lastName || !role) {
             console.log('Missing fields:', { email, password, firstName, lastName, role });
@@ -57,10 +59,7 @@ router.post('/Register', async (req, res) => {
     }
 });
 
-
-
-//Login route
-
+// Login route
 router.post('/login', async (req, res) => {
     const { email, password, role='Admin' } = req.body;
     console.log('Role sent in request:', role);
@@ -74,7 +73,6 @@ router.post('/login', async (req, res) => {
         console.log('User found:', user);
         if (!user) {
             return res.status(401).json({ error: 'Invalid email or password' });
-           
         }
         console.log('Role in database:', user.role);
 
@@ -83,14 +81,17 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
 
-        const token = jwt.sign({ _id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        res.cookie('token', token, { httpOnly: true, maxAge: 3600000 }).json({ message: 'Logged in successfully',role: user.role, token });
+        const token = jwt.sign({ _id: user._id, role: user.role }, getConfig('JWT_SECRET'), { expiresIn: '1h' });
+        res.cookie('token', token, { httpOnly: true, maxAge: 3600000 }).json({ 
+            message: 'Logged in successfully',
+            role: user.role, 
+            token 
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Server Error' });
     }
 });
-
 
 router.post('/forgot-password', async (req, res) => {
     try {
@@ -113,18 +114,18 @@ router.post('/forgot-password', async (req, res) => {
 
         // Send email with the reset link
         const transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST,
-            port: process.env.SMTP_PORT,
+            host: getConfig('SMTP_HOST'),
+            port: getConfig('SMTP_PORT'),
             auth: {
-                user: process.env.SMTP_USER,
-                pass: process.env.SMTP_PASS,
+                user: getConfig('SMTP_USER'),
+                pass: getConfig('SMTP_PASS'),
             }
         });
 
-        const resetLink = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}&email=${email}`;
+        const resetLink = `${getConfig('CLIENT_URL')}/reset-password?token=${resetToken}&email=${email}`;
 
         const mailOptions = {
-            from: process.env.SMTP_FROM,
+            from: getConfig('SMTP_FROM'),
             to: email,
             subject: 'Password Reset Request',
             text: `Click the link below to reset your password: \n\n${resetLink}\n\nThis link is valid for 1 hour.`,
@@ -139,7 +140,6 @@ router.post('/forgot-password', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-
 
 router.post('/reset-password', async (req, res) => {
     try {
@@ -173,7 +173,4 @@ router.post('/reset-password', async (req, res) => {
     }
 });
 
-
-
-
-export  {router as UserRouter}
+export { router as UserRouter }

@@ -1,21 +1,18 @@
 import express from 'express';
 import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
+import { getConfig } from '../configManager.js';
 import Email from '../Models/Email.js';
-
-
-dotenv.config();
 
 const router = express.Router();
 
 // SMTP Configuration
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: process.env.SMTP_PORT,
+  host: getConfig('SMTP_HOST'),
+  port: getConfig('SMTP_PORT'),
   secure: false, 
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
+    user: getConfig('SMTP_USER'),
+    pass: getConfig('SMTP_PASS'),
   },
   tls: {
     ciphers: 'TLSv1.2', 
@@ -33,7 +30,7 @@ router.post('/send', async (req, res) => {
   try {
     // Send email
     await transporter.sendMail({
-      from: process.env.SMTP_FROM,
+      from: getConfig('SMTP_FROM'),
       to,
       subject,
       text,
@@ -51,4 +48,4 @@ router.post('/send', async (req, res) => {
   }
 });
 
-export {router as emailRouter}
+export { router as emailRouter }
