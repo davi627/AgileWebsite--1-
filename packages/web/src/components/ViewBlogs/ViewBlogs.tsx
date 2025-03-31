@@ -1,29 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import SecurityKeyModal from 'components/SercurityKeyModal/SercurityKeyModal';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 const ViewBlogs: React.FC = () => {
   const [blogs, setBlogs] = useState<{ _id: string; title: string; author: { name: string } }[]>([]);
-  const [isSecurityKeyModalOpen, setIsSecurityKeyModalOpen] = useState(false);
-  const [pendingAction, setPendingAction] = useState<() => void>(() => {});
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [currentAction, setCurrentAction] = useState<() => void>(() => {});
 
-
-  const validateSecurityKey = async (key: string) => {
-    try {
-      const response = await axios.post(`${API_BASE_URL}/validate-security-key`, { key });
-      return response.data.isValid;
-    } catch (error) {
-      console.error('Failed to validate security key:', error);
-      return false;
-    }
+  // Handle form submission with confirmation
+  const handleWithConfirmation = (action: () => void, message?: string) => {
+    setCurrentAction(() => action);
+    setShowConfirmation(true);
   };
 
+  const executeAction = () => {
+    setShowConfirmation(false);
+    currentAction();
+  };
 
-  const handleActionWithSecurityKey = (action: () => void) => {
-    setPendingAction(() => action);
-    setIsSecurityKeyModalOpen(true);
+  const cancelAction = () => {
+    setShowConfirmation(false);
   };
 
   // Fetch blogs from the backend
@@ -37,22 +34,20 @@ const ViewBlogs: React.FC = () => {
     }
   };
 
-  // Handle delete action with security key
+  // Handle delete action with confirmation
   const handleDelete = async (blogId: string) => {
-    const action = async () => {
+    handleWithConfirmation(async () => {
       try {
         const response = await axios.delete(`${API_BASE_URL}/blog/blogs/${blogId}`);
         if (response.status === 200) {
           alert('Blog deleted successfully!');
-          fetchBlogs(); 
+          fetchBlogs();
         }
       } catch (error) {
         console.error('Failed to delete blog:', error);
         alert('Failed to delete blog. Please try again.');
       }
-    };
-
-    handleActionWithSecurityKey(action);
+    }, "Are you sure you want to permanently delete this blog post? This action cannot be undone.");
   };
 
   // Fetch blogs on component mount
@@ -84,17 +79,29 @@ const ViewBlogs: React.FC = () => {
         )}
       </div>
 
-      <SecurityKeyModal
-        isOpen={isSecurityKeyModalOpen}
-        onClose={() => setIsSecurityKeyModalOpen(false)}
-        onValidate={async (key) => {
-          const isValid = await validateSecurityKey(key);
-          if (isValid) {
-            pendingAction();
-          }
-          return isValid;
-        }}
-      />
+      {/* Confirmation Modal */}
+      {showConfirmation && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-medium mb-4">Confirm Action</h3>
+            <p className="mb-6">Are you sure you want to perform this action?</p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={cancelAction}
+                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={executeAction}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -14,6 +14,7 @@ import bodyParser from 'body-parser';
 import { SecurityKey } from './Models/SercurityKey.js';
 import './Models/Blogs.js'; 
 import { getConfig, updateConfig, getAllConfig } from './configManager.js';
+import { solutionCategoriesRouter } from './Routes/SolutionsCategory.js';
 
 const app = express();
 
@@ -116,6 +117,7 @@ app.use('/log', logoRouter);
 app.use('/blog', BlogsRouter);
 app.use('/comments', CommentRouter);
 app.use('/email', emailRouter);
+app.use('/api/solution-categories', solutionCategoriesRouter);
 
 // All other requests go to React (for client-side routing)
 app.get('*', (req, res) => {

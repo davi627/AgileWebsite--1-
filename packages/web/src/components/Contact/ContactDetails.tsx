@@ -31,7 +31,7 @@ const ContactDetails: React.FC = () => {
           Get in touch
         </h2>
         <p className="mt-4 leading-7 text-gray-600">
-          Quam nunc nunc eu sed. Sed rhoncus quis ultricies ac pellentesque.
+          
         </p>
       </div>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:col-span-2 lg:gap-8">

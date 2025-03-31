@@ -91,7 +91,7 @@ export default function Blog() {
             </Link>
           </div>
 
-          <h2 className="text-2xl font-bold text-center text-gray-800">Latest Blog Posts</h2>
+          <h2 className="mt-[40px] text-2xl font-bold text-center text-gray-800">Latest Blog Articles</h2>
 
           <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {blogs.map((blog) => {

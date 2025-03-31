@@ -8,6 +8,7 @@ import SecurityKeyModal from 'components/SercurityKeyModal/SercurityKeyModal';
 import ViewBlogs from 'components/ViewBlogs/ViewBlogs';
 import ViewSolutions from 'components/ViewSolutions/ViewSolutions';
 import UpdateSecurityKey from 'components/UpdateSercurityKey/UpdateSercurityKey';
+import SolutionCategoryForm from 'components/SolutionCategoryForm/SolutionCategoryForm';
 
 
 
@@ -470,36 +471,42 @@ useEffect(() => {
   };
   
   const handleApproveComment = async (commentId: string) => {
-    try {
-      await axios.patch(`${API_BASE_URL}/blog/comments/${commentId}/approve`);
-      fetchPendingComments();
-      alert('Comment approved successfully!');
-    } catch (error) {
-      console.error('Failed to approve comment:', error);
-      alert('Failed to approve comment. Please try again.');
-    }
+    handleWithConfirmation(async () => {
+      try {
+        await axios.patch(`${API_BASE_URL}/blog/comments/${commentId}/approve`);
+        fetchPendingComments();
+        alert('Comment approved successfully!');
+      } catch (error) {
+        console.error('Failed to approve comment:', error);
+        alert('Failed to approve comment. Please try again.');
+      }
+    }, "Are you sure you want to approve this comment?");
   };
   
   const handleRejectComment = async (commentId: string) => {
-    try {
-      await axios.patch(`${API_BASE_URL}/blog/comments/${commentId}/reject`);
-      fetchPendingComments();
-      alert('Comment rejected successfully!');
-    } catch (error) {
-      console.error('Failed to reject comment:', error);
-      alert('Failed to reject comment. Please try again.');
-    }
+    handleWithConfirmation(async () => {
+      try {
+        await axios.patch(`${API_BASE_URL}/blog/comments/${commentId}/reject`);
+        fetchPendingComments();
+        alert('Comment rejected successfully!');
+      } catch (error) {
+        console.error('Failed to reject comment:', error);
+        alert('Failed to reject comment. Please try again.');
+      }
+    }, "Are you sure you want to reject this comment?");
   };
   
   const handleDeleteComment = async (commentId: string) => {
-    try {
-      await axios.delete(`${API_BASE_URL}/blog/comments/${commentId}`);
-      fetchPendingComments();
-      alert('Comment deleted successfully!');
-    } catch (error) {
-      console.error('Failed to delete comment:', error);
-      alert('Failed to delete comment. Please try again.');
-    }
+    handleWithConfirmation(async () => {
+      try {
+        await axios.delete(`${API_BASE_URL}/blog/comments/${commentId}`);
+        fetchPendingComments();
+        alert('Comment deleted successfully!');
+      } catch (error) {
+        console.error('Failed to delete comment:', error);
+        alert('Failed to delete comment. Please try again.');
+      }
+    }, "Are you sure you want to permanently delete this comment? This action cannot be undone.");
   };
   
   // Call fetchPendingComments in useEffect
@@ -606,6 +613,17 @@ useEffect(() => {
     Moderate Comments
   </button>
 </li>
+<li>
+  <button
+    onClick={() => handleMenuItemClick('manage-solutions')}
+    className={`block w-full text-left p-4 hover:bg-indigo-700 transition duration-200 ${
+      activeSection === 'manage-solutions' ? 'bg-indigo-700' : ''
+    }`}
+  >
+    Manage Solutions
+  </button>
+</li>
+
 
 
   <li>
@@ -672,27 +690,27 @@ useEffect(() => {
         <main className="flex-1 p-6 overflow-y-auto">
 
         {showConfirmation && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-medium mb-4">Confirm Action</h3>
-            <p className="mb-6">Are you sure you want to perform this action?</p>
-            <div className="flex justify-end space-x-4">
-              <button
-                onClick={cancelAction}
-                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={executeAction}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-              >
-                Confirm
-              </button>
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+              <div className="bg-white rounded-lg p-6 w-full max-w-md">
+                <h3 className="text-lg font-medium mb-4">Confirm Action</h3>
+                <p className="mb-6">Are you sure you want to perform this action?</p>
+                <div className="flex justify-end space-x-4">
+                  <button
+                    onClick={cancelAction}
+                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={executeAction}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          )}
 
         {activeSection === 'statistics' && (
   <div className="bg-white rounded-lg shadow-md p-6">
@@ -1283,6 +1301,7 @@ useEffect(() => {
 )}
 {activeSection === 'view-solutions' && <ViewSolutions />}
 {activeSection === 'update-security-key' && <UpdateSecurityKey />}
+{activeSection === 'manage-solutions' && <SolutionCategoryForm />}
         </main>
       </div>
 
