@@ -19,6 +19,7 @@ interface Solution {
 interface SolutionCategory {
   _id?: string;
   title: string;
+  imageUrl: string;
   solutions: Solution[];
 }
 
@@ -26,6 +27,7 @@ const SolutionCategoryForm: React.FC = () => {
   const [categories, setCategories] = useState<SolutionCategory[]>([]);
   const [currentCategory, setCurrentCategory] = useState<SolutionCategory>({
     title: '',
+    imageUrl: '', 
     solutions: []
   });
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -157,6 +159,7 @@ const SolutionCategoryForm: React.FC = () => {
   const resetForm = () => {
     setCurrentCategory({
       title: '',
+      imageUrl: '',
       solutions: []
     });
     setEditingId(null);
@@ -177,6 +180,31 @@ const SolutionCategoryForm: React.FC = () => {
             className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             required
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Image URL</label>
+          <input
+            type="text"
+            name="imageUrl"
+            value={currentCategory.imageUrl}
+            onChange={handleInputChange}
+            className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            placeholder="https://example.com/image.jpg"
+          />
+          {currentCategory.imageUrl && (
+            <div className="mt-2">
+              <p className="text-sm text-gray-500 mb-1">Image Preview:</p>
+              <img 
+                src={currentCategory.imageUrl} 
+                alt="Category preview" 
+                className="h-20 object-contain border rounded"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
+              />
+            </div>
+          )}
         </div>
 
         <div>
@@ -305,9 +333,21 @@ const SolutionCategoryForm: React.FC = () => {
         <div className="space-y-4">
           {categories.map((category) => (
             <div key={category._id} className="border p-4 rounded-lg flex justify-between items-center">
-              <div>
-                <h4 className="font-medium">{category.title}</h4>
-                <p className="text-sm text-gray-500">{category.solutions.length} solutions</p>
+              <div className="flex items-center space-x-4">
+                {category.imageUrl && (
+                  <img 
+                    src={category.imageUrl} 
+                    alt={category.title}
+                    className="h-12 w-12 object-cover rounded"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = 'none';
+                    }}
+                  />
+                )}
+                <div>
+                  <h4 className="font-medium">{category.title}</h4>
+                  <p className="text-sm text-gray-500">{category.solutions.length} solutions</p>
+                </div>
               </div>
               <div className="flex space-x-2">
                 <button

@@ -20,6 +20,10 @@ import BlogDetail from 'components/BlogDetails/BlogDetail'
 import Reset from 'components/Authentication/Reset'
 import ResetPassword from 'components/ResetPassword/ResetPassword'
 import Soltns from 'components/Soltns/Soltns'
+import Partners from 'components/Partners'
+import SolutionCategoryForm from 'components/SolutionCategoryForm/SolutionCategoryForm'
+import SolutionDetail from 'components/Solutions/SolutionsDetails'
+import SolutionsDetails from 'components/SolutionsDetails/SolutionsDetails'
 
 
 const AppRouter: React.FC = () => {
@@ -47,6 +51,9 @@ const AppRouter: React.FC = () => {
           <Route path='/reset' element={<Reset/>}/>
           <Route path='/reset-password' element={<ResetPassword/>}/>
           <Route path='/solns' element={<Soltns/>}/>
+          <Route path='/patners' element={<Partners/>}/>
+          <Route path='/solutionsdetails' element={<SolutionsDetails/>}/>
+          <Route path="/solns/:categoryId/:solutionId" element={<SolutionsDetails />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

@@ -2,7 +2,6 @@ import express from 'express'
 import SolutionCategory from '../Models/Solutions.js'
 const router = express.Router();
 
-
 // Get all solution categories
 router.get('/', async (req, res) => {
   try {
@@ -17,6 +16,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   const category = new SolutionCategory({
     title: req.body.title,
+    imageUrl: req.body.imageUrl, // Added imageUrl
     solutions: req.body.solutions
   });
 
@@ -33,7 +33,11 @@ router.put('/:id', async (req, res) => {
   try {
     const updatedCategory = await SolutionCategory.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      {
+        title: req.body.title,
+        imageUrl: req.body.imageUrl, // Added imageUrl
+        solutions: req.body.solutions
+      },
       { new: true }
     );
     res.json(updatedCategory);
@@ -52,4 +56,4 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-export {router as  solutionCategoriesRouter}
+export { router as solutionCategoriesRouter }

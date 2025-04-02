@@ -2,7 +2,7 @@ import SidePadding from 'components/Shared/SidePadding.Component'
 import RequestDemoBtn from 'components/Shared/RequestDemoBtn.Component'
 
 // import CtaCard from './ctaCard'
-import HeroBg from '../../assets/hero_bg.png'
+import HeroBg from '../../assets/website1.png'
 // import HeroImage from '../../assets/hero_content@2x.png'
 // import AgileArrow from 'components/Common/agileArrow'
 import SmileIcon from '../../assets/smile.svg'

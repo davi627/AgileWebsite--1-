@@ -16,60 +16,81 @@ import './faq.css';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 interface ISolution {
+  id: number;
+  name: string;
+  shortDesc: string;
+  fullDesc: string;
+  features: { text: string }[];
+  implementation: string;
+}
+
+interface ISolutionCategory {
   _id: string;
   title: string;
-  soln: string;
-  img: string;
-  route: string;
-  faqs: { q: string; a: string }[];
+  imageUrl: string;
+  solutions: ISolution[];
 }
 
 function OurSolns() {
   const navigate = useNavigate();
-  const [solutions, setSolutions] = useState<ISolution[]>([]);
-  const [selectedSoln, setSelectedSoln] = useState<ISolution | null>(null);
+  const [categories, setCategories] = useState<ISolutionCategory[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<ISolutionCategory | null>(null);
+  const [selectedSolution, setSelectedSolution] = useState<number>(0);
   const [featureImg, setFeatureImg] = useState(feature1);
-  const [theFAQs, setTheFAQs] = useState<{ q: string; a: string }[]>([]);
+  const [theFAQs, setTheFAQs] = useState<{ q: string; a: string; solutionId: number }[]>([]);
   const [selected, setSelected] = useState<number | null>(null);
 
-  // Fetch solutions from the backend
+  // Fetch solution categories from the backend
   useEffect(() => {
-    const fetchSolutions = async () => {
+    const fetchCategories = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/solns/solution`);
-        setSolutions(response.data);
+        const response = await axios.get(`${API_BASE_URL}/api/solution-categories`);
+        setCategories(response.data);
         if (response.data.length > 0) {
-          setSelectedSoln(response.data[0]);
-          setTheFAQs(response.data[0].faqs);
+          setSelectedCategory(response.data[0]);
+          // Create FAQs using only solution name and fullDesc
+          if (response.data[0].solutions.length > 0) {
+            setTheFAQs(response.data[0].solutions.map((solution: ISolution) => ({
+              q: solution.name,
+              a: solution.fullDesc,
+              solutionId: solution.id
+            })));
+          }
         }
       } catch (error) {
-        console.error('Failed to fetch solutions:', error);
+        console.error('Failed to fetch solution categories:', error);
       }
     };
 
-    fetchSolutions();
+    fetchCategories();
   }, []);
 
-  // Update FAQs and feature image when selected solution changes
+  // Update FAQs and feature image when selected category or solution changes
   useEffect(() => {
-    if (selectedSoln) {
-      setTheFAQs(selectedSoln.faqs);
-      switch (selectedSoln.soln) {
-        case 'microsoft':
+    if (selectedCategory && selectedCategory.solutions.length > 0) {
+      // Create FAQs using only solution name and fullDesc
+      setTheFAQs(selectedCategory.solutions.map((solution: ISolution) => ({
+        q: solution.name,
+        a: solution.fullDesc,
+        solutionId: solution.id
+      })));
+      
+      // Set feature image based on solution index
+      switch (selectedSolution) {
+        case 0:
           setFeatureImg(feature1);
           break;
-        case 'sap':
+        case 1:
           setFeatureImg(feature2);
           break;
-        case 'oracle':
-        case 'redstor':
+        case 2:
           setFeatureImg(feature3);
           break;
         default:
           setFeatureImg(feature1);
       }
     }
-  }, [selectedSoln]);
+  }, [selectedCategory, selectedSolution]);
 
   const toggle = (i: number | null) => {
     if (selected === i) {
@@ -79,33 +100,36 @@ function OurSolns() {
     }
   };
 
-  // Navigation handler
-  const handleReadMore = () => {
-    navigate('/solns'); 
+  // Navigation handler with solution ID and category ID
+  const handleReadMore = (solutionId: number) => {
+    if (selectedCategory) {
+      navigate(`/solns/${selectedCategory._id}/${solutionId}`);
+    }
   };
 
-  if (!selectedSoln) {
+  if (!selectedCategory || selectedCategory.solutions.length === 0) {
     return <div>Loading...</div>;
   }
 
   return (
     <SidePadding>
-      <div id="erp-solutions" className="py-14">
-        <img src={selectedSoln.img} alt="Logo" className="h-6" />
+      <div id="erp-solutions" className="py-14" >
+      <img src={selectedCategory.imageUrl} alt="Logo" className="h-24" />
         <div className="mt-10 flex gap-8 overflow-x-scroll">
-          {solutions.map((soln) => (
+          {categories.map((category) => (
             <Pill
-              key={soln._id}
-              title={soln.title}
+              key={category._id}
+              title={category.title}
               onPress={() => {
-                setSelectedSoln(soln);
+                setSelectedCategory(category);
+                setSelectedSolution(0);
               }}
-              selected={soln.soln === selectedSoln.soln}
+              selected={category._id === selectedCategory._id} 
             />
           ))}
         </div>
         <p className="mt-6 text-xl font-medium leading-tight md:text-[2rem]">
-          Transform your Business with <br /> {selectedSoln.title} solutions
+          Transform your Business with <br /> {selectedCategory.title} solutions
         </p>
 
         <div className="mt-12 flex w-full gap-10">
@@ -131,7 +155,7 @@ function OurSolns() {
                   <p className="text-gray-700">
                     {qn.a}
                     <button 
-                      onClick={handleReadMore}
+                      onClick={() => handleReadMore(qn.solutionId)}
                       className="ml-2 text-blue-600 hover:underline"
                     >
                       Read more
@@ -150,6 +174,8 @@ function OurSolns() {
             />
           </div>
         </div>
+
+
       </div>
     </SidePadding>
   );

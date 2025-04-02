@@ -15,9 +15,8 @@ const solutionSchema = new mongoose.Schema({
 
 const solutionCategorySchema = new mongoose.Schema({
   title: String,
+  imageUrl: String, 
   solutions: [solutionSchema]
 });
 
 export default mongoose.model('SolutionCategory', solutionCategorySchema);
-
-

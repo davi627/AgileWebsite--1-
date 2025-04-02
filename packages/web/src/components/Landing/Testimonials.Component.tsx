@@ -138,7 +138,7 @@ function Testimonials() {
 
                     <div className="hidden h-[28rem] w-1/2 rounded-xl md:block">
                       <img
-                        src={`http://localhost:5000${comment.image}`}
+                        src={`http://webtest-api.agilebiz.co.ke:5000${comment.image}`}
                         alt="testimonial"
                         className="h-full w-full rounded-xl object-cover object-center"
                       />

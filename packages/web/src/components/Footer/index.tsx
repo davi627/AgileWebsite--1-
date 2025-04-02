@@ -1,12 +1,13 @@
 import Logo from '../../assets/agilebiz_logo2.png'
-
+import cert1 from '../../assets/iso27001.png'
+import cert2 from '../../assets/iso9001.png'
 const navigation = {
   company: [
     { name: 'About', href: '/about-us' },
-    { name: 'Blog', href: '/blog' },
+    { name: 'Blog', href: '/blogs' },
     { name: 'Careers', href: '/careers' },
     // { name: 'Staff Access', href: '/login' },
-    { name: 'Partners', href: '#' }
+    { name: 'Partners', href: '/patners' }
   ],
   legal: [
     { name: 'Claim', href: '#' },
@@ -89,13 +90,6 @@ export default function Footer() {
       </h2>
       <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
         <div className="flex flex-wrap items-center justify-between">
-          {/* <div className="flex items-center space-x-6">
-            <img className="h-12 w-auto" src={Logo} alt="Agile Biz" />
-            <p className="text-sm leading-6 text-gray-300">
-              Ready to help launch your project along with our well-designed
-              solutions.
-            </p>
-          </div> */}
           <div className="flex space-x-6">
             {navigation.social.map((item) => (
               <a
@@ -109,11 +103,13 @@ export default function Footer() {
             ))}
           </div>
         </div>
-        <div className="mt-8 flex flex-wrap items-end justify-between gap-4">
-          <div className="">
+        
+        <div className="mt-8 flex flex-wrap items-center justify-between gap-8">
+          {/* Left section - Logo and links */}
+          <div className="flex items-start gap-6">
             <img className="h-12 w-auto" src={Logo} alt="agilebiz logo" />
-
-            <div className="mt-6 flex space-x-8">
+            
+            <div className="mt-6 flex flex-wrap gap-x-8 gap-y-2">
               {navigation.company.map((item) => (
                 <a
                   key={item.name}
@@ -125,24 +121,23 @@ export default function Footer() {
               ))}
             </div>
           </div>
-          {/* <div className="mt-4 flex space-x-8 lg:mt-0">
-            {navigation.legal.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className="text-sm leading-6 text-gray-300 hover:text-white"
-              >
-                {item.name}
-              </a>
-            ))}
-          </div> */}
-          <div className="flex flex-col gap-1 text-base font-light">
-            <p>Phone: +254 712 345 678</p>
-            <p>Email: info@agilebiz.co.ke</p>
-            <p>Contact Us: sales@agilebiz.co.ke</p>
-            <p>Address: Nairobi, Kenya</p>
+          
+          {/* Right section - Contact info and Certifications */}
+          <div className="flex items-center gap-8">
+            <div className="flex flex-col gap-1 text-base font-light">
+              <p>Phone: +254 712 345 678</p>
+              <p>Email: info@agilebiz.co.ke</p>
+              <p>Contact Us: sales@agilebiz.co.ke</p>
+              <p>Address: Nairobi, Kenya</p>
+            </div>
+            
+            <div className="flex gap-4">
+              <img src={cert1} alt="ISO 27001 Certification" className="h-24 w-auto" />
+              <img src={cert2} alt="ISO 9001 Certification" className="h-24 w-auto" />
+            </div>
           </div>
         </div>
+        
         <div className="mt-8 border-t border-white/10 pt-4">
           <p className="text-xs leading-5 text-gray-300">
             &copy; 2024 Agile Business Solutions Ltd. All rights reserved.

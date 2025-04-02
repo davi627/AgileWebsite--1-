@@ -15,10 +15,12 @@ import twitterIcon from 'assets/socials/twitter.png'
 
 const navigation = [
   { name: 'Home', href: '/' },
-  { name: 'Solutions', href: '#erp-solutions' },
+  { name: 'Solutions Category', href: '#erp-solutions' },
   { name: 'About Us', href: '/about-us' },
   { name: 'Contact Us', href: '/contact-us' },
-  {name: 'Blogs', href:'/blogs'}
+  {name: 'Blogs', href:'/blogs'},
+  {name:'Solutions' ,href:'/solns'}
+
  
 
 

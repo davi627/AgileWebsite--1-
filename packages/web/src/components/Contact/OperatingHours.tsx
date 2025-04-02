@@ -13,9 +13,7 @@ const OperatingHours: React.FC = () => {
         <h2 className="text-3xl font-bold tracking-tight text-gray-900">
           Operating Hours
         </h2>
-        <p className="mt-4 leading-7 text-gray-600">
-          Quam nunc nunc eu sed. Sed rhoncus quis ultricies ac pellentesque.
-        </p>
+
       </div>
       <div className="lg:col-span-2">
         <div className="rounded-2xl bg-gray-50 p-10">
