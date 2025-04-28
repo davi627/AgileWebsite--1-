@@ -78,11 +78,13 @@ function SolutionsDetails() {
     return (
       <div className="min-h-screen flex flex-col">
         <Navbar />
-        <SidePadding>
-          <div className="flex-grow flex justify-center items-center">
-            <p className="text-xl">Loading...</p>
-          </div>
-        </SidePadding>
+        <main className="flex-grow">
+          <SidePadding>
+            <div className="flex justify-center items-center h-full">
+              <p className="text-xl">Loading...</p>
+            </div>
+          </SidePadding>
+        </main>
         <Footer />
       </div>
     );
@@ -91,51 +93,53 @@ function SolutionsDetails() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <SidePadding>
-        <div className="py-14 flex-grow">
-          <button 
-            onClick={handleGoBack}
-            className="mb-6 flex items-center text-[#34C4EC] hover:underline"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Back to Solutions
-          </button>
+      <main className="flex-grow">
+        <SidePadding>
+          <div className="py-14">
+            <button 
+              onClick={handleGoBack}
+              className="mb-6 flex items-center text-[#34C4EC] hover:underline"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Back to Solutions
+            </button>
 
-          {solution && category && (
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-              <div className="bg-[#34C4EC] text-white p-6">
-                <h1 className="text-2xl font-bold">{solution.name}</h1>
-                <p className="mt-2">{category.title} </p>
-              </div>
-              
-              <div className="p-6">
-                <div className="mb-6">
-                  <h2 className="text-xl font-semibold mb-2">Description</h2>
-                  <p className="text-gray-700">{solution.fullDesc}</p>
+            {solution && category && (
+              <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+                <div className="bg-[#34C4EC] text-white p-6">
+                  <h1 className="text-2xl font-bold">{solution.name}</h1>
+                  <p className="mt-2">{category.title} </p>
                 </div>
                 
-                <div className="mb-6">
-                  <h2 className="text-xl font-semibold mb-2">Key Features</h2>
-                  <ul className="list-disc pl-5 space-y-2">
-                    {solution.features.map((feature, index) => (
-                      <li key={index} className="text-gray-700">{feature.text}</li>
-                    ))}
-                  </ul>
-                </div>
-                
-                {solution.implementation && (
-                  <div>
-                    <h2 className="text-xl font-semibold mb-2">Implementation</h2>
-                    <p className="text-gray-700">{solution.implementation}</p>
+                <div className="p-6">
+                  <div className="mb-6">
+                    <h2 className="text-xl font-semibold mb-2">Overview</h2>
+                    <p className="text-gray-700">{solution.fullDesc}</p>
                   </div>
-                )}
+                  
+                  <div className="mb-6">
+                    <h2 className="text-xl font-semibold mb-2">Key Features</h2>
+                    <ul className="list-disc pl-5 space-y-2">
+                      {solution.features.map((feature, index) => (
+                        <li key={index} className="text-gray-700">{feature.text}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  
+                  {solution.implementation && (
+                    <div>
+                      <h2 className="text-xl font-semibold mb-2">Implementation</h2>
+                      <p className="text-gray-700">{solution.implementation}</p>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
-        </div>
-      </SidePadding>
+            )}
+          </div>
+        </SidePadding>
+      </main>
       <Footer />
     </div>
   );

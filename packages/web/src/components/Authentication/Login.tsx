@@ -5,7 +5,7 @@ import agile from '../../assets/agilebiz_logo.png'
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>('stephen.okwemba@agilebiz.co.ke')
-  const [password, setPassword] = useState<string>('12345678')
+  const [password, setPassword] = useState<string>('')
   const [error, setError] = useState<string>('')
   const navigate = useNavigate()
 

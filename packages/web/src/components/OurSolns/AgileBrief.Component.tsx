@@ -11,9 +11,10 @@ function AgileBrief() {
         <div className="flex w-full flex-col items-start justify-evenly gap-4 md:w-1/2">
           <img src={logo} alt="Azure" className="h-10 w-auto" />
 
-          <p className="text-xl tracking-wide md:text-3xl xl:text-4xl">
+          <p className="text-xl tracking-wide md:text-3xl xl:text-4xl font-century" >
             Optimize your Organization <br />
-            With Cutting Edge Software <br />
+            With Cutting Edge<br/> 
+            Management Information Systems <br />
             From Agile Business Solutions
           </p>
           <RequestDemoBtn />

@@ -32,8 +32,10 @@ export default {
       //   sans: ['Inter', 'sans-serif']
       // }
       fontFamily: {
-        poppins: "'Poppins', sans-serif"
+        century: ['"Century Gothic"', 'sans-serif'],
+        poppins: ['Poppins', 'sans-serif'], 
       },
+      
       boxShadow: {
         'top-bottom':
           // '0 -4px 6px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.1)'

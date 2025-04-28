@@ -60,7 +60,7 @@ export default function JobOpenings() {
           </ul>
         ) : (
           <p className="text-lg text-gray-600">
-            No job openings found at this time.
+          
           </p>
         )}
       </div>

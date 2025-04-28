@@ -62,11 +62,11 @@ const ProductsSection = () => {
   }
 
   return (
-    <section className="mt-8 bg-[#F3F8FA] py-20">
+    <section className="mt-8 bg-[#F3F8FA] py-20 font-century">
       <SidePadding>
         <h2 className="mb-6 text-center text-2xl font-semibold leading-tight tracking-wide md:text-[2.2rem]">
           Experience the convenience of <br />
-          our ERP solutions
+          our Management Information Systems solutions
         </h2>
         <p className="text-center text-gray-700">
           Connect finance, sales, service, and operations with a solution

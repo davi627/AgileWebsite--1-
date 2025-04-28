@@ -32,6 +32,7 @@ const SolutionCategoryForm: React.FC = () => {
   });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState<string | null>(null);
 
   useEffect(() => {
     fetchCategories();
@@ -165,209 +166,262 @@ const SolutionCategoryForm: React.FC = () => {
     setEditingId(null);
   };
 
+  const toggleMenu = (id: string) => {
+    setIsMenuOpen(isMenuOpen === id ? null : id);
+  };
+
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-2xl font-bold mb-6">Manage Solution Categories</h2>
-      
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Category Title</label>
-          <input
-            type="text"
-            name="title"
-            value={currentCategory.title}
-            onChange={handleInputChange}
-            className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            required
-          />
-        </div>
+    <div className="bg-white rounded-lg shadow-md p-3 md:p-6">
+    <h2 className="text-lg md:text-2xl font-bold mb-3 md:mb-6">Manage Solution Categories</h2>
+    
+    <form onSubmit={handleSubmit} className="space-y-3 md:space-y-6">
+      {/* Category Title */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">Category Title</label>
+        <input
+          type="text"
+          name="title"
+          value={currentCategory.title}
+          onChange={handleInputChange}
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 text-sm md:text-base focus:border-indigo-500 focus:ring-indigo-500"
+          required
+        />
+      </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Image URL</label>
-          <input
-            type="text"
-            name="imageUrl"
-            value={currentCategory.imageUrl}
-            onChange={handleInputChange}
-            className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            placeholder="https://example.com/image.jpg"
-          />
-          {currentCategory.imageUrl && (
-            <div className="mt-2">
-              <p className="text-sm text-gray-500 mb-1">Image Preview:</p>
-              <img 
-                src={currentCategory.imageUrl} 
-                alt="Category preview" 
-                className="h-20 object-contain border rounded"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = 'none';
-                }}
-              />
+      {/* Image URL */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">Image URL</label>
+        <input
+          type="text"
+          name="imageUrl"
+          value={currentCategory.imageUrl}
+          onChange={handleInputChange}
+          className="mt-1 block w-full rounded-md border border-gray-300 p-2 text-sm md:text-base focus:border-indigo-500 focus:ring-indigo-500"
+          placeholder="https://example.com/image.jpg"
+        />
+        {currentCategory.imageUrl && (
+          <div className="mt-2">
+            <img 
+              src={currentCategory.imageUrl} 
+              alt="Category preview" 
+              className="h-16 md:h-20 object-contain border rounded"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = 'none';
+              }}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Solutions Section */}
+      <div>
+        <h3 className="text-md md:text-lg font-medium mb-2">Solutions</h3>
+        {currentCategory.solutions.map((solution, solIndex) => (
+          <div key={solIndex} className="mb-3 p-3 md:p-4 border rounded-lg">
+            {/* Solution Header with Responsive Remove Button */}
+            <div className="flex justify-between items-center mb-2">
+              <h4 className="font-medium text-sm md:text-base">Solution {solIndex + 1}</h4>
+              <button
+                type="button"
+                onClick={() => removeSolution(solIndex)}
+                className="text-red-500 hover:text-red-700 text-xs md:text-sm bg-red-50 hover:bg-red-100 px-2 py-1 rounded"
+              >
+                Remove Solution
+              </button>
             </div>
-          )}
-        </div>
 
-        <div>
-          <h3 className="text-lg font-medium mb-2">Solutions</h3>
-          {currentCategory.solutions.map((solution, solIndex) => (
-            <div key={solIndex} className="mb-6 p-4 border rounded-lg">
-              <div className="flex justify-between items-center mb-2">
-                <h4 className="font-medium">Solution {solIndex + 1}</h4>
-                <button
-                  type="button"
-                  onClick={() => removeSolution(solIndex)}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  Remove
-                </button>
+            <div className="space-y-2 md:space-y-3">
+              {/* Solution Name */}
+              <div>
+                <label className="block text-xs md:text-sm font-medium text-gray-700">Name</label>
+                <input
+                  type="text"
+                  value={solution.name}
+                  onChange={(e) => handleSolutionChange(solIndex, 'name', e.target.value)}
+                  className="mt-1 block w-full rounded-md border border-gray-300 p-2 text-sm md:text-base focus:border-indigo-500 focus:ring-indigo-500"
+                  required
+                />
               </div>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Name</label>
-                  <input
-                    type="text"
-                    value={solution.name}
-                    onChange={(e) => handleSolutionChange(solIndex, 'name', e.target.value)}
-                    className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    required
-                  />
-                </div>
+              {/* Short Description */}
+              <div>
+                <label className="block text-xs md:text-sm font-medium text-gray-700">Short Description</label>
+                <input
+                  type="text"
+                  value={solution.shortDesc}
+                  onChange={(e) => handleSolutionChange(solIndex, 'shortDesc', e.target.value)}
+                  className="mt-1 block w-full rounded-md border border-gray-300 p-2 text-sm md:text-base focus:border-indigo-500 focus:ring-indigo-500"
+                />
+              </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Short Description</label>
-                  <input
-                    type="text"
-                    value={solution.shortDesc}
-                    onChange={(e) => handleSolutionChange(solIndex, 'shortDesc', e.target.value)}
-                    className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                   
-                  />
-                </div>
+              {/* Full Description */}
+              <div>
+                <label className="block text-xs md:text-sm font-medium text-gray-700">Full Description</label>
+                <textarea
+                  value={solution.fullDesc}
+                  onChange={(e) => handleSolutionChange(solIndex, 'fullDesc', e.target.value)}
+                  className="mt-1 block w-full rounded-md border border-gray-300 p-2 text-sm md:text-base focus:border-indigo-500 focus:ring-indigo-500"
+                  rows={2}
+                />
+              </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Full Description</label>
-                  <textarea
-                    value={solution.fullDesc}
-                    onChange={(e) => handleSolutionChange(solIndex, 'fullDesc', e.target.value)}
-                    className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    rows={3}
-                    
-                  />
-                </div>
+              {/* Implementation */}
+              <div>
+                <label className="block text-xs md:text-sm font-medium text-gray-700">Implementation</label>
+                <textarea
+                  value={solution.implementation}
+                  onChange={(e) => handleSolutionChange(solIndex, 'implementation', e.target.value)}
+                  className="mt-1 block w-full rounded-md border border-gray-300 p-2 text-sm md:text-base focus:border-indigo-500 focus:ring-indigo-500"
+                  rows={2}
+                />
+              </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Implementation</label>
-                  <textarea
-                    value={solution.implementation}
-                    onChange={(e) => handleSolutionChange(solIndex, 'implementation', e.target.value)}
-                    className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    rows={2}
-                   
-                  />
+              {/* Features Section */}
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <label className="block text-xs md:text-sm font-medium text-gray-700">Features</label>
+                  <button
+                    type="button"
+                    onClick={() => addFeature(solIndex)}
+                    className="text-xs md:text-sm text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded"
+                  >
+                    Add Feature
+                  </button>
                 </div>
-
-                <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <label className="block text-sm font-medium text-gray-700">Features</label>
+                
+                {solution.features.map((feature, featIndex) => (
+                  <div key={featIndex} className="flex items-center mb-1 gap-1">
+                    <input
+                      type="text"
+                      value={feature.text}
+                      onChange={(e) => handleFeatureChange(solIndex, featIndex, e.target.value)}
+                      className="flex-1 rounded-md border border-gray-300 p-2 text-sm md:text-base focus:border-indigo-500 focus:ring-indigo-500"
+                    />
                     <button
                       type="button"
-                      onClick={() => addFeature(solIndex)}
-                      className="text-sm text-indigo-600 hover:text-indigo-800"
+                      onClick={() => removeFeature(solIndex, featIndex)}
+                      className="text-red-500 hover:text-red-700 text-xs md:text-sm bg-red-50 hover:bg-red-100 px-2 py-1 rounded"
                     >
-                      Add Feature
+                      Remove
                     </button>
                   </div>
-                  {solution.features.map((feature, featIndex) => (
-                    <div key={featIndex} className="flex items-center mb-2">
-                      <input
-                        type="text"
-                        value={feature.text}
-                        onChange={(e) => handleFeatureChange(solIndex, featIndex, e.target.value)}
-                        className="flex-1 rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                        
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeFeature(solIndex, featIndex)}
-                        className="ml-2 text-red-500 hover:text-red-700"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ))}
-                </div>
+                ))}
               </div>
             </div>
-          ))}
+          </div>
+        ))}
 
-          <button
-            type="button"
-            onClick={addSolution}
-            className="mt-2 bg-indigo-100 text-indigo-700 px-4 py-2 rounded-md hover:bg-indigo-200 transition duration-200"
-          >
-            Add Solution
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={addSolution}
+          className="mt-2 bg-indigo-100 text-indigo-700 px-3 py-1.5 text-sm md:text-base rounded-md transition duration-200 w-full md:w-auto"
+        >
+          + Add Solution
+        </button>
+      </div>
 
-        <div className="flex space-x-4">
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition duration-200"
-          >
-            {isLoading ? 'Saving...' : editingId ? 'Update Category' : 'Create Category'}
-          </button>
-          <button
-            type="button"
-            onClick={resetForm}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md transition duration-200"
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
+      {/* Form Actions */}
+      <div className="flex flex-col md:flex-row gap-2 md:gap-4">
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md transition duration-200 text-sm md:text-base"
+        >
+          {isLoading ? 'Saving...' : editingId ? 'Update Category' : 'Create Category'}
+        </button>
+        <button
+          type="button"
+          onClick={resetForm}
+          className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md transition duration-200 text-sm md:text-base"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
 
-      <div className="mt-8">
-        <h3 className="text-xl font-medium mb-4">Existing Categories</h3>
-        <div className="space-y-4">
-          {categories.map((category) => (
-            <div key={category._id} className="border p-4 rounded-lg flex justify-between items-center">
-              <div className="flex items-center space-x-4">
+    {/* Existing Categories */}
+    <div className="mt-4 md:mt-6">
+      <h3 className="text-md md:text-lg font-medium mb-2 md:mb-4">Existing Categories</h3>
+      <div className="space-y-2 md:space-y-3">
+        {categories.map((category) => (
+          <div key={category._id} className="border p-2 md:p-3 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 md:gap-3">
                 {category.imageUrl && (
                   <img 
                     src={category.imageUrl} 
                     alt={category.title}
-                    className="h-12 w-12 object-cover rounded"
+                    className="h-8 w-8 md:h-10 md:w-10 object-cover rounded"
                     onError={(e) => {
                       (e.target as HTMLImageElement).style.display = 'none';
                     }}
                   />
                 )}
                 <div>
-                  <h4 className="font-medium">{category.title}</h4>
-                  <p className="text-sm text-gray-500">{category.solutions.length} solutions</p>
+                  <h4 className="font-medium text-sm md:text-base">{category.title}</h4>
+                  <p className="text-xs md:text-sm text-gray-500">{category.solutions.length} solutions</p>
                 </div>
               </div>
-              <div className="flex space-x-2">
+              
+              {/* Mobile Dropdown */}
+              <div className="relative md:hidden">
+                <button
+                  onClick={() => toggleMenu(category._id!)}
+                  className="p-1 rounded-full hover:bg-gray-100 focus:outline-none"
+                  aria-label="Actions"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                  </svg>
+                </button>
+                
+                {isMenuOpen === category._id && (
+                  <div className="absolute right-0 mt-1 w-32 bg-white rounded-md shadow-lg z-10 border border-gray-200">
+                    <div className="py-1">
+                      <button
+                        onClick={() => {
+                          editCategory(category);
+                          setIsMenuOpen(null);
+                        }}
+                        className="block w-full text-left px-3 py-1.5 text-xs text-gray-700 hover:bg-indigo-50 hover:text-indigo-800"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => {
+                          deleteCategory(category._id!);
+                          setIsMenuOpen(null);
+                        }}
+                        className="block w-full text-left px-3 py-1.5 text-xs text-red-600 hover:bg-red-50"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {/* Desktop Buttons */}
+              <div className="hidden md:flex gap-2">
                 <button
                   onClick={() => editCategory(category)}
-                  className="text-indigo-600 hover:text-indigo-800"
+                  className="text-indigo-600 hover:text-indigo-800 px-3 py-1 text-sm rounded hover:bg-indigo-50"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => deleteCategory(category._id!)}
-                  className="text-red-600 hover:text-red-800"
+                  className="text-red-600 hover:text-red-800 px-3 py-1 text-sm rounded hover:bg-red-50"
                 >
                   Delete
                 </button>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </div>
+  </div>
   );
 };
 

@@ -112,7 +112,7 @@ export default function Stats() {
   return (
     <div
       ref={sectionRef}
-      className="bg-auto bg-center bg-no-repeat py-20 sm:py-32"
+      className="bg-auto bg-center bg-no-repeat py-20 sm:py-32 font-century"
       style={{ backgroundImage: `url(${FaintLogo})` }}
     >
       <SidePadding>

@@ -99,7 +99,7 @@ function Testimonials() {
 
   return (
     <SidePadding>
-      <div className="py-20">
+      <div className="py-20 font-century">
         <p className="text-3xl font-medium leading-9 md:text-4xl">
           See how organizations grow with <br />
           Our Microsoft solutions
@@ -138,7 +138,7 @@ function Testimonials() {
 
                     <div className="hidden h-[28rem] w-1/2 rounded-xl md:block">
                       <img
-                        src={`http://webtest-api.agilebiz.co.ke:5000${comment.image}`}
+                        src={`http://localhost:5000${comment.image}`}
                         alt="testimonial"
                         className="h-full w-full rounded-xl object-cover object-center"
                       />

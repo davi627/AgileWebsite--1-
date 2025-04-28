@@ -39,16 +39,23 @@ function OurSolns() {
   const [featureImg, setFeatureImg] = useState(feature1);
   const [theFAQs, setTheFAQs] = useState<{ q: string; a: string; solutionId: number }[]>([]);
   const [selected, setSelected] = useState<number | null>(null);
+  const [fade, setFade] = useState(true);
+  // Add state to control showing all FAQs
+  const [showAllFAQs, setShowAllFAQs] = useState(false);
 
-  // Fetch solution categories from the backend
+  // Display only 5 FAQs by default
+  const displayedFAQs = showAllFAQs ? theFAQs : theFAQs.slice(0, 5);
+  // Check if we have more than 5 FAQs
+  const hasMoreFAQs = theFAQs.length > 5;
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/solution-categories`);
+        console.log('Fetched categories:', response.data);
         setCategories(response.data);
         if (response.data.length > 0) {
           setSelectedCategory(response.data[0]);
-          // Create FAQs using only solution name and fullDesc
           if (response.data[0].solutions.length > 0) {
             setTheFAQs(response.data[0].solutions.map((solution: ISolution) => ({
               q: solution.name,
@@ -65,17 +72,23 @@ function OurSolns() {
     fetchCategories();
   }, []);
 
-  // Update FAQs and feature image when selected category or solution changes
+  useEffect(() => {
+    if (selectedCategory) {
+      setFade(false);
+      setTimeout(() => setFade(true), 100);
+      // Reset show all FAQs when changing category
+      setShowAllFAQs(false);
+    }
+  }, [selectedCategory]);
+
   useEffect(() => {
     if (selectedCategory && selectedCategory.solutions.length > 0) {
-      // Create FAQs using only solution name and fullDesc
       setTheFAQs(selectedCategory.solutions.map((solution: ISolution) => ({
         q: solution.name,
         a: solution.fullDesc,
         solutionId: solution.id
       })));
-      
-      // Set feature image based on solution index
+
       switch (selectedSolution) {
         case 0:
           setFeatureImg(feature1);
@@ -93,18 +106,18 @@ function OurSolns() {
   }, [selectedCategory, selectedSolution]);
 
   const toggle = (i: number | null) => {
-    if (selected === i) {
-      setSelected(null);
-    } else {
-      setSelected(i);
-    }
+    setSelected(selected === i ? null : i);
   };
 
-  // Navigation handler with solution ID and category ID
   const handleReadMore = (solutionId: number) => {
     if (selectedCategory) {
       navigate(`/solns/${selectedCategory._id}/${solutionId}`);
     }
+  };
+
+  // Handler for toggling show all/less FAQs
+  const toggleShowAllFAQs = () => {
+    setShowAllFAQs(prev => !prev);
   };
 
   if (!selectedCategory || selectedCategory.solutions.length === 0) {
@@ -113,71 +126,95 @@ function OurSolns() {
 
   return (
     <SidePadding>
-      <div id="erp-solutions" className="py-14" >
+    <div id="erp-solutions" className="py-14 font-century relative">
       <img src={selectedCategory.imageUrl} alt="Logo" className="h-24" />
-        <div className="mt-10 flex gap-8 overflow-x-scroll">
-          {categories.map((category) => (
-            <Pill
-              key={category._id}
-              title={category.title}
-              onPress={() => {
-                setSelectedCategory(category);
-                setSelectedSolution(0);
-              }}
-              selected={category._id === selectedCategory._id} 
-            />
-          ))}
-        </div>
-        <p className="mt-6 text-xl font-medium leading-tight md:text-[2rem]">
-          Transform your Business with <br /> {selectedCategory.title} solutions
-        </p>
-
-        <div className="mt-12 flex w-full gap-10">
-          <div className="w-full md:w-2/5">
-            {theFAQs.map((qn, i) => (
-              <div key={i} className="mb-8">
-                <button
-                  type="button"
-                  className="mb-1 flex w-full items-center justify-between gap-6 text-left md:font-medium"
-                  onClick={() => toggle(i)}
-                >
-                  <p className="text-base md:text-lg">{qn.q}</p>
-                  <img
-                    src={chevDown}
-                    alt="v"
-                    className={clsx([
-                      'size-5 duration-700 ease-out',
-                      selected === i ? 'rotate-180' : 'rotate-0',
-                    ])}
-                  />
-                </button>
-                <div className={selected === i ? 'content show' : 'content'}>
-                  <p className="text-gray-700">
-                    {qn.a}
-                    <button 
-                      onClick={() => handleReadMore(qn.solutionId)}
-                      className="ml-2 text-blue-600 hover:underline"
-                    >
-                      Read more
-                    </button>
-                  </p>
-                </div>
-                <hr className="mt-4" />
-              </div>
-            ))}
-          </div>
-          <div className="hidden w-3/5 md:block">
-            <img
-              src={featureImg}
-              alt="feature img"
-              className="h-96 w-full rounded-xl object-cover object-center"
-            />
-          </div>
-        </div>
-
-
+  
+      <div className="mt-10 flex flex-wrap gap-4 relative z-10">
+        {categories.map((category) => (
+          <Pill
+            key={category._id}
+            title={category.title}
+            onPress={() => {
+              setSelectedCategory(category);
+              setSelectedSolution(0);
+            }}
+            selected={category._id === selectedCategory._id}
+          />
+        ))}
       </div>
-    </SidePadding>
+  
+      {/* Properly centered watermark image with position absolute */}
+      <div className="relative">
+        <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 mt-80 flex justify-center items-center pointer-events-none">
+          <img
+            src={selectedCategory.imageUrl}
+            alt="Watermark"
+            className="w-2/5 max-h-96 object-contain opacity-25"
+          />
+        </div>
+      </div>
+  
+      <p className="mt-6 text-xl font-medium leading-tight md:text-[2rem] relative z-10">
+        Transform your Business with <br /> {selectedCategory.title} solutions
+      </p>
+  
+      <div className="mt-12 flex w-full gap-10 relative z-10">
+        <div className="w-full">
+          {/* FAQs as before */}
+          {displayedFAQs.map((qn, i) => (
+            <div key={i} className="mb-8">
+              <button
+                type="button"
+                className="mb-1 flex w-full items-center justify-between gap-6 text-left md:font-medium"
+                onClick={() => toggle(i)}
+              >
+                <p className="text-base md:text-lg">{qn.q}</p>
+                <img
+                  src={chevDown}
+                  alt="v"
+                  className={clsx([
+                    'size-5 duration-700 ease-out',
+                    selected === i ? 'rotate-180' : 'rotate-0',
+                  ])}
+                />
+              </button>
+              <div className={selected === i ? 'content show' : 'content'}>
+                <p className="text-gray-700">
+                  {qn.a}
+                  <button 
+                    onClick={() => handleReadMore(qn.solutionId)}
+                    className="ml-2 text-blue-600 hover:underline"
+                  >
+                    Read more
+                  </button>
+                </p>
+              </div>
+              <hr className="mt-4" />
+            </div>
+          ))}
+  
+          {hasMoreFAQs && (
+            <div className="mt-4 mb-8">
+              <button
+                onClick={toggleShowAllFAQs}
+                className="text-blue-600 font-medium hover:text-blue-800 hover:underline flex items-center"
+              >
+                {showAllFAQs ? 'Show Less' : 'Show More Solutions'}
+                <svg 
+                  className={`ml-1 h-4 w-4 transition-transform ${showAllFAQs ? 'rotate-180' : ''}`} 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  </SidePadding>
   );
 }
 
