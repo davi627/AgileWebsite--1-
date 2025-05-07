@@ -3,7 +3,7 @@ import { User } from '../types/User'
 
 // Define the base URL for the API
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'
+  import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000/api'
 
 // Define a type for user roles
 type Role = 'Admin' | 'User'

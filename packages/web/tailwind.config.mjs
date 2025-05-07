@@ -7,6 +7,10 @@ export default {
       colors: {
         primary: '#167AA0',
         alternate: '#F0AE1C',
+        cyan: {
+          600: '#0891b2',
+          700: '#0e7490',
+        },
         secondary: {
           100: '#E2E2D5',
           200: '#888883',

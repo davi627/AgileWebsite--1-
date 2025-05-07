@@ -3,7 +3,7 @@ import SidePadding from 'components/Shared/SidePadding.Component'
 import FaintLogo from '../../assets/faint-agile-logo.svg'
 import axios from 'axios'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/stats'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000/stats'
 
 interface Stat {
   id: number

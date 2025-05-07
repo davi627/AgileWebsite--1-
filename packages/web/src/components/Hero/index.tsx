@@ -1,45 +1,56 @@
 import SidePadding from 'components/Shared/SidePadding.Component'
 import RequestDemoBtn from 'components/Shared/RequestDemoBtn.Component'
-import HeroBg from '../../assets/agile.webp'
+import HeroBg from '../../assets/Home page (1).png'
 import SmileIcon from '../../assets/smile.svg'
+import HeroCard from './heroCard'
 
 export default function Hero() {
   return (
-    <main
-      className="relative w-full min-h-screen bg-cover bg-no-repeat transition-all duration-500 
-                 bg-left sm:bg-center md:bg-right lg:bg-center"
-      style={{ backgroundImage: `url(${HeroBg})` }}
-    >
-      <div className="text-primary relative isolate pb-16 lg:pb-28">
-        {/* Gradient overlay for better text contrast */}
-        <div className="absolute inset-0 bg-gradient-to-r from-white/80 to-transparent z-[-1]"></div>
-
-        <div className="ml-6 flex flex-col pt-28 sm:pt-40 text-xl font-semibold leading-[1.15] sm:text-2xl md:text-3xl lg:ml-28 lg:pt-48 font-century">
-
-          <p>One-stop shop <br /> for all your <br /></p>
-          <div className="flex gap-1 md:gap-4">
-            {/* Smile Icon inside "software" with margin-top */}
-            <div className="flex items-center gap-2">
-              <span>Management Information System</span>
-              <img
-                src={SmileIcon}
-                alt="smile icon"
-                className="h-5 md:h-8 mt-4 md:mt-6"
-              />
+    <main className="relative w-full min-h-screen bg-white overflow-hidden">
+      {/* Image as a positioned element rather than background */}
+      <div className="absolute right-8 top-0 w-5/5 h-full z-0">
+        <img 
+          src={HeroBg} 
+          alt="Software interface" 
+          className="object-contain h-full w-full"
+        />
+      </div>
+      
+      {/* Gradient overlay for better text visibility */}
+      <div className="absolute inset-0 bg-gradient-to-r from-white via-white/60 to-transparent z-10"></div>
+      
+      <SidePadding>
+        <div className="relative z-20 flex flex-col pt-32 md:pt-48 lg:pt-56 pb-16">
+          {/* Text content - Left side */}
+          <div className="text-primary w-full md:w-1/2 lg:w-2/5">
+            <div className="text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight font-century">
+              <p>One-stop shop</p>
+              <p>for all your</p>
+              <div className="flex items-center gap-4">
+                <span className="text-cyan-600">software</span>
+                <span>needs</span>
+              </div>
+              <div className="mt-1">
+                <img 
+                  src={SmileIcon} 
+                  alt="smile icon" 
+                  className="h-6 md:h-8" 
+                />
+              </div>
             </div>
-            <p>needs</p>
+            
+            <p className="my-8 text-base md:text-lg text-gray-700 font-light max-w-md">
+              Streamline your workflow with our innovative software.
+            </p>
+            
+            <RequestDemoBtn />
+           
           </div>
         </div>
-
-        <SidePadding>
-          <div className="mt-8 sm:mt-12">
-            <p className="mb-10 text-base font-light tracking-wide sm:text-lg md:text-2xl">
-             Innovative Management Information Systems
-            </p>
-            <RequestDemoBtn />
-          </div>
-        </SidePadding>
-      </div>
+      </SidePadding>
+      
+      {/* Blue accent line at bottom */}
+      <div className="w-full h-2 bg-blue-500 absolute bottom-0 z-30"></div>
     </main>
   )
 }

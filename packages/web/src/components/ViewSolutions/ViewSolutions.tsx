@@ -4,7 +4,7 @@ import SecurityKeyModal from 'components/SercurityKeyModal/SercurityKeyModal';
 
 
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000';
 const ViewSolutions: React.FC = () => {
   const [solutions, setSolutions] = useState<{ _id: string; title: string }[]>([]);
     const [isSecurityKeyModalOpen, setIsSecurityKeyModalOpen] = useState(false);

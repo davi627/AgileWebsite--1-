@@ -37,13 +37,13 @@ const solutions = [
   {
     name: 'Mobile Applications and Web Portals',
     description: 'Develop custom mobile apps for Android and iOS.',
-    icon: CloudIcon, // Consider replacing with a more appropriate icon if available
+    icon: CloudIcon, 
     bgColor: 'bg-white'
   },
   {
     name: 'Bulk SMS and USSD Query Services',
     description: 'Efficiently manage bulk SMS services and USSD queries.',
-    icon: ServerIcon, // Consider replacing with a more appropriate icon if available
+    icon: ServerIcon, 
     bgColor: 'bg-white'
   }
 ]

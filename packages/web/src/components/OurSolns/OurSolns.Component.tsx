@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import clsx from 'clsx';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
+import { motion, AnimatePresence } from 'framer-motion';
 import SidePadding from 'components/Shared/SidePadding.Component';
 import Pill from './Pill.Component';
 
@@ -13,7 +13,7 @@ import chevDown from '../../assets/chevron-down.svg';
 
 import './faq.css';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.ac.ke:5000';
 
 interface ISolution {
   id: number;
@@ -39,30 +39,51 @@ function OurSolns() {
   const [featureImg, setFeatureImg] = useState(feature1);
   const [theFAQs, setTheFAQs] = useState<{ q: string; a: string; solutionId: number }[]>([]);
   const [selected, setSelected] = useState<number | null>(null);
-  const [fade, setFade] = useState(true);
-  // Add state to control showing all FAQs
-  const [showAllFAQs, setShowAllFAQs] = useState(false);
+  const [visibleColumns, setVisibleColumns] = useState(2);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Display only 5 FAQs by default
-  const displayedFAQs = showAllFAQs ? theFAQs : theFAQs.slice(0, 5);
-  // Check if we have more than 5 FAQs
-  const hasMoreFAQs = theFAQs.length > 5;
+  // Animation variants
+  const fadeIn = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.5, ease: "easeOut" }
+    },
+    exit: { 
+      opacity: 0, 
+      y: -20,
+      transition: { duration: 0.3, ease: "easeIn" }
+    }
+  };
+
+  const faqItem = {
+    hidden: { opacity: 0, height: 0 },
+    visible: { 
+      opacity: 1, 
+      height: "auto",
+      transition: { duration: 0.3 }
+    }
+  };
+
+  const chunkFAQs = (faqs: { q: string; a: string; solutionId: number }[], chunkSize: number) => {
+    const chunks: any[] = [];
+    for (let i = 0; i < faqs.length; i += chunkSize) {
+      chunks.push(faqs.slice(i, i + chunkSize));
+    }
+    return chunks;
+  };
+
+  const displayedFAQs = chunkFAQs(theFAQs, 5);
+  const hasMoreColumns = displayedFAQs.length > visibleColumns;
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/solution-categories`);
-        console.log('Fetched categories:', response.data);
         setCategories(response.data);
         if (response.data.length > 0) {
           setSelectedCategory(response.data[0]);
-          if (response.data[0].solutions.length > 0) {
-            setTheFAQs(response.data[0].solutions.map((solution: ISolution) => ({
-              q: solution.name,
-              a: solution.fullDesc,
-              solutionId: solution.id
-            })));
-          }
         }
       } catch (error) {
         console.error('Failed to fetch solution categories:', error);
@@ -74,36 +95,20 @@ function OurSolns() {
 
   useEffect(() => {
     if (selectedCategory) {
-      setFade(false);
-      setTimeout(() => setFade(true), 100);
-      // Reset show all FAQs when changing category
-      setShowAllFAQs(false);
-    }
-  }, [selectedCategory]);
-
-  useEffect(() => {
-    if (selectedCategory && selectedCategory.solutions.length > 0) {
       setTheFAQs(selectedCategory.solutions.map((solution: ISolution) => ({
         q: solution.name,
         a: solution.fullDesc,
         solutionId: solution.id
       })));
 
-      switch (selectedSolution) {
-        case 0:
-          setFeatureImg(feature1);
-          break;
-        case 1:
-          setFeatureImg(feature2);
-          break;
-        case 2:
-          setFeatureImg(feature3);
-          break;
-        default:
-          setFeatureImg(feature1);
-      }
+      // Reset to first solution when category changes
+      setSelectedSolution(0);
+      setSelected(null);
+      
+      // Scroll to top when category changes
+      containerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }, [selectedCategory, selectedSolution]);
+  }, [selectedCategory]);
 
   const toggle = (i: number | null) => {
     setSelected(selected === i ? null : i);
@@ -115,9 +120,10 @@ function OurSolns() {
     }
   };
 
-  // Handler for toggling show all/less FAQs
-  const toggleShowAllFAQs = () => {
-    setShowAllFAQs(prev => !prev);
+  const toggleShowMoreColumns = () => {
+    setVisibleColumns(prev => 
+      prev < displayedFAQs.length ? prev + 1 : 2
+    );
   };
 
   if (!selectedCategory || selectedCategory.solutions.length === 0) {
@@ -126,95 +132,139 @@ function OurSolns() {
 
   return (
     <SidePadding>
-    <div id="erp-solutions" className="py-14 font-century relative">
-      <img src={selectedCategory.imageUrl} alt="Logo" className="h-24" />
-  
-      <div className="mt-10 flex flex-wrap gap-4 relative z-10">
-        {categories.map((category) => (
-          <Pill
-            key={category._id}
-            title={category.title}
-            onPress={() => {
-              setSelectedCategory(category);
-              setSelectedSolution(0);
-            }}
-            selected={category._id === selectedCategory._id}
+      <div 
+        id="erp-solutions" 
+        className="py-14 font-century relative"
+        ref={containerRef}
+      >
+        <AnimatePresence mode="wait">
+          <motion.img 
+            key={selectedCategory._id}
+            src={selectedCategory.imageUrl} 
+            alt="Logo" 
+            className="h-24"
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={fadeIn}
           />
-        ))}
-      </div>
-  
-      {/* Properly centered watermark image with position absolute */}
-      <div className="relative">
-        <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 mt-80 flex justify-center items-center pointer-events-none">
-          <img
-            src={selectedCategory.imageUrl}
-            alt="Watermark"
-            className="w-2/5 max-h-96 object-contain opacity-25"
-          />
-        </div>
-      </div>
-  
-      <p className="mt-6 text-xl font-medium leading-tight md:text-[2rem] relative z-10">
-        Transform your Business with <br /> {selectedCategory.title} solutions
-      </p>
-  
-      <div className="mt-12 flex w-full gap-10 relative z-10">
-        <div className="w-full">
-          {/* FAQs as before */}
-          {displayedFAQs.map((qn, i) => (
-            <div key={i} className="mb-8">
-              <button
-                type="button"
-                className="mb-1 flex w-full items-center justify-between gap-6 text-left md:font-medium"
-                onClick={() => toggle(i)}
-              >
-                <p className="text-base md:text-lg">{qn.q}</p>
-                <img
-                  src={chevDown}
-                  alt="v"
-                  className={clsx([
-                    'size-5 duration-700 ease-out',
-                    selected === i ? 'rotate-180' : 'rotate-0',
-                  ])}
-                />
-              </button>
-              <div className={selected === i ? 'content show' : 'content'}>
-                <p className="text-gray-700">
-                  {qn.a}
-                  <button 
-                    onClick={() => handleReadMore(qn.solutionId)}
-                    className="ml-2 text-blue-600 hover:underline"
-                  >
-                    Read more
-                  </button>
-                </p>
-              </div>
-              <hr className="mt-4" />
-            </div>
+        </AnimatePresence>
+
+        <div className="mt-10 flex flex-wrap gap-4 relative z-10">
+          {categories.map((category) => (
+            <Pill
+              key={category._id}
+              title={category.title}
+              onPress={() => setSelectedCategory(category)}
+              selected={category._id === selectedCategory._id}
+            />
           ))}
-  
-          {hasMoreFAQs && (
-            <div className="mt-4 mb-8">
+        </div>
+
+        <div className="relative">
+          <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 mt-80 flex justify-center items-center pointer-events-none">
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={`watermark-${selectedCategory._id}`}
+                src={selectedCategory.imageUrl}
+                alt="Watermark"
+                className="w-2/5 max-h-96 object-contain opacity-25"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.25 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+              />
+            </AnimatePresence>
+          </div>
+        </div>
+
+        <AnimatePresence mode="wait">
+          <motion.p 
+            key={`title-${selectedCategory._id}`}
+            className="mt-6 text-xl font-medium leading-tight md:text-[2rem] relative z-10"
+            variants={fadeIn}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+          >
+            Transform your Business with <br /> {selectedCategory.title} solutions
+          </motion.p>
+        </AnimatePresence>
+
+        <div className="mt-12 w-full relative z-10">
+          <div className="overflow-x-auto">
+            <div className="grid gap-6 grid-flow-col auto-cols-[minmax(300px,_1fr)]">
+              {displayedFAQs.slice(0, visibleColumns).map((column, colIndex) => (
+                <div key={colIndex} className="flex flex-col gap-6 w-80">
+                  {column.map((qn: { q: string; a: string; solutionId: number }, i: number) => (
+                    <div key={i} className="mb-4">
+                      <button
+                        type="button"
+                        className="mb-2 flex w-full items-center justify-between gap-4 text-left font-medium"
+                        onClick={() => toggle(i)}
+                      >
+                        <p className="text-base md:text-lg">{qn.q}</p>
+                        <motion.img
+                          src={chevDown}
+                          alt="v"
+                          className="size-5"
+                          animate={{ rotate: selected === i ? 180 : 0 }}
+                          transition={{ duration: 0.3 }}
+                        />
+                      </button>
+                      
+                      <AnimatePresence>
+                        {selected === i && (
+                          <motion.div
+                            initial="hidden"
+                            animate="visible"
+                            exit="hidden"
+                            variants={faqItem}
+                            className="overflow-hidden"
+                          >
+                            <p className="text-gray-700 text-sm md:text-base">
+                              {qn.a}
+                              <button
+                                onClick={() => handleReadMore(qn.solutionId)}
+                                className="ml-2 text-blue-600 hover:underline"
+                              >
+                                Read more
+                              </button>
+                            </p>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                      <hr className="mt-4" />
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {hasMoreColumns && (
+            <div className="mt-6">
               <button
-                onClick={toggleShowAllFAQs}
+                onClick={toggleShowMoreColumns}
                 className="text-blue-600 font-medium hover:text-blue-800 hover:underline flex items-center"
               >
-                {showAllFAQs ? 'Show Less' : 'Show More Solutions'}
-                <svg 
-                  className={`ml-1 h-4 w-4 transition-transform ${showAllFAQs ? 'rotate-180' : ''}`} 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
+                {visibleColumns < displayedFAQs.length ? 'Show More Columns' : 'Show Less Columns'}
+                <motion.svg
+                  className="ml-1 h-4 w-4"
+                  animate={{ rotate: visibleColumns < displayedFAQs.length ? 0 : 180 }}
+                  transition={{ duration: 0.3 }}
+                  fill="none"
+                  viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                </motion.svg>
               </button>
             </div>
           )}
         </div>
       </div>
-    </div>
-  </SidePadding>
+    </SidePadding>
   );
 }
 

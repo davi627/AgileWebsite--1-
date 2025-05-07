@@ -2,7 +2,7 @@ import axios from 'axios'
 import { Career } from '../types/Career'
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'
+  import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000/api'
 
 const handleApiError = (error: unknown): never => {
   if (axios.isAxiosError(error)) {
