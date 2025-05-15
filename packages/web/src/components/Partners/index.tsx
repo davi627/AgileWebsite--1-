@@ -7,12 +7,12 @@ interface Logo {
   colorLogoUrl: string;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.ac.ke:5000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000';
 
 export default function Partners() {
   const [logos, setLogos] = useState<Logo[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const scrollSpeed = 0.5; // Adjust for faster/slower scroll
+  const scrollSpeed = 0.5; 
 
   useEffect(() => {
     const fetchLogos = async () => {
