@@ -8,7 +8,7 @@ const router = express.Router();
 // Configure Multer for file uploads (logos)
 const logoStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/logos/'); // Save logos in a separate directory
+    cb(null, 'uploads/logos/');
   },
   filename: (req, file, cb) => {
     cb(null, `${Date.now()}-${file.originalname}`);

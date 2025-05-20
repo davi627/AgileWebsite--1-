@@ -149,7 +149,7 @@ function Testimonials() {
             </Slider>
           </div>
         ) : (
-          <p className="mt-14 text-center text-gray-600">No approved testimonials found.</p>
+          <p className="mt-14 text-center text-gray-600">No  testimonials found.</p>
         )}
       </div>
     </SidePadding>

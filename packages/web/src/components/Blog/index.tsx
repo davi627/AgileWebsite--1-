@@ -29,7 +29,7 @@ export default function TopBlogs() {
         setBlogs(data);
       } catch (error) {
         console.error("Error fetching top blogs:", error);
-        setError("Failed to fetch top blogs. Please try again later.");
+        setError("Top Blogs Not Available. Please try again later.");
       } finally {
         setLoading(false);
       }

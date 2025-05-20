@@ -97,7 +97,7 @@ export default function Stats() {
               }
               return newStats
             })
-          }, 150) // Adjust speed as needed
+          }, 150)
           return interval
         }
         return null

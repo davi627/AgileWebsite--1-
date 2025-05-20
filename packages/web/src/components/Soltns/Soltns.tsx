@@ -39,7 +39,7 @@ const Soltns = () => {
   useEffect(() => {
     const fetchSolutionCategories = async () => {
       try {
-        const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.ac.ke:5000';
+        const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000';
         const response = await fetch(`${API_BASE_URL}/api/solution-categories`);
         
         if (!response.ok) {

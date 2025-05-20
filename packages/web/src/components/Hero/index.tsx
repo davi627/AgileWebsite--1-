@@ -85,7 +85,7 @@ export default function Hero() {
             <div className="text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight font-century">
               <p>One-stop shop</p>
               <p>for all your</p>
-              <div className="flex items-start gap-4 h-[12.5rem] overflow-hidden">
+              <div className="flex items-start gap-4 h-[8.5rem] overflow-hidden">
 
                 <span
                   className={`text-alternate transition-opacity duration-500 ${
@@ -93,9 +93,9 @@ export default function Hero() {
                   }`}
                   dangerouslySetInnerHTML={{ __html: phrases[currentPhraseIndex] }}
                 />
-                <span>needs</span>
+                
               </div>
-              <div className="-mt-6">
+              <div className="-mt-8">
                 <img 
                   src={SmileIcon} 
                   alt="smile icon" 

@@ -5,9 +5,9 @@ import { useNavigate } from 'react-router-dom'
 
 import SidePadding from 'components/Shared/SidePadding.Component'
 
-import Logo from 'assets/agilebiz_logo2x.png'
+import Logo from 'assets/Agile Logo.png'
 import fBIcon from 'assets/socials/fb.png'
-import instaIcon from 'assets/socials/insta.png'
+import instaIcon from 'assets/insta logo.png'
 import liIcon from 'assets/socials/linkedin.png'
 import twitterIcon from 'assets/socials/twitter.png'
 

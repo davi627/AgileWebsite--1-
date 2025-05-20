@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   const category = new SolutionCategory({
     title: req.body.title,
-    imageUrl: req.body.imageUrl, // Added imageUrl
+    imageUrl: req.body.imageUrl, 
     solutions: req.body.solutions
   });
 
@@ -35,7 +35,7 @@ router.put('/:id', async (req, res) => {
       req.params.id,
       {
         title: req.body.title,
-        imageUrl: req.body.imageUrl, // Added imageUrl
+        imageUrl: req.body.imageUrl,
         solutions: req.body.solutions
       },
       { new: true }
