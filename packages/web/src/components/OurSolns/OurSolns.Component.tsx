@@ -7,13 +7,11 @@ import SidePadding from 'components/Shared/SidePadding.Component';
 import Pill from './Pill.Component';
 
 import feature1 from '../../assets/feature1.png';
-import feature2 from '../../assets/feature2.jpg';
-import feature3 from '../../assets/feature3.jpg';
 import chevDown from '../../assets/chevron-down.svg';
 
 import './faq.css';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 interface ISolution {
   id: number;
@@ -42,28 +40,27 @@ function OurSolns() {
   const [visibleColumns, setVisibleColumns] = useState(2);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Animation variants
   const fadeIn = {
     hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
-      transition: { duration: 0.5, ease: "easeOut" }
+      transition: { duration: 0.5, ease: 'easeOut' },
     },
-    exit: { 
-      opacity: 0, 
+    exit: {
+      opacity: 0,
       y: -20,
-      transition: { duration: 0.3, ease: "easeIn" }
-    }
+      transition: { duration: 0.3, ease: 'easeIn' },
+    },
   };
 
   const faqItem = {
     hidden: { opacity: 0, height: 0 },
-    visible: { 
-      opacity: 1, 
-      height: "auto",
-      transition: { duration: 0.3 }
-    }
+    visible: {
+      opacity: 1,
+      height: 'auto',
+      transition: { duration: 0.3 },
+    },
   };
 
   const chunkFAQs = (faqs: { q: string; a: string; solutionId: number }[], chunkSize: number) => {
@@ -95,17 +92,17 @@ function OurSolns() {
 
   useEffect(() => {
     if (selectedCategory) {
-      setTheFAQs(selectedCategory.solutions.map((solution: ISolution) => ({
-        q: solution.name,
-        a: solution.fullDesc,
-        solutionId: solution.id
-      })));
+      setTheFAQs(
+        selectedCategory.solutions.map((solution: ISolution) => ({
+          q: solution.name,
+          a: solution.fullDesc,
+          solutionId: solution.id,
+        }))
+      );
 
-      // Reset to first solution when category changes
       setSelectedSolution(0);
       setSelected(null);
-      
-      // Scroll to top when category changes
+
       containerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [selectedCategory]);
@@ -121,9 +118,7 @@ function OurSolns() {
   };
 
   const toggleShowMoreColumns = () => {
-    setVisibleColumns(prev => 
-      prev < displayedFAQs.length ? prev + 1 : 2
-    );
+    setVisibleColumns((prev) => (prev < displayedFAQs.length ? prev + 1 : 2));
   };
 
   if (!selectedCategory || selectedCategory.solutions.length === 0) {
@@ -132,16 +127,12 @@ function OurSolns() {
 
   return (
     <SidePadding>
-      <div 
-        id="erp-solutions" 
-        className="py-14 font-century relative"
-        ref={containerRef}
-      >
+      <div id="erp-solutions" className="py-14 font-century relative" ref={containerRef}>
         <AnimatePresence mode="wait">
-          <motion.img 
+          <motion.img
             key={selectedCategory._id}
-            src={selectedCategory.imageUrl} 
-            alt="Logo" 
+            src={selectedCategory.imageUrl}
+            alt="Logo"
             className="h-24"
             initial="hidden"
             animate="visible"
@@ -161,25 +152,8 @@ function OurSolns() {
           ))}
         </div>
 
-        <div className="relative">
-          <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 mt-80 flex justify-center items-center pointer-events-none">
-            <AnimatePresence mode="wait">
-              <motion.img
-                key={`watermark-${selectedCategory._id}`}
-                src={selectedCategory.imageUrl}
-                alt="Watermark"
-                className="w-2/5 max-h-96 object-contain opacity-25"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 0.25 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.5 }}
-              />
-            </AnimatePresence>
-          </div>
-        </div>
-
         <AnimatePresence mode="wait">
-          <motion.p 
+          <motion.p
             key={`title-${selectedCategory._id}`}
             className="mt-6 text-xl font-medium leading-tight md:text-[2rem] relative z-10"
             variants={fadeIn}
@@ -212,7 +186,7 @@ function OurSolns() {
                           transition={{ duration: 0.3 }}
                         />
                       </button>
-                      
+
                       <AnimatePresence>
                         {selected === i && (
                           <motion.div
