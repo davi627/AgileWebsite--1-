@@ -94,7 +94,7 @@ const BlogDetail = () => {
   <Navbar />
 
   <main className="flex-grow bg-gradient-to-b from-gray-50 to-gray-100">
-    <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-12 relative">
+    <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-12 relative font-Poppins">
       {/* Blog Content Area */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
         {/* Left Decorative Line (Desktop Only) */}

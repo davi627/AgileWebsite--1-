@@ -20,10 +20,10 @@ const people = [
 
 const TeamSection: React.FC = () => {
   return (
-    <div className="mb-4 bg-white py-24 md:py-32 lg:py-40">
+    <div className="mb-4 bg-white py-24 md:py-32 lg:py-40 font-Poppins">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-x-8 gap-y-20 px-6 lg:px-8 xl:grid-cols-3">
         <div className="mx-auto max-w-2xl lg:mx-0">
-          <h2 className="text-primary text-3xl font-bold tracking-tight sm:text-4xl">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight text-primary">
             Our Leadership
           </h2>
           <p className="mt-6 text-lg leading-8 text-gray-600">

@@ -81,7 +81,7 @@ const navigation = {
 
 export default function Footer() {
   return (
-<footer className="bg-primary relative py-8 text-white" aria-labelledby="footer-heading">
+<footer className="bg-primary relative py-8 text-white font-Poppins" aria-labelledby="footer-heading">
   <h2 id="footer-heading" className="sr-only">Footer</h2>
   
   <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
@@ -121,7 +121,7 @@ export default function Footer() {
           <p>Phone: +254 712 345 678</p>
           <p>Email: info@agilebiz.co.ke</p>
           <p>Contact Us: sales@agilebiz.co.ke</p>
-          <p>Address: Nairobi, Kenya</p>
+          <p>Address: Jumuia Place II Lenana</p>
         </div>
 
         {/* Certifications - Responsive Image Sizing */}
@@ -135,7 +135,7 @@ export default function Footer() {
     {/* Copyright */}
     <div className="mt-8 border-t border-white/10 pt-4 text-center">
       <p className="text-xs leading-5 text-gray-300">
-        &copy; 2024 Agile Business Solutions Ltd. All rights reserved.
+        &copy; 2025 Agile Business Solutions Ltd. All rights reserved.
       </p>
     </div>
   </div>

@@ -70,23 +70,24 @@ export default function Partners() {
         >
           {/* Render two sets of logos for seamless looping */}
           {[...logos, ...logos].map((logo, index) => (
-            <div 
-              key={`${logo._id}-${index}`} 
-              data-logo 
-              className="group relative h-24 w-40 shrink-0"
-            >
-              <img
-                src={`${API_BASE_URL}${logo.bwLogoUrl}`}
-                alt={`${logo.name} (BW)`}
-                className="size-full object-contain transition-opacity duration-300 group-hover:opacity-0"
-              />
-              <img
-                src={`${API_BASE_URL}${logo.colorLogoUrl}`}
-                alt={`${logo.name} (Color)`}
-                className="absolute inset-0 size-full object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-              />
-            </div>
-          ))}
+     <div 
+          key={`${logo._id}-${index}`} 
+          data-logo 
+          className="group relative flex items-center justify-center h-24 w-40 shrink-0 bg-white p-2 rounded-md"
+  >
+    <img
+         src={`${API_BASE_URL}${logo.bwLogoUrl}`}
+         alt={`${logo.name} (BW)`}
+         className="max-h-full max-w-full object-contain transition-opacity duration-300 group-hover:opacity-0"
+    />
+    <img
+        src={`${API_BASE_URL}${logo.colorLogoUrl}`}
+        alt={`${logo.name} (Color)`}
+        className="absolute inset-0 max-h-full max-w-full object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+    />
+  </div>
+))}
+
         </div>
       </div>
     </div>

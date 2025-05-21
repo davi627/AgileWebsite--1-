@@ -32,9 +32,9 @@ const colorClasses = [
 
 const ValuesSection: React.FC = () => {
   return (
-    <div className="mx-auto mb-14 mt-32 max-w-7xl px-6 sm:mt-40 lg:px-8">
+    <div className="mx-auto mb-14 mt-32 max-w-7xl px-6 sm:mt-40 lg:px-8 font-Poppins">
       <div className="mx-auto max-w-2xl lg:mx-0">
-        <h2 className="text-[#167AA0] text-3xl font-bold tracking-tight sm:text-4xl">
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight text-primary">
           Our Values
         </h2>
       </div>

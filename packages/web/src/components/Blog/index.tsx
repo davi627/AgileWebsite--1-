@@ -42,7 +42,7 @@ export default function TopBlogs() {
   if (error) return <div className="text-center py-10 text-red-500">{error}</div>;
 
   return (
-    <div className="mt-10 bg-gray-100 py-10">
+    <div className="mt-10 bg-gray-100 py-10 Poppins">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h2 className="text-2xl font-bold text-center text-gray-800">Top Most Viewed Blogs</h2>
 

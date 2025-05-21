@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import SidePadding from 'components/Shared/SidePadding.Component'
 import RequestDemoBtn from 'components/Shared/RequestDemoBtn.Component'
-import HeroBg from '../../assets/iMac 1.png'
+import HeroBg from '../../assets/iMac 2.png'
 import Phone from '../../assets/phone.png'
 import Investment from '../../assets/Investment.png'
-import Microsoft from '../../assets/Microsoft.png'
-import Server from '../../assets/Server.png'
+import Microsoft from '../../assets/Microsoft Image.png'
+import Server from '../../assets/Data-Image.png'
 
 export default function Hero() {
   const phrases = [
@@ -35,14 +35,13 @@ export default function Hero() {
 
       {/* Main content */}
       <SidePadding>
-        <div className="relative z-40 md:flex md:flex-row md:items-center md:justify-between pt-32 md:pt-48 lg:pt-32 pb-16">
+        <div className="relative z-40 md:flex md:flex-row md:items-center md:justify-between pt-32 md:pt-48 lg:pt-32 pb-16 font-Poppins">
           
           {/* Text content */}
           <div className="relative text-primary w-full md:w-5/12 lg:w-[40%]">
-            <div className="text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight font-century">
-              <p>One-stop shop  </p>
-              <p>for all your</p>
-              <div className="flex items-start gap-4 h-[15.0rem] overflow-hidden">
+            <div className="text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight ">
+              <p>One-stop shop for all your</p>
+               <div className="flex items-start h-[14.5rem] sm:h-[10rem] md:h-[12rem] lg:h-[9rem] overflow-hidden">
                 <span
                   className={`text-alternate transition-opacity duration-500 ${
                     isFading ? 'opacity-0' : 'opacity-100'
@@ -53,7 +52,7 @@ export default function Hero() {
             </div>
 
             <p className="my-8 text-base md:text-lg text-gray-700 font-light max-w-md">
-              Streamline your workflow with our innovative software.
+              Streamline your workflow with our innovative Technolgies.
             </p>
 
             <RequestDemoBtn />
@@ -69,6 +68,7 @@ export default function Hero() {
                   src={HeroBg} 
                   alt="Software interface" 
                   className="object-contain w-full h-full"
+                  
                 />
                 <img 
                   src={Phone} 
@@ -78,7 +78,7 @@ export default function Hero() {
                     bottom: '44px',
                     right: '60%',
                     height:'200px',
-                    zIndex: 3
+                    zIndex: 5
                   }}
                 />
                 <img 
@@ -88,7 +88,7 @@ export default function Hero() {
                   style={{
                     bottom: '225px',
                     right: '55%',
-                    zIndex: 3,
+                    zIndex: 5,
                     height: '40px'
                   }}
                 />
@@ -101,13 +101,14 @@ export default function Hero() {
                   alt="Microsoft solutions" 
                   className="absolute object-contain"
                   style={{
-                    top: '-150px', 
-                    right: '-50px', 
-                    height: '750px', 
-                    width: 'auto',   
-                    zIndex: 3
+                    top: '-100px',
+                    right: '0px',
+                    height: '602px',
+                    width:'1070px',
+                    zIndex: 5
                   }}
                 />
+                
               </div>
 
               {/* THIRD IMAGE GROUP - Server */}
@@ -117,11 +118,11 @@ export default function Hero() {
                   alt="Server and security" 
                   className="absolute object-contain"
                   style={{
-                     top: '0px',    
-                     right: '100px', 
-                     height: '800px', 
-                     width: 'auto',  
-                    zIndex: 3
+                    top: '40px',
+                    right: '10px',
+                    height: '400px',
+                    width:'2000px',
+                    zIndex: 5
                   }}
                 />
               </div>
@@ -146,7 +147,7 @@ export default function Hero() {
                     style={{
                       bottom: '24px',
                       right: '60%',
-                      zIndex: 3
+                      zIndex: 5
                     }}
                   />
                   <img 
@@ -173,7 +174,7 @@ export default function Hero() {
                     top: '-40px',
                     right: '10px',
                     height: '250px',
-                    zIndex: 3
+                    zIndex: 5
                   }}
                 />
               )}
@@ -185,10 +186,10 @@ export default function Hero() {
                   alt="Server solutions" 
                   className="absolute object-contain"
                   style={{
-                    top: '20px',
+                    top: '1px',
                     right: '20px',
                     width: '800px',
-                    zIndex: 3
+                    zIndex: 5
                   }}
                 />
               )}

@@ -11,7 +11,7 @@ import instaIcon from 'assets/insta logo.png'
 import liIcon from 'assets/socials/linkedin.png'
 import twitterIcon from 'assets/socials/twitter.png'
 
-// import GetQuoteModal from '../../components/QuoteModal' // TODO: What is this all about?
+
 
 const navigation = [
   { name: 'Home', href: '/' },
@@ -20,11 +20,6 @@ const navigation = [
   { name: 'Contact Us', href: '/contact-us' },
   {name: 'Blogs', href:'/blogs'},
   
-
- 
-
-
-
 ]
 
 export default function Navbar() {

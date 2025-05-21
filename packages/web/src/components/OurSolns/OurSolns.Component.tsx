@@ -11,7 +11,7 @@ import chevDown from '../../assets/chevron-down.svg';
 
 import './faq.css';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000';
 
 interface ISolution {
   id: number;
@@ -127,7 +127,7 @@ function OurSolns() {
 
   return (
     <SidePadding>
-      <div id="erp-solutions" className="py-14 font-century relative" ref={containerRef}>
+      <div id="erp-solutions" className="py-14 font-Poppins relative" ref={containerRef}>
         <AnimatePresence mode="wait">
           <motion.img
             key={selectedCategory._id}

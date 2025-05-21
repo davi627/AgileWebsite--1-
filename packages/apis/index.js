@@ -21,6 +21,18 @@ const app = express();
 // Get the directory name using import.meta.url
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+// Trust proxy headers from IIS
+app.set('trust proxy', 1);
+
+// SSL redirect middleware (if IIS forwarded HTTP request)
+app.use((req, res, next) => {
+  if (req.headers['x-forwarded-proto'] === 'http') {
+    return res.redirect(301, `https://${req.headers.host}${req.url}`);
+  }
+  next();
+});
+
+
 
 // Serve static files from React's "web/build" folder
 app.use(express.static(path.join(__dirname, '../web/build')));

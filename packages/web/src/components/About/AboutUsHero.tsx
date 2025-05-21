@@ -1,5 +1,5 @@
 import React from 'react'
-import AfricaMap from '../../assets/af_map.svg'
+import AfricaMap from '../../assets/Map.png'
 
 const HeroSection: React.FC = () => {
   return (
@@ -45,11 +45,11 @@ const HeroSection: React.FC = () => {
           className="aspect-[801/1036] w-[50.0625rem] bg-gradient-to-tr from-[#F0AE1C] to-[#167aa0] opacity-30"
         /> */}
       </div>
-      <div className="overflow-hidden">
+      <div className="overflow-hidden font-Poppins">
         <div className="mx-auto max-w-7xl px-6 pb-32 pt-36 sm:pt-60 lg:px-8 lg:pt-32">
           <div className="mx-auto max-w-2xl gap-x-14 lg:mx-0 lg:flex lg:max-w-none lg:items-center">
             <div className="w-full max-w-xl lg:shrink-0 xl:max-w-2xl">
-              <h1 className="text-primary text-4xl font-bold tracking-tight sm:text-6xl">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight text-primary">
                 Driving Vision Into Action For Our Clients.
               </h1>
               <p className="relative mt-6 text-lg leading-8 text-gray-600 sm:max-w-md lg:max-w-none">

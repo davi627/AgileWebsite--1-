@@ -8,8 +8,8 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.ag
 interface Stat {
   id: number
   name: string
-  value: string | number
-  displayValue?: string | number
+  value: string // now assuming all values are strings
+  displayValue?: number | string
 }
 
 export default function Stats() {
@@ -23,19 +23,17 @@ export default function Stats() {
       const response = await axios.get(`${API_BASE_URL}/statistics`)
       const stats = response.data
 
-      // Map the fetched data to the `displayStats` format
-      const formattedStats = [
-        { id: 1, name: 'Successful Projects', value: stats.successfulProjects },
-        { id: 2, name: 'Happy Customers', value: stats.happyCustomers },
-        { id: 3, name: 'Customer Satisfaction', value: stats.customerSatisfaction },
-        { id: 4, name: 'Experience', value: stats.experience }
+      const formattedStats: Stat[] = [
+        { id: 1, name: 'Successful Projects', value: stats.successfulProjects.toString() },
+        { id: 2, name: 'Happy Customers', value: stats.happyCustomers.toString() },
+        { id: 3, name: 'Customer Satisfaction', value: stats.customerSatisfaction.toString() },
+        { id: 4, name: 'Experience', value: stats.experience.toString() }
       ]
 
-      // Initialize `displayValue` for animation
       setDisplayStats(
         formattedStats.map((stat) => ({
           ...stat,
-          displayValue: typeof stat.value === 'number' ? 0 : stat.value
+          displayValue: !isNaN(Number(stat.value)) ? 0 : stat.value
         }))
       )
     } catch (error) {
@@ -43,12 +41,10 @@ export default function Stats() {
     }
   }
 
-  // Fetch statistics on component mount
   useEffect(() => {
     fetchStatistics()
   }, [])
 
-  // Intersection Observer for animation
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -57,39 +53,32 @@ export default function Stats() {
           observer.disconnect()
         }
       },
-      {
-        threshold: 0.5
-      }
+      { threshold: 0.5 }
     )
 
     if (sectionRef.current) {
       observer.observe(sectionRef.current)
     }
 
-    return () => {
-      observer.disconnect()
-    }
+    return () => observer.disconnect()
   }, [])
 
-  // Animate statistics when in view
   useEffect(() => {
     if (isInView) {
       const intervals = displayStats.map((stat, index) => {
-        if (typeof stat.value === 'number') {
+        const targetValue = Number(stat.value)
+
+        if (!isNaN(targetValue)) {
           const interval = setInterval(() => {
             setDisplayStats((prevStats) => {
               const newStats = [...prevStats]
-              const currentValue = newStats[index].displayValue
+              const currentValue = Number(newStats[index].displayValue)
 
-              if (
-                typeof currentValue === 'number' &&
-                typeof stat.value === 'number' &&
-                currentValue < stat.value
-              ) {
-                const increment = Math.ceil(stat.value / 50)
+              if (currentValue < targetValue) {
+                const increment = Math.ceil(targetValue / 50)
                 const newValue =
-                  currentValue + increment > stat.value
-                    ? stat.value
+                  currentValue + increment > targetValue
+                    ? targetValue
                     : currentValue + increment
                 newStats[index].displayValue = newValue
               } else {
@@ -112,7 +101,7 @@ export default function Stats() {
   return (
     <div
       ref={sectionRef}
-      className="bg-auto bg-center bg-no-repeat py-20 sm:py-32 font-century"
+      className="bg-auto bg-center bg-no-repeat py-20 sm:py-32 font-Poppins"
       style={{ backgroundImage: `url(${FaintLogo})` }}
     >
       <SidePadding>
@@ -134,7 +123,7 @@ export default function Stats() {
               >
                 <dt className="text-sm leading-6">{stat.name}</dt>
                 <dd className="text-primary order-first text-4xl font-medium tracking-tight md:text-5xl">
-                  {typeof stat.displayValue === 'number'
+                  {!isNaN(Number(stat.displayValue))
                     ? `${stat.displayValue}+`
                     : stat.displayValue}
                 </dd>

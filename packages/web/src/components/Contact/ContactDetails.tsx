@@ -4,22 +4,22 @@ const contactItems = [
   {
     title: 'Sales',
     email: 'sales@agilebiz.co.ke',
-    phone: '+254 712345678'
+    phone: '+254 723929999'
   },
   {
     title: 'Careers',
     email: 'careers@agilebiz.co.ke',
-    phone: '+254 712345678'
+    phone: '+254 723929999'
   },
   {
     title: 'Data Privacy Controller',
     email: 'privacy@agilebiz.co.ke',
-    phone: '+254 712345678'
+    phone: '+254 33290655'
   },
   {
     title: 'Customer Service',
     email: 'support@agilebiz.co.ke',
-    phone: '+254 712345678'
+    phone: '+254 33290655'
   }
 ]
 

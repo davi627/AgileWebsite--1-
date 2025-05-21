@@ -1,38 +1,35 @@
 import React from 'react'
 
 const stats = [
-  { label: 'Happy Clients', value: '1000+' },
-  { label: 'Complete Projects', value: '1200+' },
-  { label: 'New users annually', value: '46,000' }
+  { label: 'Happy Clients', value: '100+' },
+  { label: 'Complete Projects', value: '100+' },
+  { label: 'Networth', value: ' USD 100B' },
+  
 ]
 
 const ContentSection: React.FC = () => {
   return (
-    <div className="mx-auto -mt-12 max-w-7xl px-6 sm:mt-0 lg:px-8 xl:-mt-8">
+    <div className="mx-auto -mt-12 max-w-7xl px-6 sm:mt-0 lg:px-8 xl:-mt-8 font-Poppins text-primary">
       <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
-        <h2 className="text-primary text-3xl font-bold tracking-tight sm:text-4xl">
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight">
           We are Agile
         </h2>
         <div className="mt-6 flex flex-col gap-x-8 gap-y-20 lg:flex-row">
           <div className="lg:w-full lg:max-w-2xl lg:flex-auto">
             <p className="text-xl leading-8 text-gray-600">
-              We specialize in software development, customization, IT
-              consultancy services, and training. We have been accredited as
-              Microsoft Gold Partner, Oracle Partner, and ICTA. Since its
-              inception, Agile has worked tirelessly to build systems that
-              tailor-fit to the size, budget, and needs of our customers. Our
-              customers are empowered by technical expertise executing projects
-              allocated to Agile and we ensure we deliver the customized
-              solutions on time.{' '}
+          Agile Business Solutions is proudly a  Kenyan technology powerhouse 
+          at the forefront of Africa’s digital revolution. As a leading technology hub
+          , we are passionate about designing and delivering cutting edge technology solutions
+           that respond to the unique challenges and opportunities of businesses.{' '}
             </p>
             <p className="mt-4 text-xl leading-8 text-gray-600">
-              At Agile, we know this success is the direct result of continued
-              investment in our framework technology and a sustained commitment
-              to the core values and best practices. As we continue to grow,
-              scope, and influence, our purpose remains the same: to deliver
-              dynamic IT solutions to our esteemed customers, to work with you
-              in understanding your unique vision, implementation and to drive
-              that vision into action through customer experience.
+             Rooted in Kenya and reaching across the globe, we are committed to excellence,
+              innovation, and customer satisfaction. We specialize in crafting high-performance,
+               scalable enterprise management  information systems that drives digital transformation,
+                operational efficiency, and business growth. Our solutions are tailored to meet diverse industry needs,
+                 blending global best practices with deep insight.
+
+              At Agile, we don’t just build technology we build the future of  enterprises.
             </p>
           </div>
           <div className="lg:flex lg:flex-auto lg:justify-center">
