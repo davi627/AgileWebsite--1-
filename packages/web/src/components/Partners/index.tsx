@@ -7,7 +7,7 @@ interface Logo {
   colorLogoUrl: string;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://webtest.agilebiz.co.ke:5000';
 
 export default function Partners() {
   const [logos, setLogos] = useState<Logo[]>([]);
@@ -33,7 +33,7 @@ export default function Partners() {
     if (!scrollContainer || logos.length === 0) return;
 
     // Double the logos for seamless looping
-    const logoElements = scrollContainer.querySelectorAll('div[data-logo]');
+    const logoElements = scrollContainer.querySelectorAll('img[data-logo]');
     const containerWidth = scrollContainer.scrollWidth / 2;
     
     let animationFrameId: number;
@@ -70,24 +70,23 @@ export default function Partners() {
         >
           {/* Render two sets of logos for seamless looping */}
           {[...logos, ...logos].map((logo, index) => (
-     <div 
-          key={`${logo._id}-${index}`} 
-          data-logo 
-          className="group relative flex items-center justify-center h-24 w-40 shrink-0 bg-white p-2 rounded-md"
-  >
-    <img
-         src={`${API_BASE_URL}${logo.bwLogoUrl}`}
-         alt={`${logo.name} (BW)`}
-         className="max-h-full max-w-full object-contain transition-opacity duration-300 group-hover:opacity-0"
-    />
-    <img
-        src={`${API_BASE_URL}${logo.colorLogoUrl}`}
-        alt={`${logo.name} (Color)`}
-        className="absolute inset-0 max-h-full max-w-full object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-    />
-  </div>
-))}
-
+            <div 
+              key={`${logo._id}-${index}`}
+              className="group relative flex items-center justify-center h-24 w-40 shrink-0"
+            >
+              <img
+                data-logo
+                src={`${API_BASE_URL}${logo.bwLogoUrl}`}
+                alt={`${logo.name} (BW)`}
+                className="absolute max-h-full max-w-full object-contain transition-opacity duration-300 group-hover:opacity-0"
+              />
+              <img
+                src={`${API_BASE_URL}${logo.colorLogoUrl}`}
+                alt={`${logo.name} (Color)`}
+                className="absolute max-h-full max-w-full object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+              />
+            </div>
+          ))}
         </div>
       </div>
     </div>

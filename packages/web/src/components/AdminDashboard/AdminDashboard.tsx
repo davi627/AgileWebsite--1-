@@ -53,7 +53,7 @@ const AdminDashboard: React.FC = () => {
   const [statistics, setStatistics] = useState({
     successfulProjects: 0,
     happyCustomers: 0,
-    customerSatisfaction: '0%',
+    customerSatisfaction: 0,
     experience: '0 Years',
   });
   const [newSolution, setNewSolution] = useState({

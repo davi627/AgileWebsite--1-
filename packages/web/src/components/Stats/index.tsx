@@ -8,8 +8,9 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.ag
 interface Stat {
   id: number
   name: string
-  value: string // now assuming all values are strings
-  displayValue?: number | string
+  value: string
+  displayValue: number | string
+  isNumeric: boolean
 }
 
 export default function Stats() {
@@ -24,20 +25,46 @@ export default function Stats() {
       const stats = response.data
 
       const formattedStats: Stat[] = [
-        { id: 1, name: 'Successful Projects', value: stats.successfulProjects.toString() },
-        { id: 2, name: 'Happy Customers', value: stats.happyCustomers.toString() },
-        { id: 3, name: 'Customer Satisfaction', value: stats.customerSatisfaction.toString() },
-        { id: 4, name: 'Experience', value: stats.experience.toString() }
+        { 
+          id: 1, 
+          name: 'Successful Projects', 
+          value: stats.successfulProjects,
+          isNumeric: !isNaN(Number(stats.successfulProjects.replace(/\D/g, ''))),
+          displayValue: !isNaN(Number(stats.successfulProjects.replace(/\D/g, ''))) ? 0 : stats.successfulProjects
+        },
+        { 
+          id: 2, 
+          name: 'Happy Customers', 
+          value: stats.happyCustomers,
+          isNumeric: !isNaN(Number(stats.happyCustomers.replace(/\D/g, ''))),
+          displayValue: !isNaN(Number(stats.happyCustomers.replace(/\D/g, ''))) ? 0 : stats.happyCustomers
+        },
+        { 
+          id: 3, 
+          name: 'Customer Satisfaction', 
+          value: stats.customerSatisfaction,
+          isNumeric: !isNaN(Number(stats.customerSatisfaction.replace(/\D/g, ''))),
+          displayValue: !isNaN(Number(stats.customerSatisfaction.replace(/\D/g, ''))) ? 0 : stats.customerSatisfaction
+        },
+        { 
+          id: 4, 
+          name: 'Experience', 
+          value: stats.experience,
+          isNumeric: !isNaN(Number(stats.experience.replace(/\D/g, ''))),
+          displayValue: !isNaN(Number(stats.experience.replace(/\D/g, ''))) ? 0 : stats.experience
+        }
       ]
 
-      setDisplayStats(
-        formattedStats.map((stat) => ({
-          ...stat,
-          displayValue: !isNaN(Number(stat.value)) ? 0 : stat.value
-        }))
-      )
+      setDisplayStats(formattedStats)
     } catch (error) {
       console.error('Failed to fetch statistics:', error)
+      // Set default values in case of error
+      setDisplayStats([
+        { id: 1, name: 'Successful Projects', value: '0', displayValue: 0, isNumeric: true },
+        { id: 2, name: 'Happy Customers', value: '0', displayValue: 0, isNumeric: true },
+        { id: 3, name: 'Customer Satisfaction', value: '0', displayValue: 0, isNumeric: true },
+        { id: 4, name: 'Experience', value: '0 Years', displayValue: '0 Years', isNumeric: false }
+      ])
     }
   }
 
@@ -66,28 +93,31 @@ export default function Stats() {
   useEffect(() => {
     if (isInView) {
       const intervals = displayStats.map((stat, index) => {
-        const targetValue = Number(stat.value)
+        if (stat.isNumeric) {
+          // Extract only numbers from the string for animation
+          const numericValue = parseInt(stat.value.replace(/\D/g, ''), 10)
 
-        if (!isNaN(targetValue)) {
-          const interval = setInterval(() => {
-            setDisplayStats((prevStats) => {
-              const newStats = [...prevStats]
-              const currentValue = Number(newStats[index].displayValue)
+          if (!isNaN(numericValue)) {
+            const interval = setInterval(() => {
+              setDisplayStats((prevStats) => {
+                const newStats = [...prevStats]
+                const currentValue = Number(newStats[index].displayValue)
 
-              if (currentValue < targetValue) {
-                const increment = Math.ceil(targetValue / 50)
-                const newValue =
-                  currentValue + increment > targetValue
-                    ? targetValue
-                    : currentValue + increment
-                newStats[index].displayValue = newValue
-              } else {
-                clearInterval(interval)
-              }
-              return newStats
-            })
-          }, 150)
-          return interval
+                if (currentValue < numericValue) {
+                  const increment = Math.ceil(numericValue / 50)
+                  const newValue =
+                    currentValue + increment > numericValue
+                      ? numericValue
+                      : currentValue + increment
+                  newStats[index].displayValue = newValue
+                } else {
+                  clearInterval(interval)
+                }
+                return newStats
+              })
+            }, 150)
+            return interval
+          }
         }
         return null
       })
@@ -97,6 +127,17 @@ export default function Stats() {
       }
     }
   }, [isInView, displayStats])
+
+  // Format display value to include any non-numeric text (like "Years" in "10 Years")
+  const formatDisplayValue = (stat: Stat) => {
+    if (stat.isNumeric) {
+      // Add the "+" suffix to numeric values and keep any non-numeric suffix from original value
+      const numericPart = stat.displayValue.toString()
+      const originalSuffix = stat.value.replace(/\d+/g, '').trim()
+      return `${numericPart}${originalSuffix ? ' ' + originalSuffix : '+'}`
+    }
+    return stat.displayValue
+  }
 
   return (
     <div
@@ -123,9 +164,7 @@ export default function Stats() {
               >
                 <dt className="text-sm leading-6">{stat.name}</dt>
                 <dd className="text-primary order-first text-4xl font-medium tracking-tight md:text-5xl">
-                  {!isNaN(Number(stat.displayValue))
-                    ? `${stat.displayValue}+`
-                    : stat.displayValue}
+                  {formatDisplayValue(stat)}
                 </dd>
               </div>
             ))}
