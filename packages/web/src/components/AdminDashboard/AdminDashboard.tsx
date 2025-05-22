@@ -31,7 +31,7 @@ const AdminDashboard: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [title, setTitle] = useState(""); 
   const [content, setContent] = useState<BlogContent[]>([]); 
-  const [author, setAuthor] = useState(""); // 
+  const [author, setAuthor] = useState("");  
   const [loading, setLoading] = useState(false); 
   const [imageUrl, setImageUrl] = useState("");
   const [isSecurityKeyModalOpen, setIsSecurityKeyModalOpen] = useState(false);

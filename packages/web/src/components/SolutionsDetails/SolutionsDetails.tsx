@@ -110,20 +110,23 @@ function SolutionsDetails() {
               <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
                 <div className="bg-[#34C4EC] text-white p-6">
                   <h1 className="text-2xl font-bold">{solution.name}</h1>
-                  <p className="mt-2">{category.title} </p>
+                  <p className="mt-2">{category.title}</p>
                 </div>
                 
                 <div className="p-6">
                   <div className="mb-6">
                     <h2 className="text-xl font-semibold mb-2">Overview</h2>
-                    <p className="text-gray-700">{solution.fullDesc}</p>
+                    {/* Display plain text with proper line breaks */}
+                    <div className="text-gray-700 whitespace-pre-line">{solution.fullDesc}</div>
                   </div>
                   
                   <div className="mb-6">
                     <h2 className="text-xl font-semibold mb-2">Key Features</h2>
                     <ul className="list-disc pl-5 space-y-2">
                       {solution.features.map((feature, index) => (
-                        <li key={index} className="text-gray-700">{feature.text}</li>
+                        <li key={index} className="text-gray-700 whitespace-pre-line">
+                          {feature.text}
+                        </li>
                       ))}
                     </ul>
                   </div>
@@ -131,7 +134,8 @@ function SolutionsDetails() {
                   {solution.implementation && (
                     <div>
                       <h2 className="text-xl font-semibold mb-2">Implementation</h2>
-                      <p className="text-gray-700">{solution.implementation}</p>
+                      {/* Display plain text with proper line breaks */}
+                      <div className="text-gray-700 whitespace-pre-line">{solution.implementation}</div>
                     </div>
                   )}
                 </div>
