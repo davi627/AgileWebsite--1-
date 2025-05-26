@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -29,7 +29,8 @@ const ViewBlogs: React.FC = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState<BlogContent[]>([]);
   const [author, setAuthor] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
+  const [coverImageUrl, setCoverImageUrl] = useState("");
   const [loading, setLoading] = useState(false);
 
   const [editorHtml, setEditorHtml] = useState("");
@@ -109,9 +110,13 @@ const ViewBlogs: React.FC = () => {
     if (editor) {
       editor.commands.setContent(html);
     }
+
+    // Set cover image URL if exists
+    const coverImage = blog.content.find(item => item.type === 'image');
+    setCoverImageUrl(coverImage ? coverImage.data : '');
   };
 
-  const handleImageUpload = async () => {
+  const handleImageUploadInEditor = async () => {
     const input = document.createElement('input');
     input.setAttribute('type', 'file');
     input.setAttribute('accept', 'image/*');
@@ -142,11 +147,33 @@ const ViewBlogs: React.FC = () => {
     };
   };
 
+  const handleCoverImageUpload = async (file: File) => {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      setLoading(true);
+      const response = await axios.post(`${API_BASE_URL}/blog/upload-image`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      if (response.data.imageUrl) {
+        setCoverImageUrl(response.data.imageUrl);
+      }
+    } catch (error) {
+      console.error('Failed to upload cover image:', error);
+      alert('Cover image upload failed.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleBlogSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
+      // Convert HTML to structured content
       const tempDiv = document.createElement('div');
       tempDiv.innerHTML = editorHtml;
 
@@ -163,25 +190,26 @@ const ViewBlogs: React.FC = () => {
         blogContent.push({ type: 'image', data: src });
       });
 
+      // Prepend cover image if available
+      if (coverImageUrl) {
+        blogContent.unshift({ type: 'image', data: coverImageUrl });
+      }
+
       if (isEditingBlog && editingBlogId) {
-        // Update existing blog
         const response = await axios.put(`${API_BASE_URL}/blog/blogs/${editingBlogId}`, {
           title,
           content: blogContent,
           author: { name: author },
-          imageUrl,
         });
 
         if (response.status === 200) {
           alert('Blog updated successfully!');
         }
       } else {
-        // Create new blog
         const response = await axios.post(`${API_BASE_URL}/blog/blogs`, {
           title,
           content: blogContent,
           author: { name: author },
-          imageUrl,
         });
 
         if (response.status === 201) {
@@ -193,7 +221,8 @@ const ViewBlogs: React.FC = () => {
       setTitle('');
       setContent([]);
       setAuthor('');
-      setImageUrl('');
+      setCoverImageFile(null);
+      setCoverImageUrl('');
       setEditorHtml('');
       if (editor) {
         editor.commands.clearContent();
@@ -203,7 +232,6 @@ const ViewBlogs: React.FC = () => {
       setEditingBlogId(null);
 
       fetchBlogs();
-
     } catch (error) {
       console.error('Failed to submit blog:', error);
       alert('Failed to submit blog. Please try again.');
@@ -232,7 +260,8 @@ const ViewBlogs: React.FC = () => {
             if (editor) {
               editor.commands.clearContent();
             }
-            setImageUrl('');
+            setCoverImageFile(null);
+            setCoverImageUrl('');
           }}
           className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md transition duration-200"
         >
@@ -245,14 +274,23 @@ const ViewBlogs: React.FC = () => {
           <h2 className="text-2xl font-bold mb-6">{isEditingBlog ? 'Update Blog' : 'Create Blog'}</h2>
           <form onSubmit={handleBlogSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Image URL (Cover i.e the image that appears on top of the blog)</label>
+              <label className="block text-sm font-medium text-gray-700">Cover Image</label>
               <input
-                type="text"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                className="mt-1 block w-full rounded-md border border-gray-300 p-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                required
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  if (e.target.files?.[0]) {
+                    const file = e.target.files[0];
+                    setCoverImageFile(file);
+                    handleCoverImageUpload(file);
+                  }
+                }}
+                className="mt-1 block w-full text-sm text-gray-700"
+                required={!isEditingBlog} 
               />
+              {coverImageUrl && (
+                <img src={coverImageUrl} alt="Cover" className="mt-2 w-32 h-32 object-cover rounded" />
+              )}
             </div>
 
             <div>
@@ -293,7 +331,7 @@ const ViewBlogs: React.FC = () => {
                   </button>
                   <button
                     type="button"
-                    onClick={handleImageUpload}
+                    onClick={handleImageUploadInEditor}
                     className="p-2 rounded"
                   >
                     Image
@@ -317,51 +355,46 @@ const ViewBlogs: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="mt-4 bg-primary hover:bg-indigo-600 text-white px-4 py-2 rounded-md transition duration-200 w-full sm:w-auto"
+              className="bg-primary hover:bg-primary text-white px-4 py-2 rounded-md transition duration-200"
             >
-              {loading ? (isEditingBlog ? "Updating..." : "Creating...") : (isEditingBlog ? "Update Blog" : "Create Blog")}
+              {loading ? 'Submitting...' : isEditingBlog ? 'Update' : 'Create'}
             </button>
           </form>
         </div>
       )}
 
-      <div className="space-y-4">
-        {blogs.length === 0 ? (
-          <p className="text-gray-700">No blogs found.</p>
-        ) : (
-          blogs.map((blog) => (
-            <div key={blog._id} className="flex justify-between items-center p-4 border border-gray-300 rounded-md">
-              <div>
-                <h3 className="font-bold">{blog.title}</h3>
-                <p className="text-sm text-gray-600">By {blog.author.name}</p>
-              </div>
-              <div className="flex space-x-4">
-                <button
-                  onClick={() => handleEdit(blog)}
-                  className="text-blue-500 hover:text-blue-700"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(blog._id)}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  Delete
-                </button>
-              </div>
+      {/* Display blogs here */}
+      <div>
+        {blogs.map((blog) => (
+          <div key={blog._id} className="border-b py-4">
+            <h3 className="text-lg font-semibold">{blog.title}</h3>
+            <p className="text-sm text-gray-500">By {blog.author.name}</p>
+            <div className="mt-2 flex gap-2">
+              <button
+                onClick={() => handleEdit(blog)}
+                className="bg-primary hover:bg-blue-600 text-white px-3 py-1 rounded-md"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => handleDelete(blog._id)}
+                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md"
+              >
+                Delete
+              </button>
             </div>
-          ))
-        )}
+          </div>
+        ))}
       </div>
 
-      {/* Confirmation Modal */}
+      {/* Confirmation modal */}
       {showConfirmation && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-md shadow-md">
-            <p className="text-lg mb-4">Are you sure you want to proceed?</p>
-            <div className="flex justify-end space-x-4">
-              <button onClick={cancelAction} className="px-4 py-2 bg-gray-300 rounded-md">Cancel</button>
-              <button onClick={executeAction} className="px-4 py-2 bg-red-500 text-white rounded-md">Confirm</button>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50">
+          <div className="bg-white p-6 rounded shadow-md">
+            <p>Are you sure you want to proceed?</p>
+            <div className="mt-4 flex justify-end gap-2">
+              <button onClick={executeAction} className="bg-primary text-white px-4 py-2 rounded">Yes</button>
+              <button onClick={cancelAction} className="bg-gray-300 px-4 py-2 rounded">No</button>
             </div>
           </div>
         </div>

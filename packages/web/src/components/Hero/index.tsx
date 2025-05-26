@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import SidePadding from 'components/Shared/SidePadding.Component'
 import RequestDemoBtn from 'components/Shared/RequestDemoBtn.Component'
-import HeroBg from '../../assets/iMac 2.png'
+import HeroBg from '../../assets/Image 1.png'
 import Phone from '../../assets/phone.png'
 import Investment from '../../assets/Investment.png'
-import Microsoft from '../../assets/Microsoft Image.png'
-import Server from '../../assets/Data-Image.png'
+import Microsoft from '../../assets/Image 2.png'
+import Server from '../../assets/Image 3.png'
 
 export default function Hero() {
   const phrases = [
@@ -29,7 +29,8 @@ export default function Hero() {
   }, [])
 
   return (
-    <main className="relative w-full min-h-screen bg-white overflow-hidden">
+  <main className="relative w-full h-auto bg-white overflow-hidden">
+
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-white via-white/60 to-transparent z-10"></div>
 
@@ -37,29 +38,35 @@ export default function Hero() {
       <SidePadding>
         <div className="relative z-40 md:flex md:flex-row md:items-center md:justify-between pt-32 md:pt-48 lg:pt-32 pb-16 font-Poppins">
           
-          {/* Text content */}
-          <div className="relative text-primary w-full md:w-5/12 lg:w-[40%]">
-            <div className="text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight ">
-              <p>One-stop shop for all your</p>
-               <div className="flex items-start h-[14.5rem] sm:h-[10rem] md:h-[12rem] lg:h-[9rem] overflow-hidden">
-                <span
-                  className={`text-alternate transition-opacity duration-500 ${
-                    isFading ? 'opacity-0' : 'opacity-100'
-                  }`}
-                  dangerouslySetInnerHTML={{ __html: phrases[currentPhraseIndex] }}
-                />
-              </div>
-            </div>
+{/* Text content */}
+<div className="relative text-primary w-full md:w-6/12 lg:w-[55%]  md:-mt-48">
 
-            <p className="my-8 text-base md:text-lg text-gray-700 font-light max-w-md">
-              Streamline your workflow with our innovative Technolgies.
-            </p>
+  <div className="text-[28px] md:text-[32px] lg:text-[45px] font-bold leading-tight font-poppins">
+    <p className='gap-8'>One-stop shop for all your</p>
+    <div className="flex items-center justify-start h-[14.5rem] sm:h-[16rem] md:h-[12rem] lg:h-[10rem] overflow-hidden w-full">
+  <span
+    className={`text-alternate transition-opacity duration-500 w-full block text-left ${
+      isFading ? 'opacity-0' : 'opacity-100'
+    }`}
+    dangerouslySetInnerHTML={{ __html: phrases[currentPhraseIndex] }}
+  />
+</div>
 
-            <RequestDemoBtn />
-          </div>
+  </div>
+
+
+
+  <p className="my-8 text-[16px] text-primary font-normal font-poppins max-w-lg">
+    Streamline your workflow with our innovative Technologies.
+  </p>
+
+  <RequestDemoBtn />
+</div>
+
+
 
           {/* Desktop image container */}
-          <div className="hidden md:block relative z-20 md:w-6/12 lg:w-1/2 md:h-[400px] lg:h-[450px] md:max-w-xl">
+          <div className="hidden md:block relative z-20 md:w-[800px] lg:w-[1000px] md:h-[600px] lg:h-[700px] md:max-w-none">
             <div className="relative w-full h-full md:scale-90 lg:scale-100 transform-gpu">
 
               {/* FIRST IMAGE GROUP */}
@@ -67,31 +74,17 @@ export default function Hero() {
                 <img 
                   src={HeroBg} 
                   alt="Software interface" 
-                  className="object-contain w-full h-full"
-                  
-                />
-                <img 
-                  src={Phone} 
-                  alt="Mobile interface" 
-                  className="absolute h-56 object-contain"
-                  style={{
-                    bottom: '44px',
-                    right: '60%',
-                    height:'200px',
-                    zIndex: 5
-                  }}
-                />
-                <img 
-                  src={Investment} 
-                  alt="Investment interface" 
                   className="absolute object-contain"
                   style={{
-                    bottom: '225px',
-                    right: '55%',
-                    zIndex: 5,
-                    height: '40px'
+                    height:'600px',
+                    width:'700px',
+                    right:'-80px',
+                    top:'-30px'
                   }}
+
+                  
                 />
+
               </div>
 
               {/* SECOND IMAGE GROUP - Microsoft */}
@@ -100,13 +93,13 @@ export default function Hero() {
                   src={Microsoft} 
                   alt="Microsoft solutions" 
                   className="absolute object-contain"
-                  style={{
-                    top: '-100px',
-                    right: '0px',
-                    height: '602px',
-                    width:'1070px',
-                    zIndex: 5
+                   style={{
+                    height:'600px',
+                    width:'700px',
+                    right:'-80px',
+                    top:'-40px'
                   }}
+
                 />
                 
               </div>
@@ -117,13 +110,13 @@ export default function Hero() {
                   src={Server} 
                   alt="Server and security" 
                   className="absolute object-contain"
-                  style={{
-                    top: '40px',
-                    right: '10px',
-                    height: '400px',
-                    width:'2000px',
-                    zIndex: 5
+                   style={{
+                    height:'450px',
+                    width:'1070px',
+                    right:'-80px',
+                    top:'80px'
                   }}
+
                 />
               </div>
             </div>
@@ -138,29 +131,15 @@ export default function Hero() {
                   <img 
                     src={HeroBg} 
                     alt="Software interface" 
-                    className="object-contain w-full h-full"
-                  />
-                  <img 
-                    src={Phone} 
-                    alt="Mobile interface" 
-                    className="absolute h-48 object-contain"
-                    style={{
-                      bottom: '24px',
-                      right: '60%',
-                      zIndex: 5
-                    }}
-                  />
-                  <img 
-                    src={Investment} 
-                    alt="Investment interface" 
                     className="absolute object-contain"
-                    style={{
-                      bottom: '180px',
-                      right: '55%',
-                      zIndex: 3,
-                      height: '40px'
-                    }}
+                     style={{
+                    top: '-60px',
+                    right: '10px',
+                    height: '270px',
+                    zIndex: 5
+                  }}
                   />
+                 
                 </>
               )}
 
@@ -171,9 +150,9 @@ export default function Hero() {
                   alt="Microsoft solutions" 
                   className="absolute object-contain"
                   style={{
-                    top: '-40px',
+                    top: '-60px',
                     right: '10px',
-                    height: '250px',
+                    height: '300px',
                     zIndex: 5
                   }}
                 />
@@ -186,7 +165,7 @@ export default function Hero() {
                   alt="Server solutions" 
                   className="absolute object-contain"
                   style={{
-                    top: '1px',
+                    top: '-60px',
                     right: '20px',
                     width: '800px',
                     zIndex: 5

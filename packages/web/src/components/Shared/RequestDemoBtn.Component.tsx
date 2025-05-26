@@ -13,7 +13,7 @@ function RequestDemoBtn() {
       }}
     >
       Request Demo
-      <img src={ArrowRight} alt="arrow" className="h-2" />
+  
     </button>
   )
 }

@@ -46,7 +46,7 @@ export default function Navbar() {
   }
 
   return (
-    <header className="absolute inset-x-0 top-0 z-50 bg-white">
+    <header className="absolute inset-x-0 top-0 z-50 bg-white font-Poppins">
       <SidePadding>
         <nav
           className="flex items-center justify-between py-8"
@@ -66,7 +66,7 @@ export default function Navbar() {
               <Bars3Icon className="size-6" aria-hidden="true" />
             </button>
           </div>
-          <div className="hidden lg:flex lg:gap-x-12">
+          <div className="hidden lg:flex lg:gap-x-12 font-medium">
             {navigation.map((item) => (
               // <a key={item.name} href={item.href} className="leading-6">
               //   {item.name}

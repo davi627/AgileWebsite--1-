@@ -7,7 +7,7 @@ interface Logo {
   colorLogoUrl: string;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://webtest.agilebiz.co.ke:5000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000';
 
 export default function Partners() {
   const [logos, setLogos] = useState<Logo[]>([]);
@@ -70,22 +70,23 @@ export default function Partners() {
         >
           {/* Render two sets of logos for seamless looping */}
           {[...logos, ...logos].map((logo, index) => (
-            <div 
-              key={`${logo._id}-${index}`}
-              className="group relative flex items-center justify-center h-24 w-40 shrink-0"
-            >
-              <img
-                data-logo
-                src={`${API_BASE_URL}${logo.bwLogoUrl}`}
-                alt={`${logo.name} (BW)`}
-                className="absolute max-h-full max-w-full object-contain transition-opacity duration-300 group-hover:opacity-0"
-              />
-              <img
-                src={`${API_BASE_URL}${logo.colorLogoUrl}`}
-                alt={`${logo.name} (Color)`}
-                className="absolute max-h-full max-w-full object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-              />
-            </div>
+           <div 
+  key={`${logo._id}-${index}`}
+  className="group relative flex items-center justify-center h-24 w-40 shrink-0"
+>
+  <img
+    data-logo
+    src={`${API_BASE_URL}${logo.bwLogoUrl}`}
+    alt={`${logo.name} (BW)`}
+    className="absolute h-20 object-contain transition-opacity duration-300 group-hover:opacity-0"
+  />
+  <img
+    src={`${API_BASE_URL}${logo.colorLogoUrl}`}
+    alt={`${logo.name} (Color)`}
+    className="absolute h-20 object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+  />
+</div>
+
           ))}
         </div>
       </div>
