@@ -5,7 +5,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import SidePadding from 'components/Shared/SidePadding.Component';
 import { useNavigate } from 'react-router-dom';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 interface Comment {
   _id: string;
@@ -138,7 +138,7 @@ function Testimonials() {
 
                     <div className="hidden h-[28rem] w-1/2 rounded-xl md:block">
                       <img
-                        src={`http://webtest-api.agilebiz.co.ke:5000${comment.image}`}
+                        src={`http://localhost:5000${comment.image}`}
                         alt="testimonial"
                         className="h-full w-full rounded-xl object-cover object-center"
                       />

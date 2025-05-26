@@ -166,7 +166,7 @@ router.get('/comments/pending', async (req, res) => {
     const comments = await Comments.find({ status: 'pending' })
       .populate('blogId', 'title')
       .sort({ date: -1 })
-      .lean(); // Convert to plain JavaScript objects
+      .lean(); 
     
     const formattedComments = comments.map(comment => {
       // Safely handle date formatting
@@ -197,6 +197,44 @@ router.get('/comments/pending', async (req, res) => {
     });
   }
 });
+
+// Admin route to fetch approved comments
+router.get('/comments/approved', async (req, res) => {
+  try {
+    const comments = await Comments.find({ status: 'approved' })
+      .populate('blogId', 'title')
+      .sort({ date: -1 })
+      .lean();
+
+    const formattedComments = comments.map(comment => {
+      let formattedDate;
+      try {
+        formattedDate = comment.date
+          ? new Date(comment.date).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            })
+          : 'No date';
+      } catch (e) {
+        formattedDate = 'Invalid date';
+      }
+
+      return {
+        ...comment,
+        formattedDate
+      };
+    });
+
+    res.json(formattedComments);
+  } catch (error) {
+    res.status(500).json({
+      message: 'Failed to fetch approved comments',
+      error: error.message
+    });
+  }
+});
+
 
 router.patch('/comments/:id/approve', async (req, res) => {
   try {

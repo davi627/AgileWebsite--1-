@@ -156,7 +156,8 @@ export default function Stats() {
               and cloud solutions provider in Kenya, East and central Africa
             </p>
           </div>
-          <dl className="mt-16 grid grid-cols-2 gap-x-8 gap-y-10 lg:grid-cols-4">
+         <dl className="mt-16 flex gap-x-24 overflow-x-auto">
+
             {displayStats.map((stat) => (
               <div
                 key={stat.id}
