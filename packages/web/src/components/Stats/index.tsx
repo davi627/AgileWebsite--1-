@@ -48,7 +48,7 @@ export default function Stats() {
         },
         { 
           id: 4, 
-          name: 'Experience', 
+          name: 'Years Of Experience', 
           value: stats.experience,
           isNumeric: !isNaN(Number(stats.experience.replace(/\D/g, ''))),
           displayValue: !isNaN(Number(stats.experience.replace(/\D/g, ''))) ? 0 : stats.experience
@@ -63,7 +63,7 @@ export default function Stats() {
         { id: 1, name: 'Successful Projects', value: '0', displayValue: 0, isNumeric: true },
         { id: 2, name: 'Happy Customers', value: '0', displayValue: 0, isNumeric: true },
         { id: 3, name: 'Customer Satisfaction', value: '0', displayValue: 0, isNumeric: true },
-        { id: 4, name: 'Experience', value: '0 Years', displayValue: '0 Years', isNumeric: false }
+        { id: 4, name: 'Years Of Experience', value: '0 ', displayValue: '0 ', isNumeric: false }
       ])
     }
   }

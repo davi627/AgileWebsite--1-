@@ -58,7 +58,7 @@ export default function Partners() {
 
   return (
     <div className="bg-[#F3F8FA] py-[4.5rem] overflow-hidden">
-      <h2 className="text-center text-lg font-medium tracking-wide text-[#1E1E1E] md:tracking-wider">
+      <h2 className="text-center text-lg font-medium tracking-wide text-[#1E1E1E] md:tracking-wider font-Poppins">
         We have Partnered with the best
       </h2>
 
@@ -70,23 +70,22 @@ export default function Partners() {
         >
           {/* Render two sets of logos for seamless looping */}
           {[...logos, ...logos].map((logo, index) => (
-           <div 
-  key={`${logo._id}-${index}`}
-  className="group relative flex items-center justify-center h-24 w-40 shrink-0"
->
-  <img
-    data-logo
-    src={`${API_BASE_URL}${logo.bwLogoUrl}`}
-    alt={`${logo.name} (BW)`}
-    className="absolute h-20 object-contain transition-opacity duration-300 group-hover:opacity-0"
-  />
-  <img
-    src={`${API_BASE_URL}${logo.colorLogoUrl}`}
-    alt={`${logo.name} (Color)`}
-    className="absolute h-20 object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-  />
-</div>
-
+            <div 
+              key={`${logo._id}-${index}`}
+              className="group relative flex items-center justify-center h-20 w-32 shrink-0 bg-white rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300"
+            >
+              <img
+                data-logo
+                src={`${API_BASE_URL}${logo.bwLogoUrl}`}
+                alt={`${logo.name} (BW)`}
+                className="absolute max-w-24 max-h-16 object-contain transition-opacity duration-300 group-hover:opacity-0"
+              />
+              <img
+                src={`${API_BASE_URL}${logo.colorLogoUrl}`}
+                alt={`${logo.name} (Color)`}
+                className="absolute max-w-24 max-h-16 object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+              />
+            </div>
           ))}
         </div>
       </div>
