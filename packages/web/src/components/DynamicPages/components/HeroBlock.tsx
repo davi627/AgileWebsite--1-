@@ -11,7 +11,7 @@ interface HeroBlockProps {
   subtitle?: string
   description: string
   backgroundImageUrl: string
-  ctaButtons?: CTAButton[] // Make optional
+  ctaButtons?: CTAButton[]
 }
 
 export default function HeroBlock({
@@ -19,7 +19,7 @@ export default function HeroBlock({
   subtitle = '',
   description,
   backgroundImageUrl,
-  ctaButtons = [] // Default to an empty array if undefined
+  ctaButtons = []
 }: HeroBlockProps) {
   return (
     <div className="relative">
@@ -47,21 +47,7 @@ export default function HeroBlock({
             <p className="mt-6 text-lg leading-8 text-gray-600">
               {description}
             </p>
-            {/* <div className="mt-10 flex items-center justify-center gap-x-6">
-              {ctaButtons.map((button, index) => (
-                <a
-                  key={index}
-                  href={button.url}
-                  className={`rounded-md px-3.5 py-2.5 text-sm font-semibold ${
-                    button.primary
-                      ? 'bg-primary text-white hover:opacity-90'
-                      : 'text-gray-900'
-                  }`}
-                >
-                  {button.label}
-                </a>
-              ))}
-            </div> */}
+
           </div>
         </div>
       </div>

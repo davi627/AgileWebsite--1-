@@ -1,25 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 
 interface SecurityKeyModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onValidate: (key: string) => Promise<boolean>;
+  isOpen: boolean
+  onClose: () => void
+  onValidate: (key: string) => Promise<boolean>
 }
 
-const SecurityKeyModal: React.FC<SecurityKeyModalProps> = ({ isOpen, onClose, onValidate }) => {
-  const [securityKey, setSecurityKey] = useState('');
+const SecurityKeyModal: React.FC<SecurityKeyModalProps> = ({
+  isOpen,
+  onClose,
+  onValidate
+}) => {
+  const [securityKey, setSecurityKey] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const isValid = await onValidate(securityKey);
+    e.preventDefault()
+    const isValid = await onValidate(securityKey)
     if (isValid) {
-      onClose();
+      onClose()
     } else {
-      alert('Invalid security key. Please try again.');
+      alert('Invalid security key. Please try again.')
     }
-  };
+  }
 
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -52,7 +56,7 @@ const SecurityKeyModal: React.FC<SecurityKeyModalProps> = ({ isOpen, onClose, on
         </form>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default SecurityKeyModal;
+export default SecurityKeyModal

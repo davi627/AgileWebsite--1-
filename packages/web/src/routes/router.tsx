@@ -1,5 +1,10 @@
 import React, { Suspense, lazy } from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate
+} from 'react-router-dom'
 import { Login, Register } from '../components/Authentication'
 import Landing from '../components/Landing'
 import Careers from '../components/Careers'
@@ -25,7 +30,6 @@ import SolutionCategoryForm from 'components/SolutionCategoryForm/SolutionCatego
 import SolutionDetail from 'components/Solutions/SolutionsDetails'
 import SolutionsDetails from 'components/SolutionsDetails/SolutionsDetails'
 
-
 const AppRouter: React.FC = () => {
   return (
     <Router>
@@ -45,15 +49,18 @@ const AppRouter: React.FC = () => {
           <Route path="/contact-us" element={<ContactUsPage />} />
           <Route path="/access-denied" element={<AccessDenied />} />
           <Route path="/blogs" element={<Blogs />} />
-          <Route path='/dashboard' element={<AdminDashboard/>}/>
-          <Route path='/all-comments' element={<AllCommentsPage />} />
-          <Route path='/blog/:id' element={<BlogDetail/>}/>
-          <Route path='/reset' element={<Reset/>}/>
-          <Route path='/reset-password' element={<ResetPassword/>}/>
-          <Route path='/solns' element={<Soltns/>}/>
-          <Route path='/patners' element={<Partners/>}/>
-          <Route path='/solutionsdetails' element={<SolutionsDetails/>}/>
-          <Route path="/solns/:categoryId/:solutionId" element={<SolutionsDetails />} />
+          <Route path="/dashboard" element={<AdminDashboard />} />
+          <Route path="/all-comments" element={<AllCommentsPage />} />
+          <Route path="/blog/:id" element={<BlogDetail />} />
+          <Route path="/reset" element={<Reset />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/solns" element={<Soltns />} />
+          <Route path="/patners" element={<Partners />} />
+          <Route path="/solutionsdetails" element={<SolutionsDetails />} />
+          <Route
+            path="/solns/:categoryId/:solutionId"
+            element={<SolutionsDetails />}
+          />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

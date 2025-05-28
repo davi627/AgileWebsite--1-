@@ -44,7 +44,9 @@ export const fetchSolutionById = async (ids: string[]): Promise<Solution[]> => {
   }
 }
 
-export const fetchSolutionBySlug = async (slug: string): Promise<Solution | null> => {
+export const fetchSolutionBySlug = async (
+  slug: string
+): Promise<Solution | null> => {
   try {
     const response = await axios.get<Solution>(
       `${API_BASE_URL}/solutions/slug/${slug}`,
@@ -59,7 +61,9 @@ export const fetchSolutionBySlug = async (slug: string): Promise<Solution | null
   }
 }
 
-export const createSolution = async (solution: Solution): Promise<Solution | null> => {
+export const createSolution = async (
+  solution: Solution
+): Promise<Solution | null> => {
   try {
     const response = await axios.post<Solution>(
       `${API_BASE_URL}/solutions`,

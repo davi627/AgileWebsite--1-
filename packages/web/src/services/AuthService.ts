@@ -3,7 +3,8 @@ import { jwtDecode } from 'jwt-decode'
 import { useNavigate } from 'react-router-dom'
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000/api'
+  import.meta.env.VITE_API_BASE_URL ||
+  'http://webtest-api.agilebiz.co.ke:5000/api'
 
 // Define response and payload interfaces
 export interface LoginResponse {
@@ -39,7 +40,7 @@ interface AuthenticatedUser {
   id: string
   email: string
   password: string
-  name:string
+  name: string
 }
 
 // Centralized error handling function
@@ -56,10 +57,9 @@ const handleApiError = (error: unknown): never => {
 // Login function
 export const login = async (
   email: string,
-  password: string,
-  
+  password: string
 ): Promise<LoginResponse> => {
-  const payload: LoginPayload = { email, password, role:'Admin' }
+  const payload: LoginPayload = { email, password, role: 'Admin' }
 
   try {
     const response = await axios.post<LoginResponse>(
@@ -68,7 +68,7 @@ export const login = async (
       { withCredentials: true }
     )
     localStorage.setItem('token', response.data.token)
-    localStorage.setItem('userRole', response.data.userRole) 
+    localStorage.setItem('userRole', response.data.userRole)
     return response.data
   } catch (error) {
     return handleApiError(error)
@@ -83,7 +83,13 @@ export const register = async (
   password: string,
   role: string
 ): Promise<RegisterResponse> => {
-  const payload: RegisterPayload = { firstName, lastName, email, password, role }
+  const payload: RegisterPayload = {
+    firstName,
+    lastName,
+    email,
+    password,
+    role
+  }
 
   try {
     const response = await axios.post<RegisterResponse>(
@@ -129,7 +135,7 @@ export const isAuthenticated = (): boolean => {
 
   try {
     const decoded = jwtDecode<DecodedToken>(token)
-    return decoded.exp * 1000 > Date.now() 
+    return decoded.exp * 1000 > Date.now()
   } catch (error) {
     console.error('Failed to decode token:', error)
     return false
@@ -139,6 +145,6 @@ export const isAuthenticated = (): boolean => {
 // Sign out the user
 export const signOut = (navigate: (path: string) => void): void => {
   localStorage.removeItem('token')
-  localStorage.removeItem('userRole') 
+  localStorage.removeItem('userRole')
   navigate('/')
 }

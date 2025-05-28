@@ -3,7 +3,8 @@ import { User } from '../types/User'
 
 // Define the base URL for the API
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000/api'
+  import.meta.env.VITE_API_BASE_URL ||
+  'http://webtest-api.agilebiz.co.ke:5000/api'
 
 // Define a type for user roles
 type Role = 'Admin' | 'User'
@@ -57,7 +58,9 @@ const getToken = async (): Promise<string> => {
 }
 
 // Reusable function to get authorization headers
-const getAuthHeaders = async (): Promise<{ headers: { Authorization: string } }> => {
+const getAuthHeaders = async (): Promise<{
+  headers: { Authorization: string }
+}> => {
   const token = await getToken()
   return {
     headers: { Authorization: `Bearer ${token}` }
@@ -68,7 +71,11 @@ const getAuthHeaders = async (): Promise<{ headers: { Authorization: string } }>
 export const createUser = async (user: User): Promise<User> => {
   try {
     const headers = await getAuthHeaders()
-    const response = await axios.post<User>(`${API_BASE_URL}/users`, user, headers)
+    const response = await axios.post<User>(
+      `${API_BASE_URL}/users`,
+      user,
+      headers
+    )
     return response.data
   } catch (error) {
     const { message } = handleApiError(error)
@@ -80,7 +87,11 @@ export const createUser = async (user: User): Promise<User> => {
 export const updateUser = async (id: string, user: User): Promise<User> => {
   try {
     const headers = await getAuthHeaders()
-    const response = await axios.put<User>(`${API_BASE_URL}/users/${id}`, user, headers)
+    const response = await axios.put<User>(
+      `${API_BASE_URL}/users/${id}`,
+      user,
+      headers
+    )
     return response.data
   } catch (error) {
     const { message } = handleApiError(error)
@@ -116,7 +127,10 @@ export const fetchUsers = async (): Promise<User[]> => {
 export const fetchUserById = async (id: string): Promise<User> => {
   try {
     const headers = await getAuthHeaders()
-    const response = await axios.get<User>(`${API_BASE_URL}/users/${id}`, headers)
+    const response = await axios.get<User>(
+      `${API_BASE_URL}/users/${id}`,
+      headers
+    )
     return response.data
   } catch (error) {
     const { message } = handleApiError(error)

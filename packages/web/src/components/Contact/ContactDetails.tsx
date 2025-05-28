@@ -30,9 +30,7 @@ const ContactDetails: React.FC = () => {
         <h2 className="text-primary text-3xl font-bold tracking-tight">
           Get in touch
         </h2>
-        <p className="mt-4 leading-7 text-gray-600">
-          
-        </p>
+        <p className="mt-4 leading-7 text-gray-600"></p>
       </div>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:col-span-2 lg:gap-8">
         {contactItems.map((item) => (

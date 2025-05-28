@@ -1,44 +1,47 @@
-import React, { useEffect, useState, useRef } from 'react';
-import Slider from 'react-slick';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
-import SidePadding from 'components/Shared/SidePadding.Component';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState, useRef } from 'react'
+import Slider from 'react-slick'
+import 'slick-carousel/slick/slick.css'
+import 'slick-carousel/slick/slick-theme.css'
+import SidePadding from 'components/Shared/SidePadding.Component'
+import { useNavigate } from 'react-router-dom'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://webtest.agilebiz.co.ke:5000';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || 'http://webtest.agilebiz.co.ke:5000'
 
 interface Comment {
-  _id: string;
-  logo: string;
-  description: string;
-  author: string;
-  products: string[];
-  status: 'pending' | 'approved' | 'rejected';
-  image: string;
+  _id: string
+  logo: string
+  description: string
+  author: string
+  products: string[]
+  status: 'pending' | 'approved' | 'rejected'
+  image: string
 }
 
 function Testimonials() {
-  const [comments, setComments] = useState<Comment[]>([]);
-  const sliderRef = useRef<Slider>(null);
+  const [comments, setComments] = useState<Comment[]>([])
+  const sliderRef = useRef<Slider>(null)
 
   const fetchApprovedComments = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/comments/comments`);
-      const data = await response.json();
-      const approvedComments = data.filter((comment: Comment) => comment.status === 'approved');
-      setComments(approvedComments);
+      const response = await fetch(`${API_BASE_URL}/comments/comments`)
+      const data = await response.json()
+      const approvedComments = data.filter(
+        (comment: Comment) => comment.status === 'approved'
+      )
+      setComments(approvedComments)
     } catch (error) {
-      console.error('Failed to fetch comments:', error);
+      console.error('Failed to fetch comments:', error)
     }
-  };
+  }
 
   useEffect(() => {
-    fetchApprovedComments();
-  }, []);
+    fetchApprovedComments()
+  }, [])
 
   // Custom arrow components
   const NextArrow = (props: any) => {
-    const { onClick } = props;
+    const { onClick } = props
     return (
       <button
         onClick={onClick}
@@ -51,14 +54,19 @@ function Testimonials() {
           viewBox="0 0 24 24"
           stroke="currentColor"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 5l7 7-7 7"
+          />
         </svg>
       </button>
-    );
-  };
+    )
+  }
 
   const PrevArrow = (props: any) => {
-    const { onClick } = props;
+    const { onClick } = props
     return (
       <button
         onClick={onClick}
@@ -71,11 +79,16 @@ function Testimonials() {
           viewBox="0 0 24 24"
           stroke="currentColor"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M15 19l-7-7 7-7"
+          />
         </svg>
       </button>
-    );
-  };
+    )
+  }
 
   const sliderSettings = {
     dots: true,
@@ -83,7 +96,7 @@ function Testimonials() {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    autoplay: true, 
+    autoplay: true,
     arrows: true,
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
@@ -94,8 +107,8 @@ function Testimonials() {
     ),
     customPaging: () => (
       <div className="h-2 w-2 rounded-full bg-gray-400 transition-all duration-300 hover:bg-gray-600" />
-    ),
-  };
+    )
+  }
 
   return (
     <SidePadding>
@@ -109,7 +122,10 @@ function Testimonials() {
           <div className="relative mt-14">
             <Slider ref={sliderRef} {...sliderSettings}>
               {comments.map((comment) => (
-                <div key={comment._id} className="shadow-top-bottom rounded-xl p-6 md:p-10">
+                <div
+                  key={comment._id}
+                  className="shadow-top-bottom rounded-xl p-6 md:p-10"
+                >
                   <div className="flex flex-col gap-5 md:flex-row">
                     <div className="flex w-full flex-col items-start justify-evenly gap-6 md:w-1/2">
                       <img
@@ -128,7 +144,10 @@ function Testimonials() {
                         <p className="font-medium">Products</p>
                         <div className="mt-2 flex flex-wrap gap-4 text-sm font-light">
                           {comment.products.map((product, index) => (
-                            <div key={index} className="flex items-center gap-2">
+                            <div
+                              key={index}
+                              className="flex items-center gap-2"
+                            >
                               <p>{product}</p>
                             </div>
                           ))}
@@ -149,11 +168,13 @@ function Testimonials() {
             </Slider>
           </div>
         ) : (
-          <p className="mt-14 text-center text-gray-600">No  testimonials found.</p>
+          <p className="mt-14 text-center text-gray-600">
+            No testimonials found.
+          </p>
         )}
       </div>
     </SidePadding>
-  );
+  )
 }
 
-export default Testimonials;
+export default Testimonials

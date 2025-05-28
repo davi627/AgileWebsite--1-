@@ -22,7 +22,7 @@ const Register: React.FC = () => {
       }
 
       try {
-        await register(firstName, lastName, email, password, role) 
+        await register(firstName, lastName, email, password, role)
         navigate('/login')
       } catch (error: unknown) {
         if (error instanceof Error) {
@@ -140,7 +140,10 @@ const Register: React.FC = () => {
 
         <p className="mt-6 text-center text-sm text-gray-500">
           Already have an account?{' '}
-          <a href="/login" className="text-primary font-semibold hover:text-indigo-500">
+          <a
+            href="/login"
+            className="text-primary font-semibold hover:text-indigo-500"
+          >
             Login
           </a>
         </p>

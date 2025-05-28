@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 
 const featureSchema = new mongoose.Schema({
   text: String
-});
+})
 
 const solutionSchema = new mongoose.Schema({
   id: Number,
@@ -11,12 +11,12 @@ const solutionSchema = new mongoose.Schema({
   fullDesc: String,
   features: [featureSchema],
   implementation: String
-});
+})
 
 const solutionCategorySchema = new mongoose.Schema({
   title: String,
-  imageUrl: String, 
+  imageUrl: String,
   solutions: [solutionSchema]
-});
+})
 
-export default mongoose.model('SolutionCategory', solutionCategorySchema);
+export default mongoose.model('SolutionCategory', solutionCategorySchema)

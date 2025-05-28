@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import agile from '../../assets/agilebiz_logo.png'
 import axios from 'axios'
 
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000'
 
 const Reset: React.FC = () => {
   const [email, setEmail] = useState<string>('stephen.okwemba@agilebiz.co.ke')
@@ -12,39 +12,30 @@ const Reset: React.FC = () => {
   const navigate = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError('');
-    
+    e.preventDefault()
+    setError('')
+
     try {
       const response = await axios.post(`${API_BASE_URL}/api/forgot-password`, {
-        email,
-      });
-  
+        email
+      })
+
       if (response.data.success) {
-        navigate('/login');
-        alert('Reset password link sent to your email.');
+        navigate('/login')
+        alert('Reset password link sent to your email.')
       } else {
-        setError(response.data.message);
+        setError(response.data.message)
       }
     } catch (error) {
-      setError('An error occurred while sending reset password link.');
-      console.error(error);
+      setError('An error occurred while sending reset password link.')
+      console.error(error)
     }
-  };
-  
-
- 
-
-  
+  }
 
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <img
-          className="mx-auto h-10 w-auto"
-          src={agile}
-          alt="AgileBiz Logo"
-        />
+        <img className="mx-auto h-10 w-auto" src={agile} alt="AgileBiz Logo" />
         <h2 className="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           Input Email
         </h2>
@@ -54,7 +45,7 @@ const Reset: React.FC = () => {
         <div className="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
           {error && <p className="text-red-500 mb-4">{error}</p>}
 
-          <form className="space-y-6" onSubmit={handleSubmit} >
+          <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label
                 htmlFor="email"
@@ -76,8 +67,6 @@ const Reset: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center justify-between">
-              
-
               <div className="text-sm leading-6">
                 <a
                   href="/login"
@@ -86,7 +75,6 @@ const Reset: React.FC = () => {
                   Submit
                 </a>
               </div>
-             
             </div>
           </form>
         </div>

@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-// import {
-//   UserGroupIcon,
-//   ChartBarIcon,
-//   CloudIcon,
-//   ServerIcon,
-//   DocumentTextIcon
-// } from '@heroicons/react/24/outline'
+
 import { fetchSolutions } from '../../services/SolutionsService'
 import { Solution } from '../../types/Solutions'
 import Loader from '../Loader'
@@ -14,14 +8,6 @@ import Loader from '../Loader'
 import SidePadding from 'components/Shared/SidePadding.Component'
 import ProductCard from './ProductCard.Component'
 import ArrowRight from '../../assets/arrow-right.png'
-
-// const iconMapping: { [key: string]: React.ElementType } = {
-//   UserGroupIcon,
-//   ChartBarIcon,
-//   CloudIcon,
-//   ServerIcon,
-//   DocumentTextIcon
-// }
 
 const ProductsSection = () => {
   const navigate = useNavigate()

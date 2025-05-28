@@ -36,7 +36,7 @@ const GetQuoteModal: React.FC<GetQuoteModalProps> = ({
       }
 
       await sendMail({
-        to: 'hello@skyver.co.ke', // Replace with the recipient's email address
+        to: 'hello@skyver.co.ke',
         subject: `Quote Request from ${name}`,
         text: renderQuotationEmailText(mailProps),
         html: renderQuotationEmailHtml(mailProps)

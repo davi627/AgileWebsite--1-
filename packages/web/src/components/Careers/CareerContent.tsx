@@ -20,11 +20,6 @@ export default function CareerContent() {
               that help us deliver exceptional business solutions to our
               clients.
             </p>
-            {/* <p className="mt-6 text-base leading-7 text-gray-600">
-              Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui
-              lorem cupidatat commodo. Elit sunt amet fugiat veniam occaecat
-              fugiat. Quasi aperiam sit non sit neque reprehenderit.
-            </p> */}
           </div>
           <div className="flex flex-wrap items-start justify-end gap-6 sm:gap-8 lg:contents">
             <div className="w-0 flex-auto lg:ml-auto lg:w-auto lg:flex-none lg:self-end">

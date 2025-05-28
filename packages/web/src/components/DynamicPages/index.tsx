@@ -4,7 +4,6 @@ import { fetchSolutionBySlug } from '../../services/SolutionsService'
 import { Solution } from '../../types/Solutions'
 import PageTemplate from './components/PageTemplate'
 import Loader from '../Loader'
-// import AgileIcon from 'components/Common/agileIcon'
 
 const DynamicPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>()

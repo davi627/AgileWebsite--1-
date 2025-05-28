@@ -12,7 +12,7 @@ import { User } from '../../types/User'
 import { useNavigate } from 'react-router-dom'
 
 const userNavigation = [
-  { name: 'Profile', href: '/profile' }, 
+  { name: 'Profile', href: '/profile' },
   { name: 'Sign out', href: '#' }
 ]
 

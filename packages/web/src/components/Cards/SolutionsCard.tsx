@@ -1,13 +1,18 @@
-import React from 'react';
+import React from 'react'
 
 interface CardProps {
-  name: string;
-  shortDescription: string;
-  image: string;
-  onLearnMore: () => void;
+  name: string
+  shortDescription: string
+  image: string
+  onLearnMore: () => void
 }
 
-const SolutionCard: React.FC<CardProps> = ({ name, shortDescription, image, onLearnMore }) => {
+const SolutionCard: React.FC<CardProps> = ({
+  name,
+  shortDescription,
+  image,
+  onLearnMore
+}) => {
   return (
     <div className="hover:border-primary w-full overflow-hidden rounded-md border-2 bg-white transition-shadow duration-300">
       <div className="text-md mb-2 p-3 font-semibold text-black">{name}</div>
@@ -22,7 +27,7 @@ const SolutionCard: React.FC<CardProps> = ({ name, shortDescription, image, onLe
         </button>
       </div>
     </div>
-  );
+  )
 }
 
-export default SolutionCard;
+export default SolutionCard

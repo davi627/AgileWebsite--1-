@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import Blogs from './Blogs.js';
+import Blogs from './Blogs.js'
 const CommentsSchema = new mongoose.Schema({
   text: {
     type: String,
@@ -11,9 +11,9 @@ const CommentsSchema = new mongoose.Schema({
     required: [true, 'Author name is required'],
     minlength: [2, 'Author name must be at least 2 characters']
   },
-  blogId: {  
+  blogId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Blogs', 
+    ref: 'Blogs',
     required: true
   },
   status: {
@@ -23,15 +23,15 @@ const CommentsSchema = new mongoose.Schema({
   },
   date: {
     type: Date,
-    default: () => new Date() 
+    default: () => new Date()
   }
-});
+})
 
 // Add virtual for formatted date
-CommentsSchema.virtual('formattedDate').get(function() {
-  return this.date.toLocaleDateString();
-});
+CommentsSchema.virtual('formattedDate').get(function () {
+  return this.date.toLocaleDateString()
+})
 
-const Comments = mongoose.model('Comments', CommentsSchema);
+const Comments = mongoose.model('Comments', CommentsSchema)
 
-export default Comments;
+export default Comments

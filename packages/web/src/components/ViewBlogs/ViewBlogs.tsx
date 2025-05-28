@@ -1,248 +1,266 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Image from '@tiptap/extension-image';
+import React, { useEffect, useState } from 'react'
+import axios from 'axios'
+import { useEditor, EditorContent } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
+import Image from '@tiptap/extension-image'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000'
 
 interface BlogContent {
-  type: "text" | "image";
-  data: string;
+  type: 'text' | 'image'
+  data: string
 }
 
 interface Blog {
-  _id: string;
-  title: string;
-  author: { name: string };
-  content: BlogContent[];
+  _id: string
+  title: string
+  author: { name: string }
+  content: BlogContent[]
 }
 
 const ViewBlogs: React.FC = () => {
-  const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [showConfirmation, setShowConfirmation] = useState(false);
-  const [currentAction, setCurrentAction] = useState<() => void>(() => {});
-  const [isCreatingBlog, setIsCreatingBlog] = useState(false);
-  const [isEditingBlog, setIsEditingBlog] = useState(false);
-  const [editingBlogId, setEditingBlogId] = useState<string | null>(null);
+  const [blogs, setBlogs] = useState<Blog[]>([])
+  const [showConfirmation, setShowConfirmation] = useState(false)
+  const [currentAction, setCurrentAction] = useState<() => void>(() => {})
+  const [isCreatingBlog, setIsCreatingBlog] = useState(false)
+  const [isEditingBlog, setIsEditingBlog] = useState(false)
+  const [editingBlogId, setEditingBlogId] = useState<string | null>(null)
 
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState<BlogContent[]>([]);
-  const [author, setAuthor] = useState("");
-  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
-  const [coverImageUrl, setCoverImageUrl] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [title, setTitle] = useState('')
+  const [content, setContent] = useState<BlogContent[]>([])
+  const [author, setAuthor] = useState('')
+  const [coverImageFile, setCoverImageFile] = useState<File | null>(null)
+  const [coverImageUrl, setCoverImageUrl] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const [editorHtml, setEditorHtml] = useState("");
+  const [editorHtml, setEditorHtml] = useState('')
 
   const editor = useEditor({
     extensions: [
       StarterKit,
       Image.configure({
         inline: true,
-        allowBase64: true,
-      }),
+        allowBase64: true
+      })
     ],
     content: editorHtml,
     onUpdate: ({ editor }) => {
-      setEditorHtml(editor.getHTML());
-    },
-  });
+      setEditorHtml(editor.getHTML())
+    }
+  })
 
   const handleWithConfirmation = (action: () => void) => {
-    setCurrentAction(() => action);
-    setShowConfirmation(true);
-  };
+    setCurrentAction(() => action)
+    setShowConfirmation(true)
+  }
 
   const executeAction = () => {
-    setShowConfirmation(false);
-    currentAction();
-  };
+    setShowConfirmation(false)
+    currentAction()
+  }
 
   const cancelAction = () => {
-    setShowConfirmation(false);
-  };
+    setShowConfirmation(false)
+  }
 
   const fetchBlogs = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/blog/blogs`);
-      setBlogs(response.data);
+      const response = await axios.get(`${API_BASE_URL}/blog/blogs`)
+      setBlogs(response.data)
     } catch (error) {
-      console.error('Failed to fetch blogs:', error);
-      alert('Failed to fetch blogs. Please try again.');
+      console.error('Failed to fetch blogs:', error)
+      alert('Failed to fetch blogs. Please try again.')
     }
-  };
+  }
 
   const handleDelete = async (blogId: string) => {
     handleWithConfirmation(async () => {
       try {
-        const response = await axios.delete(`${API_BASE_URL}/blog/blogs/${blogId}`);
+        const response = await axios.delete(
+          `${API_BASE_URL}/blog/blogs/${blogId}`
+        )
         if (response.status === 200) {
-          alert('Blog deleted successfully!');
-          fetchBlogs();
+          alert('Blog deleted successfully!')
+          fetchBlogs()
         }
       } catch (error) {
-        console.error('Failed to delete blog:', error);
-        alert('Failed to delete blog. Please try again.');
+        console.error('Failed to delete blog:', error)
+        alert('Failed to delete blog. Please try again.')
       }
-    });
-  };
+    })
+  }
 
   const handleEdit = (blog: Blog) => {
-    setIsCreatingBlog(true);
-    setIsEditingBlog(true);
-    setEditingBlogId(blog._id);
-    setTitle(blog.title);
-    setAuthor(blog.author.name);
-    setContent(blog.content);
+    setIsCreatingBlog(true)
+    setIsEditingBlog(true)
+    setEditingBlogId(blog._id)
+    setTitle(blog.title)
+    setAuthor(blog.author.name)
+    setContent(blog.content)
 
     // Rebuild editor HTML from blog.content
-    const html = blog.content.map(item => {
-      if (item.type === 'text') {
-        return `<p>${item.data}</p>`;
-      } else if (item.type === 'image') {
-        return `<img src="${item.data}" alt="Blog Image" />`;
-      }
-      return '';
-    }).join('');
+    const html = blog.content
+      .map((item) => {
+        if (item.type === 'text') {
+          return `<p>${item.data}</p>`
+        } else if (item.type === 'image') {
+          return `<img src="${item.data}" alt="Blog Image" />`
+        }
+        return ''
+      })
+      .join('')
 
-    setEditorHtml(html);
+    setEditorHtml(html)
     if (editor) {
-      editor.commands.setContent(html);
+      editor.commands.setContent(html)
     }
 
     // Set cover image URL if exists
-    const coverImage = blog.content.find(item => item.type === 'image');
-    setCoverImageUrl(coverImage ? coverImage.data : '');
-  };
+    const coverImage = blog.content.find((item) => item.type === 'image')
+    setCoverImageUrl(coverImage ? coverImage.data : '')
+  }
 
   const handleImageUploadInEditor = async () => {
-    const input = document.createElement('input');
-    input.setAttribute('type', 'file');
-    input.setAttribute('accept', 'image/*');
-    input.click();
+    const input = document.createElement('input')
+    input.setAttribute('type', 'file')
+    input.setAttribute('accept', 'image/*')
+    input.click()
 
     input.onchange = async () => {
-      const file = input.files?.[0];
+      const file = input.files?.[0]
       if (file) {
-        const formData = new FormData();
-        formData.append("image", file);
+        const formData = new FormData()
+        formData.append('image', file)
 
         try {
-          setLoading(true);
-          const response = await axios.post(`${API_BASE_URL}/blog/upload-image`, formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          });
+          setLoading(true)
+          const response = await axios.post(
+            `${API_BASE_URL}/blog/upload-image`,
+            formData,
+            {
+              headers: { 'Content-Type': 'multipart/form-data' }
+            }
+          )
 
           if (response.data.imageUrl && editor) {
-            editor.commands.setImage({ src: response.data.imageUrl });
+            editor.commands.setImage({ src: response.data.imageUrl })
           }
         } catch (error) {
-          console.error('Failed to upload image:', error);
-          alert('Image upload failed.');
+          console.error('Failed to upload image:', error)
+          alert('Image upload failed.')
         } finally {
-          setLoading(false);
+          setLoading(false)
         }
       }
-    };
-  };
+    }
+  }
 
   const handleCoverImageUpload = async (file: File) => {
-    const formData = new FormData();
-    formData.append("image", file);
+    const formData = new FormData()
+    formData.append('image', file)
 
     try {
-      setLoading(true);
-      const response = await axios.post(`${API_BASE_URL}/blog/upload-image`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      setLoading(true)
+      const response = await axios.post(
+        `${API_BASE_URL}/blog/upload-image`,
+        formData,
+        {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        }
+      )
 
       if (response.data.imageUrl) {
-        setCoverImageUrl(response.data.imageUrl);
+        setCoverImageUrl(response.data.imageUrl)
       }
     } catch (error) {
-      console.error('Failed to upload cover image:', error);
-      alert('Cover image upload failed.');
+      console.error('Failed to upload cover image:', error)
+      alert('Cover image upload failed.')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleBlogSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+    e.preventDefault()
+    setLoading(true)
 
     try {
       // Convert HTML to structured content
-      const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = editorHtml;
+      const tempDiv = document.createElement('div')
+      tempDiv.innerHTML = editorHtml
 
-      const plainText = tempDiv.innerText.trim();
-      const images = Array.from(tempDiv.getElementsByTagName('img')).map(img => img.src);
+      const plainText = tempDiv.innerText.trim()
+      const images = Array.from(tempDiv.getElementsByTagName('img')).map(
+        (img) => img.src
+      )
 
-      const blogContent: BlogContent[] = [];
+      const blogContent: BlogContent[] = []
 
       if (plainText) {
-        blogContent.push({ type: 'text', data: plainText });
+        blogContent.push({ type: 'text', data: plainText })
       }
 
-      images.forEach(src => {
-        blogContent.push({ type: 'image', data: src });
-      });
+      images.forEach((src) => {
+        blogContent.push({ type: 'image', data: src })
+      })
 
       // Prepend cover image if available
       if (coverImageUrl) {
-        blogContent.unshift({ type: 'image', data: coverImageUrl });
+        blogContent.unshift({ type: 'image', data: coverImageUrl })
       }
 
       if (isEditingBlog && editingBlogId) {
-        const response = await axios.put(`${API_BASE_URL}/blog/blogs/${editingBlogId}`, {
-          title,
-          content: blogContent,
-          author: { name: author },
-        });
+        const response = await axios.put(
+          `${API_BASE_URL}/blog/blogs/${editingBlogId}`,
+          {
+            title,
+            content: blogContent,
+            author: { name: author }
+          }
+        )
 
         if (response.status === 200) {
-          alert('Blog updated successfully!');
+          alert('Blog updated successfully!')
         }
       } else {
         const response = await axios.post(`${API_BASE_URL}/blog/blogs`, {
           title,
           content: blogContent,
-          author: { name: author },
-        });
+          author: { name: author }
+        })
 
         if (response.status === 201) {
-          alert('Blog created successfully!');
+          alert('Blog created successfully!')
         }
       }
 
       // Reset form
-      setTitle('');
-      setContent([]);
-      setAuthor('');
-      setCoverImageFile(null);
-      setCoverImageUrl('');
-      setEditorHtml('');
+      setTitle('')
+      setContent([])
+      setAuthor('')
+      setCoverImageFile(null)
+      setCoverImageUrl('')
+      setEditorHtml('')
       if (editor) {
-        editor.commands.clearContent();
+        editor.commands.clearContent()
       }
-      setIsCreatingBlog(false);
-      setIsEditingBlog(false);
-      setEditingBlogId(null);
+      setIsCreatingBlog(false)
+      setIsEditingBlog(false)
+      setEditingBlogId(null)
 
-      fetchBlogs();
+      fetchBlogs()
     } catch (error) {
-      console.error('Failed to submit blog:', error);
-      alert('Failed to submit blog. Please try again.');
+      console.error('Failed to submit blog:', error)
+      alert('Failed to submit blog. Please try again.')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
-    fetchBlogs();
-  }, []);
+    fetchBlogs()
+  }, [])
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
@@ -250,18 +268,18 @@ const ViewBlogs: React.FC = () => {
         <h2 className="text-2xl font-bold">View Blogs</h2>
         <button
           onClick={() => {
-            setIsCreatingBlog(!isCreatingBlog);
-            setIsEditingBlog(false);
-            setEditingBlogId(null);
-            setTitle('');
-            setContent([]);
-            setAuthor('');
-            setEditorHtml('');
+            setIsCreatingBlog(!isCreatingBlog)
+            setIsEditingBlog(false)
+            setEditingBlogId(null)
+            setTitle('')
+            setContent([])
+            setAuthor('')
+            setEditorHtml('')
             if (editor) {
-              editor.commands.clearContent();
+              editor.commands.clearContent()
             }
-            setCoverImageFile(null);
-            setCoverImageUrl('');
+            setCoverImageFile(null)
+            setCoverImageUrl('')
           }}
           className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md transition duration-200"
         >
@@ -271,30 +289,40 @@ const ViewBlogs: React.FC = () => {
 
       {isCreatingBlog && (
         <div className="mb-8 border-b pb-8">
-          <h2 className="text-2xl font-bold mb-6">{isEditingBlog ? 'Update Blog' : 'Create Blog'}</h2>
+          <h2 className="text-2xl font-bold mb-6">
+            {isEditingBlog ? 'Update Blog' : 'Create Blog'}
+          </h2>
           <form onSubmit={handleBlogSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Cover Image</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Cover Image
+              </label>
               <input
                 type="file"
                 accept="image/*"
                 onChange={(e) => {
                   if (e.target.files?.[0]) {
-                    const file = e.target.files[0];
-                    setCoverImageFile(file);
-                    handleCoverImageUpload(file);
+                    const file = e.target.files[0]
+                    setCoverImageFile(file)
+                    handleCoverImageUpload(file)
                   }
                 }}
                 className="mt-1 block w-full text-sm text-gray-700"
-                required={!isEditingBlog} 
+                required={!isEditingBlog}
               />
               {coverImageUrl && (
-                <img src={coverImageUrl} alt="Cover" className="mt-2 w-32 h-32 object-cover rounded" />
+                <img
+                  src={coverImageUrl}
+                  alt="Cover"
+                  className="mt-2 w-32 h-32 object-cover rounded"
+                />
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Title</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Title
+              </label>
               <input
                 type="text"
                 value={title}
@@ -305,27 +333,37 @@ const ViewBlogs: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Content</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Content
+              </label>
               <div className="border rounded p-2 min-h-[16rem]">
                 <div className="flex gap-2 mb-2">
                   <button
                     type="button"
                     onClick={() => editor?.chain().focus().toggleBold().run()}
-                    className={`p-2 rounded ${editor?.isActive('bold') ? 'bg-gray-200' : ''}`}
+                    className={`p-2 rounded ${
+                      editor?.isActive('bold') ? 'bg-gray-200' : ''
+                    }`}
                   >
                     Bold
                   </button>
                   <button
                     type="button"
                     onClick={() => editor?.chain().focus().toggleItalic().run()}
-                    className={`p-2 rounded ${editor?.isActive('italic') ? 'bg-gray-200' : ''}`}
+                    className={`p-2 rounded ${
+                      editor?.isActive('italic') ? 'bg-gray-200' : ''
+                    }`}
                   >
                     Italic
                   </button>
                   <button
                     type="button"
-                    onClick={() => editor?.chain().focus().toggleBulletList().run()}
-                    className={`p-2 rounded ${editor?.isActive('bulletList') ? 'bg-gray-200' : ''}`}
+                    onClick={() =>
+                      editor?.chain().focus().toggleBulletList().run()
+                    }
+                    className={`p-2 rounded ${
+                      editor?.isActive('bulletList') ? 'bg-gray-200' : ''
+                    }`}
                   >
                     List
                   </button>
@@ -337,12 +375,17 @@ const ViewBlogs: React.FC = () => {
                     Image
                   </button>
                 </div>
-                <EditorContent editor={editor} className="min-h-[12rem] border-t pt-2" />
+                <EditorContent
+                  editor={editor}
+                  className="min-h-[12rem] border-t pt-2"
+                />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Author Name</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Author Name
+              </label>
               <input
                 type="text"
                 value={author}
@@ -393,14 +436,24 @@ const ViewBlogs: React.FC = () => {
           <div className="bg-white p-6 rounded shadow-md">
             <p>Are you sure you want to proceed?</p>
             <div className="mt-4 flex justify-end gap-2">
-              <button onClick={executeAction} className="bg-primary text-white px-4 py-2 rounded">Yes</button>
-              <button onClick={cancelAction} className="bg-gray-300 px-4 py-2 rounded">No</button>
+              <button
+                onClick={executeAction}
+                className="bg-primary text-white px-4 py-2 rounded"
+              >
+                Yes
+              </button>
+              <button
+                onClick={cancelAction}
+                className="bg-gray-300 px-4 py-2 rounded"
+              >
+                No
+              </button>
             </div>
           </div>
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default ViewBlogs;
+export default ViewBlogs

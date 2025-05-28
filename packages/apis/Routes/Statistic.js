@@ -7,7 +7,12 @@ const router = express.Router()
 // POST/UPDATE Statistics
 router.post('/statistics', async (req, res) => {
   try {
-    const { successfulProjects, happyCustomers, customerSatisfaction, experience } = req.body
+    const {
+      successfulProjects,
+      happyCustomers,
+      customerSatisfaction,
+      experience
+    } = req.body
 
     // Check if statistics already exist
     let statistic = await Statistic.findOne()
@@ -31,7 +36,9 @@ router.post('/statistics', async (req, res) => {
     // Save the statistics
     await statistic.save()
 
-    res.status(200).json({ message: 'Statistics updated successfully!', statistic })
+    res
+      .status(200)
+      .json({ message: 'Statistics updated successfully!', statistic })
   } catch (error) {
     console.error('Failed to update statistics:', error)
     res.status(500).json({ message: 'Failed to update statistics' })
@@ -52,4 +59,4 @@ router.get('/statistics', async (req, res) => {
   }
 })
 
-export { router as statisticsRouter}
+export { router as statisticsRouter }

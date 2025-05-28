@@ -1,7 +1,7 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
 const SecurityKeySchema = new mongoose.Schema({
   key: { type: String, required: true }
-});
+})
 
-export const SecurityKey = mongoose.model('SecurityKey', SecurityKeySchema);
+export const SecurityKey = mongoose.model('SecurityKey', SecurityKeySchema)

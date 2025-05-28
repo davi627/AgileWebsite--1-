@@ -1,45 +1,51 @@
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useEditor, EditorContent } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000'
 
 interface Feature {
-  text: string;
+  text: string
 }
 
 interface Solution {
-  id: number;
-  name: string;
-  shortDesc: string;
-  fullDesc: string;
-  features: Feature[];
-  implementation: string;
+  id: number
+  name: string
+  shortDesc: string
+  fullDesc: string
+  features: Feature[]
+  implementation: string
 }
 
 interface SolutionCategory {
-  _id?: string;
-  title: string;
-  imageUrl: string;
-  solutions: Solution[];
+  _id?: string
+  title: string
+  imageUrl: string
+  solutions: Solution[]
 }
 
 interface FeatureItemProps {
-  feature: Feature;
-  index: number;
-  onChange: (index: number, value: string) => void;
-  onRemove: (index: number) => void;
+  feature: Feature
+  index: number
+  onChange: (index: number, value: string) => void
+  onRemove: (index: number) => void
 }
 
-const FeatureItem: React.FC<FeatureItemProps> = ({ feature, index, onChange, onRemove }) => {
+const FeatureItem: React.FC<FeatureItemProps> = ({
+  feature,
+  index,
+  onChange,
+  onRemove
+}) => {
   const editor = useEditor({
     extensions: [StarterKit],
     content: feature.text || '',
     onUpdate: ({ editor }) => {
-      onChange(index, editor.getText());
-    },
-  });
+      onChange(index, editor.getText())
+    }
+  })
 
   return (
     <div className="flex flex-col gap-2 mb-3">
@@ -54,17 +60,17 @@ const FeatureItem: React.FC<FeatureItemProps> = ({ feature, index, onChange, onR
         Remove Feature
       </button>
     </div>
-  );
-};
+  )
+}
 
 interface SolutionItemProps {
-  solution: Solution;
-  index: number;
-  onChange: (index: number, field: string, value: string) => void;
-  onFeatureChange: (solIndex: number, featIndex: number, value: string) => void;
-  onAddFeature: (solIndex: number) => void;
-  onRemoveFeature: (solIndex: number, featIndex: number) => void;
-  onRemove: (index: number) => void;
+  solution: Solution
+  index: number
+  onChange: (index: number, field: string, value: string) => void
+  onFeatureChange: (solIndex: number, featIndex: number, value: string) => void
+  onAddFeature: (solIndex: number) => void
+  onRemoveFeature: (solIndex: number, featIndex: number) => void
+  onRemove: (index: number) => void
 }
 
 const SolutionItem: React.FC<SolutionItemProps> = ({
@@ -74,28 +80,30 @@ const SolutionItem: React.FC<SolutionItemProps> = ({
   onFeatureChange,
   onAddFeature,
   onRemoveFeature,
-  onRemove,
+  onRemove
 }) => {
   const fullDescEditor = useEditor({
     extensions: [StarterKit],
     content: solution.fullDesc || '',
     onUpdate: ({ editor }) => {
-      onChange(index, 'fullDesc', editor.getText());
-    },
-  });
+      onChange(index, 'fullDesc', editor.getText())
+    }
+  })
 
   const implementationEditor = useEditor({
     extensions: [StarterKit],
     content: solution.implementation || '',
     onUpdate: ({ editor }) => {
-      onChange(index, 'implementation', editor.getText());
-    },
-  });
+      onChange(index, 'implementation', editor.getText())
+    }
+  })
 
   return (
     <div className="mb-3 p-3 md:p-4 border rounded-lg">
       <div className="flex justify-between items-center mb-2">
-        <h4 className="font-medium text-sm md:text-base">Solution {index + 1}</h4>
+        <h4 className="font-medium text-sm md:text-base">
+          Solution {index + 1}
+        </h4>
         <button
           type="button"
           onClick={() => onRemove(index)}
@@ -107,7 +115,9 @@ const SolutionItem: React.FC<SolutionItemProps> = ({
 
       <div className="space-y-2 md:space-y-3">
         <div>
-          <label className="block text-xs md:text-sm font-medium text-gray-700">Name</label>
+          <label className="block text-xs md:text-sm font-medium text-gray-700">
+            Name
+          </label>
           <input
             type="text"
             value={solution.name}
@@ -118,7 +128,9 @@ const SolutionItem: React.FC<SolutionItemProps> = ({
         </div>
 
         <div>
-          <label className="block text-xs md:text-sm font-medium text-gray-700">Short Description</label>
+          <label className="block text-xs md:text-sm font-medium text-gray-700">
+            Short Description
+          </label>
           <input
             type="text"
             value={solution.shortDesc}
@@ -128,14 +140,18 @@ const SolutionItem: React.FC<SolutionItemProps> = ({
         </div>
 
         <div>
-          <label className="block text-xs md:text-sm font-medium text-gray-700">Full Description</label>
+          <label className="block text-xs md:text-sm font-medium text-gray-700">
+            Full Description
+          </label>
           <div className="mt-1 border border-gray-300 rounded-md p-2 min-h-32">
             <EditorContent editor={fullDescEditor} className="min-h-32" />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs md:text-sm font-medium text-gray-700">Implementation</label>
+          <label className="block text-xs md:text-sm font-medium text-gray-700">
+            Implementation
+          </label>
           <div className="mt-1 border border-gray-300 rounded-md p-2 min-h-32">
             <EditorContent editor={implementationEditor} className="min-h-32" />
           </div>
@@ -143,7 +159,9 @@ const SolutionItem: React.FC<SolutionItemProps> = ({
 
         <div>
           <div className="flex justify-between items-center mb-1">
-            <label className="block text-xs md:text-sm font-medium text-gray-700">Features</label>
+            <label className="block text-xs md:text-sm font-medium text-gray-700">
+              Features
+            </label>
             <button
               type="button"
               onClick={() => onAddFeature(index)}
@@ -152,74 +170,86 @@ const SolutionItem: React.FC<SolutionItemProps> = ({
               Add Feature
             </button>
           </div>
-          
+
           {solution.features.map((feature, featIndex) => (
             <FeatureItem
               key={featIndex}
               feature={feature}
               index={featIndex}
-              onChange={(featIndex, value) => onFeatureChange(index, featIndex, value)}
+              onChange={(featIndex, value) =>
+                onFeatureChange(index, featIndex, value)
+              }
               onRemove={(featIndex) => onRemoveFeature(index, featIndex)}
             />
           ))}
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 const SolutionCategoryForm: React.FC = () => {
-  const [categories, setCategories] = useState<SolutionCategory[]>([]);
+  const [categories, setCategories] = useState<SolutionCategory[]>([])
   const [currentCategory, setCurrentCategory] = useState<SolutionCategory>({
     title: '',
-    imageUrl: '', 
+    imageUrl: '',
     solutions: []
-  });
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState<string | null>(null);
+  })
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState<string | null>(null)
 
   useEffect(() => {
-    fetchCategories();
-  }, []);
+    fetchCategories()
+  }, [])
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/solution-categories`);
-      setCategories(response.data);
+      const response = await axios.get(
+        `${API_BASE_URL}/api/solution-categories`
+      )
+      setCategories(response.data)
     } catch (error) {
-      console.error('Failed to fetch categories:', error);
+      console.error('Failed to fetch categories:', error)
     }
-  };
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
     setCurrentCategory({
       ...currentCategory,
       [name]: value
-    });
-  };
+    })
+  }
 
-  const handleSolutionChange = (index: number, field: string, value: string) => {
-    const updatedSolutions = [...currentCategory.solutions];
+  const handleSolutionChange = (
+    index: number,
+    field: string,
+    value: string
+  ) => {
+    const updatedSolutions = [...currentCategory.solutions]
     updatedSolutions[index] = {
       ...updatedSolutions[index],
       [field]: value
-    };
+    }
     setCurrentCategory({
       ...currentCategory,
       solutions: updatedSolutions
-    });
-  };
+    })
+  }
 
-  const handleFeatureChange = (solIndex: number, featIndex: number, value: string) => {
-    const updatedSolutions = [...currentCategory.solutions];
-    updatedSolutions[solIndex].features[featIndex].text = value;
+  const handleFeatureChange = (
+    solIndex: number,
+    featIndex: number,
+    value: string
+  ) => {
+    const updatedSolutions = [...currentCategory.solutions]
+    updatedSolutions[solIndex].features[featIndex].text = value
     setCurrentCategory({
       ...currentCategory,
       solutions: updatedSolutions
-    });
-  };
+    })
+  }
 
   const addSolution = () => {
     setCurrentCategory({
@@ -235,93 +265,103 @@ const SolutionCategoryForm: React.FC = () => {
           implementation: ''
         }
       ]
-    });
-  };
+    })
+  }
 
   const addFeature = (solIndex: number) => {
-    const updatedSolutions = [...currentCategory.solutions];
-    updatedSolutions[solIndex].features.push({ text: '' });
+    const updatedSolutions = [...currentCategory.solutions]
+    updatedSolutions[solIndex].features.push({ text: '' })
     setCurrentCategory({
       ...currentCategory,
       solutions: updatedSolutions
-    });
-  };
+    })
+  }
 
   const removeSolution = (index: number) => {
-    const updatedSolutions = [...currentCategory.solutions];
-    updatedSolutions.splice(index, 1);
+    const updatedSolutions = [...currentCategory.solutions]
+    updatedSolutions.splice(index, 1)
     setCurrentCategory({
       ...currentCategory,
       solutions: updatedSolutions
-    });
-  };
+    })
+  }
 
   const removeFeature = (solIndex: number, featIndex: number) => {
-    const updatedSolutions = [...currentCategory.solutions];
-    updatedSolutions[solIndex].features.splice(featIndex, 1);
+    const updatedSolutions = [...currentCategory.solutions]
+    updatedSolutions[solIndex].features.splice(featIndex, 1)
     setCurrentCategory({
       ...currentCategory,
       solutions: updatedSolutions
-    });
-  };
+    })
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+    e.preventDefault()
+    setIsLoading(true)
 
     try {
       if (editingId) {
-        await axios.put(`${API_BASE_URL}/api/solution-categories/${editingId}`, currentCategory);
+        await axios.put(
+          `${API_BASE_URL}/api/solution-categories/${editingId}`,
+          currentCategory
+        )
       } else {
-        await axios.post(`${API_BASE_URL}/api/solution-categories`, currentCategory);
+        await axios.post(
+          `${API_BASE_URL}/api/solution-categories`,
+          currentCategory
+        )
       }
-      fetchCategories();
-      resetForm();
+      fetchCategories()
+      resetForm()
     } catch (error) {
-      console.error('Failed to save category:', error);
+      console.error('Failed to save category:', error)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   const editCategory = (category: SolutionCategory) => {
-    setCurrentCategory(category);
+    setCurrentCategory(category)
     if (category._id) {
-      setEditingId(category._id);
+      setEditingId(category._id)
     }
-  };
+  }
 
   const deleteCategory = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this category?')) {
       try {
-        await axios.delete(`${API_BASE_URL}/api/solution-categories/${id}`);
-        fetchCategories();
+        await axios.delete(`${API_BASE_URL}/api/solution-categories/${id}`)
+        fetchCategories()
       } catch (error) {
-        console.error('Failed to delete category:', error);
+        console.error('Failed to delete category:', error)
       }
     }
-  };
+  }
 
   const resetForm = () => {
     setCurrentCategory({
       title: '',
       imageUrl: '',
       solutions: []
-    });
-    setEditingId(null);
-  };
+    })
+    setEditingId(null)
+  }
 
   const toggleMenu = (id: string) => {
-    setIsMenuOpen(isMenuOpen === id ? null : id);
-  };
+    setIsMenuOpen(isMenuOpen === id ? null : id)
+  }
 
   return (
     <div className="bg-white rounded-lg shadow-md p-3 md:p-6">
-      <h2 className="text-lg md:text-2xl font-bold mb-3 md:mb-6">Manage Solution Categories</h2>
-      
+      <h2 className="text-lg md:text-2xl font-bold mb-3 md:mb-6">
+        Manage Solution Categories
+      </h2>
+
       <form onSubmit={handleSubmit} className="space-y-3 md:space-y-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700">Category Title</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Category Title
+          </label>
           <input
             type="text"
             name="title"
@@ -333,7 +373,9 @@ const SolutionCategoryForm: React.FC = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Image URL</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Image URL
+          </label>
           <input
             type="text"
             name="imageUrl"
@@ -344,12 +386,12 @@ const SolutionCategoryForm: React.FC = () => {
           />
           {currentCategory.imageUrl && (
             <div className="mt-2">
-              <img 
-                src={currentCategory.imageUrl} 
-                alt="Category preview" 
+              <img
+                src={currentCategory.imageUrl}
+                alt="Category preview"
                 className="h-16 md:h-20 object-contain border rounded"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = 'none';
+                  ;(e.target as HTMLImageElement).style.display = 'none'
                 }}
               />
             </div>
@@ -386,7 +428,11 @@ const SolutionCategoryForm: React.FC = () => {
             disabled={isLoading}
             className="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-md transition duration-200 text-sm md:text-base"
           >
-            {isLoading ? 'Saving...' : editingId ? 'Update Category' : 'Create Category'}
+            {isLoading
+              ? 'Saving...'
+              : editingId
+                ? 'Update Category'
+                : 'Create Category'}
           </button>
           <button
             type="button"
@@ -399,46 +445,57 @@ const SolutionCategoryForm: React.FC = () => {
       </form>
 
       <div className="mt-4 md:mt-6">
-        <h3 className="text-md md:text-lg font-medium mb-2 md:mb-4">Existing Categories</h3>
+        <h3 className="text-md md:text-lg font-medium mb-2 md:mb-4">
+          Existing Categories
+        </h3>
         <div className="space-y-2 md:space-y-3">
           {categories.map((category) => (
             <div key={category._id} className="border p-2 md:p-3 rounded-lg">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 md:gap-3">
                   {category.imageUrl && (
-                    <img 
-                      src={category.imageUrl} 
+                    <img
+                      src={category.imageUrl}
                       alt={category.title}
                       className="h-8 w-8 md:h-10 md:w-10 object-cover rounded"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = 'none';
+                        ;(e.target as HTMLImageElement).style.display = 'none'
                       }}
                     />
                   )}
                   <div>
-                    <h4 className="font-medium text-sm md:text-base">{category.title}</h4>
-                    <p className="text-xs md:text-sm text-gray-500">{category.solutions.length} solutions</p>
+                    <h4 className="font-medium text-sm md:text-base">
+                      {category.title}
+                    </h4>
+                    <p className="text-xs md:text-sm text-gray-500">
+                      {category.solutions.length} solutions
+                    </p>
                   </div>
                 </div>
-                
+
                 <div className="relative md:hidden">
                   <button
                     onClick={() => toggleMenu(category._id!)}
                     className="p-1 rounded-full hover:bg-gray-100 focus:outline-none"
                     aria-label="Actions"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
                       <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                     </svg>
                   </button>
-                  
+
                   {isMenuOpen === category._id && (
                     <div className="absolute right-0 mt-1 w-32 bg-white rounded-md shadow-lg z-10 border border-gray-200">
                       <div className="py-1">
                         <button
                           onClick={() => {
-                            editCategory(category);
-                            setIsMenuOpen(null);
+                            editCategory(category)
+                            setIsMenuOpen(null)
                           }}
                           className="block w-full text-left px-3 py-1.5 text-xs text-gray-700 hover:bg-indigo-50 hover:text-indigo-800"
                         >
@@ -446,8 +503,8 @@ const SolutionCategoryForm: React.FC = () => {
                         </button>
                         <button
                           onClick={() => {
-                            deleteCategory(category._id!);
-                            setIsMenuOpen(null);
+                            deleteCategory(category._id!)
+                            setIsMenuOpen(null)
                           }}
                           className="block w-full text-left px-3 py-1.5 text-xs text-red-600 hover:bg-red-50"
                         >
@@ -457,7 +514,7 @@ const SolutionCategoryForm: React.FC = () => {
                     </div>
                   )}
                 </div>
-                
+
                 <div className="hidden md:flex gap-2">
                   <button
                     onClick={() => editCategory(category)}
@@ -478,7 +535,7 @@ const SolutionCategoryForm: React.FC = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default SolutionCategoryForm;
+export default SolutionCategoryForm

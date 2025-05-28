@@ -1,42 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 
 interface CommentModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen: boolean
+  onClose: () => void
   onSubmit: (data: {
-    logo: File | null;
-    description: string;
-    author: string;
-    products: string[]; 
-  }) => void;
+    logo: File | null
+    description: string
+    author: string
+    products: string[]
+  }) => void
 }
 
-const CommentModal: React.FC<CommentModalProps> = ({ isOpen, onClose, onSubmit }) => {
-  const [logo, setLogo] = useState<File | null>(null);
-  const [description, setDescription] = useState('');
-  const [author, setAuthor] = useState('');
-  const [products, setProducts] = useState('');
+const CommentModal: React.FC<CommentModalProps> = ({
+  isOpen,
+  onClose,
+  onSubmit
+}) => {
+  const [logo, setLogo] = useState<File | null>(null)
+  const [description, setDescription] = useState('')
+  const [author, setAuthor] = useState('')
+  const [products, setProducts] = useState('')
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
     // Convert the products string to an array
-    const productsArray = products.split(',').map((product) => product.trim());
+    const productsArray = products.split(',').map((product) => product.trim())
 
     // Pass the data to the onSubmit function
-    onSubmit({ logo, description, author, products: productsArray });
+    onSubmit({ logo, description, author, products: productsArray })
 
     // Clear the form fields
-    setLogo(null);
-    setDescription('');
-    setAuthor('');
-    setProducts('');
+    setLogo(null)
+    setDescription('')
+    setAuthor('')
+    setProducts('')
 
     // Close the modal
-    onClose();
-  };
+    onClose()
+  }
 
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -44,7 +48,9 @@ const CommentModal: React.FC<CommentModalProps> = ({ isOpen, onClose, onSubmit }
         <h2 className="text-xl font-semibold mb-4">Add a Comment</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Company's Logo</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Company's Logo
+            </label>
             <input
               type="file"
               accept="image/*"
@@ -53,7 +59,9 @@ const CommentModal: React.FC<CommentModalProps> = ({ isOpen, onClose, onSubmit }
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Message</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Message
+            </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -62,7 +70,9 @@ const CommentModal: React.FC<CommentModalProps> = ({ isOpen, onClose, onSubmit }
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Author</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Author
+            </label>
             <input
               type="text"
               value={author}
@@ -71,7 +81,9 @@ const CommentModal: React.FC<CommentModalProps> = ({ isOpen, onClose, onSubmit }
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Products</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Products
+            </label>
             <textarea
               value={products}
               onChange={(e) => setProducts(e.target.value)}
@@ -98,7 +110,7 @@ const CommentModal: React.FC<CommentModalProps> = ({ isOpen, onClose, onSubmit }
         </form>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default CommentModal;
+export default CommentModal

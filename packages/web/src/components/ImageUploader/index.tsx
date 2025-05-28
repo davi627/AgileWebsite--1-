@@ -4,7 +4,7 @@ import { uploadFile } from '../../services/FileUploadService'
 
 interface ImageUploaderProps {
   onUploadSuccess: (url: string) => void
-  folder?: string // Optionally specify a folder where images will be uploaded in Cloudinary
+  folder?: string
   maxFileSizeMB?: number
   uploadPreset: string
   cloudName?: string
@@ -12,7 +12,7 @@ interface ImageUploaderProps {
 
 const ImageUploader: React.FC<ImageUploaderProps> = ({
   onUploadSuccess,
-  folder = 'default', // Default folder if none is provided
+  folder = 'default',
   maxFileSizeMB = 5
 }) => {
   const [uploading, setUploading] = useState(false)

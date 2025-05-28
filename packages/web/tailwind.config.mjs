@@ -9,7 +9,7 @@ export default {
         alternate: '#F0AE1C',
         cyan: {
           600: '#0891b2',
-          700: '#0e7490',
+          700: '#0e7490'
         },
         secondary: {
           100: '#E2E2D5',
@@ -32,17 +32,14 @@ export default {
         '2xl': '1.5rem',
         '3xl': '1.875rem'
       },
-      // fontFamily: {
-      //   sans: ['Inter', 'sans-serif']
-      // }
+
       fontFamily: {
         century: ['"Century Gothic"', 'sans-serif'],
-        poppins: ['Poppins', 'sans-serif'], 
+        poppins: ['Poppins', 'sans-serif']
       },
-      
+
       boxShadow: {
         'top-bottom':
-          // '0 -4px 6px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.1)'
           '0 -2px 10px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.1)'
       }
     }

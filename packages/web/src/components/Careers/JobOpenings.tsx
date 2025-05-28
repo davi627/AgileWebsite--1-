@@ -59,9 +59,7 @@ export default function JobOpenings() {
             ))}
           </ul>
         ) : (
-          <p className="text-lg text-gray-600">
-          
-          </p>
+          <p className="text-lg text-gray-600"></p>
         )}
       </div>
     </div>

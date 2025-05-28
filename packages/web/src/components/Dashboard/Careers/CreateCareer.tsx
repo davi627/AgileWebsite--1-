@@ -10,7 +10,7 @@ interface FormData {
   salary: number
   published: boolean
   department: string
-  dueDate: string // Change Date to string for input compatibility
+  dueDate: string 
 }
 
 interface Props {

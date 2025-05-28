@@ -1,5 +1,5 @@
 // models/Solution.js
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
 const SolutionSchema = new mongoose.Schema({
   title: { type: String, required: true },
@@ -9,9 +9,9 @@ const SolutionSchema = new mongoose.Schema({
   faqs: [
     {
       q: { type: String, required: true },
-      a: { type: String, required: true },
-    },
-  ],
-});
+      a: { type: String, required: true }
+    }
+  ]
+})
 
-export default mongoose.model('Solution', SolutionSchema);
+export default mongoose.model('Solution', SolutionSchema)

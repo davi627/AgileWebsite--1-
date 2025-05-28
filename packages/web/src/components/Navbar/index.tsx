@@ -11,21 +11,17 @@ import instaIcon from 'assets/insta logo.png'
 import liIcon from 'assets/socials/linkedin.png'
 import twitterIcon from 'assets/socials/twitter.png'
 
-
-
 const navigation = [
   { name: 'Home', href: '/' },
   { name: 'Solutions', href: '#erp-solutions' },
   { name: 'About Us', href: '/about-us' },
   { name: 'Contact Us', href: '/contact-us' },
-  {name: 'Blogs', href:'/blogs'},
-  
+  { name: 'Blogs', href: '/blogs' }
 ]
 
 export default function Navbar() {
   const navigate = useNavigate()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  // const [isModalOpen, setIsModalOpen] = useState(false)
 
   const handleNavigation = (href: string) => {
     const [path, hash] = href.split('#')

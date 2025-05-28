@@ -3,7 +3,9 @@ import SidePadding from 'components/Shared/SidePadding.Component'
 import FaintLogo from '../../assets/faint-agile-logo.svg'
 import axios from 'axios'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000/stats'
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  'http://webtest-api.agilebiz.co.ke:5000/stats'
 
 interface Stat {
   id: number
@@ -18,40 +20,56 @@ export default function Stats() {
   const sectionRef = useRef<HTMLDivElement>(null)
   const [isInView, setIsInView] = useState(false)
 
-  // Fetch statistics from the backend
+  // Fetching  statistics from the backend
   const fetchStatistics = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/statistics`)
       const stats = response.data
 
       const formattedStats: Stat[] = [
-        { 
-          id: 1, 
-          name: 'Successful Projects', 
+        {
+          id: 1,
+          name: 'Successful Projects',
           value: stats.successfulProjects,
-          isNumeric: !isNaN(Number(stats.successfulProjects.replace(/\D/g, ''))),
-          displayValue: !isNaN(Number(stats.successfulProjects.replace(/\D/g, ''))) ? 0 : stats.successfulProjects
+          isNumeric: !isNaN(
+            Number(stats.successfulProjects.replace(/\D/g, ''))
+          ),
+          displayValue: !isNaN(
+            Number(stats.successfulProjects.replace(/\D/g, ''))
+          )
+            ? 0
+            : stats.successfulProjects
         },
-        { 
-          id: 2, 
-          name: 'Happy Customers', 
+        {
+          id: 2,
+          name: 'Happy Customers',
           value: stats.happyCustomers,
           isNumeric: !isNaN(Number(stats.happyCustomers.replace(/\D/g, ''))),
-          displayValue: !isNaN(Number(stats.happyCustomers.replace(/\D/g, ''))) ? 0 : stats.happyCustomers
+          displayValue: !isNaN(Number(stats.happyCustomers.replace(/\D/g, '')))
+            ? 0
+            : stats.happyCustomers
         },
-        { 
-          id: 3, 
-          name: 'Customer Satisfaction', 
+        {
+          id: 3,
+          name: 'Customer Satisfaction',
           value: stats.customerSatisfaction,
-          isNumeric: !isNaN(Number(stats.customerSatisfaction.replace(/\D/g, ''))),
-          displayValue: !isNaN(Number(stats.customerSatisfaction.replace(/\D/g, ''))) ? 0 : stats.customerSatisfaction
+          isNumeric: !isNaN(
+            Number(stats.customerSatisfaction.replace(/\D/g, ''))
+          ),
+          displayValue: !isNaN(
+            Number(stats.customerSatisfaction.replace(/\D/g, ''))
+          )
+            ? 0
+            : stats.customerSatisfaction
         },
-        { 
-          id: 4, 
-          name: 'Years Of Experience', 
+        {
+          id: 4,
+          name: 'Years Of Experience',
           value: stats.experience,
           isNumeric: !isNaN(Number(stats.experience.replace(/\D/g, ''))),
-          displayValue: !isNaN(Number(stats.experience.replace(/\D/g, ''))) ? 0 : stats.experience
+          displayValue: !isNaN(Number(stats.experience.replace(/\D/g, '')))
+            ? 0
+            : stats.experience
         }
       ]
 
@@ -60,10 +78,34 @@ export default function Stats() {
       console.error('Failed to fetch statistics:', error)
       // Set default values in case of error
       setDisplayStats([
-        { id: 1, name: 'Successful Projects', value: '0', displayValue: 0, isNumeric: true },
-        { id: 2, name: 'Happy Customers', value: '0', displayValue: 0, isNumeric: true },
-        { id: 3, name: 'Customer Satisfaction', value: '0', displayValue: 0, isNumeric: true },
-        { id: 4, name: 'Years Of Experience', value: '0 ', displayValue: '0 ', isNumeric: false }
+        {
+          id: 1,
+          name: 'Successful Projects',
+          value: '0',
+          displayValue: 0,
+          isNumeric: true
+        },
+        {
+          id: 2,
+          name: 'Happy Customers',
+          value: '0',
+          displayValue: 0,
+          isNumeric: true
+        },
+        {
+          id: 3,
+          name: 'Customer Satisfaction',
+          value: '0',
+          displayValue: 0,
+          isNumeric: true
+        },
+        {
+          id: 4,
+          name: 'Years Of Experience',
+          value: '0 ',
+          displayValue: '0 ',
+          isNumeric: false
+        }
       ])
     }
   }
@@ -128,10 +170,10 @@ export default function Stats() {
     }
   }, [isInView, displayStats])
 
-  // Format display value to include any non-numeric text (like "Years" in "10 Years")
+  // Formatting display value to include any non-numeric text (like "Years" in "10 Years")
   const formatDisplayValue = (stat: Stat) => {
     if (stat.isNumeric) {
-      // Add the "+" suffix to numeric values and keep any non-numeric suffix from original value
+      // Adding the "+" suffix to numeric values and keep any non-numeric suffix from original value
       const numericPart = stat.displayValue.toString()
       const originalSuffix = stat.value.replace(/\d+/g, '').trim()
       return `${numericPart}${originalSuffix ? ' ' + originalSuffix : '+'}`
@@ -156,8 +198,7 @@ export default function Stats() {
               and cloud solutions provider in Kenya, East and central Africa
             </p>
           </div>
-         <dl className="mt-16 flex gap-x-24 overflow-x-auto">
-
+          <dl className="mt-16 flex gap-x-24 overflow-x-auto">
             {displayStats.map((stat) => (
               <div
                 key={stat.id}

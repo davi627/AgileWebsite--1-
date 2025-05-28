@@ -1,30 +1,30 @@
-import express from 'express';
-import nodemailer from 'nodemailer';
-import { getConfig } from '../configManager.js';
-import Email from '../Models/Email.js';
+import express from 'express'
+import nodemailer from 'nodemailer'
+import { getConfig } from '../configManager.js'
+import Email from '../Models/Email.js'
 
-const router = express.Router();
+const router = express.Router()
 
 // SMTP Configuration
 const transporter = nodemailer.createTransport({
   host: getConfig('SMTP_HOST'),
   port: getConfig('SMTP_PORT'),
-  secure: false, 
+  secure: false,
   auth: {
     user: getConfig('SMTP_USER'),
-    pass: getConfig('SMTP_PASS'),
+    pass: getConfig('SMTP_PASS')
   },
   tls: {
-    ciphers: 'TLSv1.2', 
-    rejectUnauthorized: false, 
-  },
-});
+    ciphers: 'TLSv1.2',
+    rejectUnauthorized: false
+  }
+})
 
 router.post('/send', async (req, res) => {
-  const { to, subject, text, html } = req.body;
+  const { to, subject, text, html } = req.body
 
   if (!to || !subject || !text || !html) {
-    return res.status(400).json({ message: 'All fields are required' });
+    return res.status(400).json({ message: 'All fields are required' })
   }
 
   try {
@@ -34,18 +34,18 @@ router.post('/send', async (req, res) => {
       to,
       subject,
       text,
-      html,
-    });
+      html
+    })
 
     // Save email record in DB
-    const email = new Email({ to, subject, text, html });
-    await email.save();
+    const email = new Email({ to, subject, text, html })
+    await email.save()
 
-    res.status(200).json({ message: 'Email sent successfully' });
+    res.status(200).json({ message: 'Email sent successfully' })
   } catch (error) {
-    console.error('Error sending email:', error);
-    res.status(500).json({ message: 'Error sending email' });
+    console.error('Error sending email:', error)
+    res.status(500).json({ message: 'Error sending email' })
   }
-});
+})
 
 export { router as emailRouter }

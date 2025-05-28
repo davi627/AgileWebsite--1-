@@ -81,65 +81,83 @@ const navigation = {
 
 export default function Footer() {
   return (
-<footer className="bg-primary relative py-8 text-white font-Poppins" aria-labelledby="footer-heading">
-  <h2 id="footer-heading" className="sr-only">Footer</h2>
-  
-  <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
-    {/* Social Media Links */}
-    <div className="flex flex-wrap items-center justify-center sm:justify-between">
-      <div className="flex space-x-6">
-        {navigation.social.map((item) => (
-          <a key={item.name} href={item.href} className="text-gray-500 hover:text-gray-400">
-            <span className="sr-only">{item.name}</span>
-            <item.icon />
-          </a>
-        ))}
-      </div>
-    </div>
+    <footer
+      className="bg-primary relative py-8 text-white font-Poppins"
+      aria-labelledby="footer-heading"
+    >
+      <h2 id="footer-heading" className="sr-only">
+        Footer
+      </h2>
 
-    {/* Main Footer Content */}
-    <div className="mt-8 flex flex-col items-center sm:flex-row sm:justify-between gap-8">
-      
-      {/* Left Section - Logo & Navigation Links */}
-      <div className="flex flex-col items-center sm:items-start gap-6">
-        <img className="h-12 w-auto" src={Logo} alt="agilebiz logo" />
-        
-        <div className="flex flex-wrap justify-center sm:justify-start gap-x-6 gap-y-2 text-center sm:text-left">
-          {navigation.company.map((item) => (
-            <a key={item.name} href={item.href} className="text-sm leading-6 text-gray-300 hover:text-white">
-              {item.name}
-            </a>
-          ))}
-        </div>
-      </div>
-
-      {/* Right Section - Contact & Certifications */}
-      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-12">
-        
-        {/* Contact Info */}
-        <div className="flex flex-col text-center sm:text-left text-sm font-light gap-1">
-          <p>Phone: +254 723929999</p>
-          <p>Email: info@agilebiz.co.ke</p>
-          <p>Contact Us: sales@agilebiz.co.ke</p>
-          <p>Address: Jumuia Place II Lenana</p>
+      <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
+        {/* Social Media Links */}
+        <div className="flex flex-wrap items-center justify-center sm:justify-between">
+          <div className="flex space-x-6">
+            {navigation.social.map((item) => (
+              <a
+                key={item.name}
+                href={item.href}
+                className="text-gray-500 hover:text-gray-400"
+              >
+                <span className="sr-only">{item.name}</span>
+                <item.icon />
+              </a>
+            ))}
+          </div>
         </div>
 
-        {/* Certifications - Responsive Image Sizing */}
-        <div className="flex flex-wrap justify-center gap-4">
-          <img src={cert1} alt="ISO 27001 Certification" className="h-20 sm:h-24 w-auto max-w-xs" />
-          <img src={cert2} alt="ISO 9001 Certification" className="h-20 sm:h-24 w-auto max-w-xs" />
+        {/* Main Footer Content */}
+        <div className="mt-8 flex flex-col items-center sm:flex-row sm:justify-between gap-8">
+          {/* Left Section - Logo & Navigation Links */}
+          <div className="flex flex-col items-center sm:items-start gap-6">
+            <img className="h-12 w-auto" src={Logo} alt="agilebiz logo" />
+
+            <div className="flex flex-wrap justify-center sm:justify-start gap-x-6 gap-y-2 text-center sm:text-left">
+              {navigation.company.map((item) => (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  className="text-sm leading-6 text-gray-300 hover:text-white"
+                >
+                  {item.name}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Right Section - Contact & Certifications */}
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-12">
+            {/* Contact Info */}
+            <div className="flex flex-col text-center sm:text-left text-sm font-light gap-1">
+              <p>Phone: +254 723929999</p>
+              <p>Email: info@agilebiz.co.ke</p>
+              <p>Contact Us: sales@agilebiz.co.ke</p>
+              <p>Address: Jumuia Place II Lenana</p>
+            </div>
+
+            {/* Certifications - Responsive Image Sizing */}
+            <div className="flex flex-wrap justify-center gap-4">
+              <img
+                src={cert1}
+                alt="ISO 27001 Certification"
+                className="h-20 sm:h-24 w-auto max-w-xs"
+              />
+              <img
+                src={cert2}
+                alt="ISO 9001 Certification"
+                className="h-20 sm:h-24 w-auto max-w-xs"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Copyright */}
+        <div className="mt-8 border-t border-white/10 pt-4 text-center">
+          <p className="text-xs leading-5 text-gray-300">
+            &copy; 2025 Agile Business Solutions Ltd. All rights reserved.
+          </p>
         </div>
       </div>
-    </div>
-
-    {/* Copyright */}
-    <div className="mt-8 border-t border-white/10 pt-4 text-center">
-      <p className="text-xs leading-5 text-gray-300">
-        &copy; 2025 Agile Business Solutions Ltd. All rights reserved.
-      </p>
-    </div>
-  </div>
-</footer>
-
+    </footer>
   )
 }

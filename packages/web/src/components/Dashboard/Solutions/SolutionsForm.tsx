@@ -9,7 +9,7 @@ import {
   updateSolution,
   createSolution
 } from '../../../services/SolutionsService'
-import ImageUploader from '../../../components/ImageUploader' // Import the ImageUploader component
+import ImageUploader from '../../../components/ImageUploader'
 import {
   ArrowUpIcon,
   ArrowDownIcon,
@@ -23,9 +23,9 @@ interface Solution {
   description: string
   icon: string
   blocks: BlockType[]
-  children?: string[] // Parent solution will hold an array of child solution IDs
-  isPrimary: boolean // Required field
-  rank: number // Required field
+  children?: string[]
+  isPrimary: boolean
+  rank: number
 }
 
 // Define the options for the block types
@@ -43,7 +43,7 @@ type BlockOptionType = (typeof blockOptions)[number]['value']
 // Define the props for the SolutionForm component
 interface SolutionFormProps {
   solution?: Solution | null
-  onSave: (solution: Solution) => Promise<void> // Update to match async function signature
+  onSave: (solution: Solution) => Promise<void>
   onCancel: () => void
 }
 
@@ -106,8 +106,8 @@ const SolutionForm: React.FC<SolutionFormProps> = ({
       icon: '',
       blocks: [],
       children: [],
-      isPrimary: false, // Default to false
-      rank: 0 // Default rank
+      isPrimary: false,
+      rank: 0
     }
   )
 
@@ -153,26 +153,12 @@ const SolutionForm: React.FC<SolutionFormProps> = ({
     }))
   }
 
-  // Function to handle block removal
-  // const handleRemoveBlock = (_id: string) => {
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     blocks: prev.blocks.filter((block) => block._id !== _id)
-  //   }))
-  // }
   const handleRemoveBlock = (_id: string) => {
     setFormData((prev) => {
       const updatedBlocks = prev.blocks.filter((block) => block._id !== _id)
       return { ...prev, blocks: updatedBlocks }
     })
   }
-
-  // const handleRemoveBlock = (index: number) => {
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     blocks: prev.blocks.filter((_, i) => i !== index)
-  //   }))
-  // }
 
   // Function to handle form submission
   const handleSubmit = async (e: FormEvent) => {
@@ -245,7 +231,7 @@ const SolutionForm: React.FC<SolutionFormProps> = ({
   const handleModalClose = () => {
     setShowSuccessModal(false)
     setShowErrorModal(false)
-    onCancel() // Close the form after modal is closed
+    onCancel()
   }
 
   // Function to handle image upload success
@@ -301,10 +287,10 @@ const SolutionForm: React.FC<SolutionFormProps> = ({
             </label>
             <ImageUploader
               onUploadSuccess={handleImageUploadSuccess}
-              folder="solution-icons" // Specify folder for uploaded images
-              maxFileSizeMB={5} // Maximum file size in MB
-              uploadPreset="your-upload-preset" // Your Cloudinary upload preset
-              cloudName="your-cloud-name" // Your Cloudinary cloud name
+              folder="solution-icons"
+              maxFileSizeMB={5}
+              uploadPreset="your-upload-preset"
+              cloudName="your-cloud-name"
             />
             {formData.icon && (
               <img

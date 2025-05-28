@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { fetchUsers, deleteUser } from '../../../services/UserService'
 import { User } from '../../../types/User'
 import { PencilIcon, TrashIcon } from '@heroicons/react/20/solid'
-import CreateUserModal from './CreateUsers' // Assuming you have a CreateUserModal component
+import CreateUserModal from './CreateUsers'
 
 function classNames(...classes: string[]): string {
   return classes.filter(Boolean).join(' ')

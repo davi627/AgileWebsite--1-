@@ -9,9 +9,9 @@ import Server from '../../assets/Image 3.png'
 
 export default function Hero() {
   const phrases = [
-    "Management<br />Information Systems",
-    "Microsoft<br />Solutions",
-    "Data Storage<br />and Security"
+    'Management<br />Information Systems',
+    'Microsoft<br />Solutions',
+    'Data Storage<br />and Security'
   ]
   const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0)
   const [isFading, setIsFading] = useState(false)
@@ -20,7 +20,7 @@ export default function Hero() {
     const interval = setInterval(() => {
       setIsFading(true)
       setTimeout(() => {
-        setCurrentPhraseIndex(prev => (prev + 1) % phrases.length)
+        setCurrentPhraseIndex((prev) => (prev + 1) % phrases.length)
         setIsFading(false)
       }, 500)
     }, 3000)
@@ -36,7 +36,6 @@ export default function Hero() {
       {/* Main content */}
       <SidePadding>
         <div className="relative z-40 md:flex md:flex-row md:items-center md:justify-between pt-32 md:pt-48 lg:pt-32 pb-16 font-Poppins">
-          
           {/* Text content */}
           <div className="relative text-primary w-full md:w-6/12 lg:w-[55%] md:-mt-48">
             <div className="text-[28px] md:text-[32px] lg:text-[45px] font-bold leading-tight font-poppins">
@@ -46,7 +45,9 @@ export default function Hero() {
                   className={`text-alternate transition-opacity duration-500 w-full block text-left ${
                     isFading ? 'opacity-0' : 'opacity-100'
                   }`}
-                  dangerouslySetInnerHTML={{ __html: phrases[currentPhraseIndex] }}
+                  dangerouslySetInnerHTML={{
+                    __html: phrases[currentPhraseIndex]
+                  }}
                 />
               </div>
             </div>
@@ -54,30 +55,41 @@ export default function Hero() {
             {/* Mobile image container - positioned between span and paragraph */}
             <div className="md:hidden relative w-full h-[200px] sm:h-[250px] mt-2 mb-4 z-20">
               <div className="relative w-full h-full">
-                
                 {/* FIRST IMAGE GROUP */}
-                <div className={`absolute inset-0 transition-opacity duration-500 ${currentPhraseIndex === 0 ? 'opacity-100' : 'opacity-0'} z-10`}>
-                  <img 
-                    src={HeroBg} 
-                    alt="Software interface" 
+                <div
+                  className={`absolute inset-0 transition-opacity duration-500 ${
+                    currentPhraseIndex === 0 ? 'opacity-100' : 'opacity-0'
+                  } z-10`}
+                >
+                  <img
+                    src={HeroBg}
+                    alt="Software interface"
                     className="absolute right-0 top-0 w-full h-full object-contain object-right-top"
                   />
                 </div>
 
                 {/* SECOND IMAGE GROUP */}
-                <div className={`absolute inset-0 transition-opacity duration-500 ${currentPhraseIndex === 1 ? 'opacity-100' : 'opacity-0'} z-10`}>
-                  <img 
-                    src={Microsoft} 
-                    alt="Microsoft solutions" 
+                <div
+                  className={`absolute inset-0 transition-opacity duration-500 ${
+                    currentPhraseIndex === 1 ? 'opacity-100' : 'opacity-0'
+                  } z-10`}
+                >
+                  <img
+                    src={Microsoft}
+                    alt="Microsoft solutions"
                     className="absolute right-0 top-0 w-full h-full object-contain object-right-top"
                   />
                 </div>
 
                 {/* THIRD IMAGE GROUP */}
-                <div className={`absolute inset-0 transition-opacity duration-500 ${currentPhraseIndex === 2 ? 'opacity-100' : 'opacity-0'} z-10`}>
-                  <img 
-                    src={Server} 
-                    alt="Server solutions" 
+                <div
+                  className={`absolute inset-0 transition-opacity duration-500 ${
+                    currentPhraseIndex === 2 ? 'opacity-100' : 'opacity-0'
+                  } z-10`}
+                >
+                  <img
+                    src={Server}
+                    alt="Server solutions"
                     className="absolute right-0 top-1/2 -translate-y-1/2 w-full max-w-[120%] h-auto object-contain object-right"
                   />
                 </div>
@@ -90,57 +102,68 @@ export default function Hero() {
 
             <RequestDemoBtn />
           </div>
-
           {/* Desktop image container */}
           <div className="hidden md:block relative z-20 md:w-[800px] lg:w-[1000px] md:h-[600px] lg:h-[700px] md:max-w-none">
             <div className="relative w-full h-full md:scale-90 lg:scale-100 transform-gpu">
-
               {/* FIRST IMAGE GROUP */}
-              <div className={`absolute inset-0 transition-opacity duration-500 ${currentPhraseIndex === 0 ? 'opacity-100' : 'opacity-0'} z-10`}>
-                <img 
-                  src={HeroBg} 
-                  alt="Software interface" 
+              <div
+                className={`absolute inset-0 transition-opacity duration-500 ${
+                  currentPhraseIndex === 0 ? 'opacity-100' : 'opacity-0'
+                } z-10`}
+              >
+                <img
+                  src={HeroBg}
+                  alt="Software interface"
                   className="absolute object-contain"
                   style={{
-                    height:'600px',
-                    width:'700px',
-                    right:'-80px',
-                    top:'-30px'
+                    height: '600px',
+                    width: '700px',
+                    right: '-80px',
+                    top: '-30px'
                   }}
                 />
               </div>
 
               {/* SECOND IMAGE GROUP - Microsoft */}
-              <div className={`absolute inset-0 transition-opacity duration-500 ${currentPhraseIndex === 1 ? 'opacity-100' : 'opacity-0'} z-10`}>
-                <img 
-                  src={Microsoft} 
-                  alt="Microsoft solutions" 
+              <div
+                className={`absolute inset-0 transition-opacity duration-500 ${
+                  currentPhraseIndex === 1 ? 'opacity-100' : 'opacity-0'
+                } z-10`}
+              >
+                <img
+                  src={Microsoft}
+                  alt="Microsoft solutions"
                   className="absolute object-contain"
-                   style={{
-                    height:'600px',
-                    width:'700px',
-                    right:'-80px',
-                    top:'-40px'
+                  style={{
+                    height: '600px',
+                    width: '700px',
+                    right: '-80px',
+                    top: '-40px'
                   }}
                 />
               </div>
 
               {/* THIRD IMAGE GROUP - Server */}
-              <div className={`absolute inset-0 transition-opacity duration-500 ${currentPhraseIndex === 2 ? 'opacity-100' : 'opacity-0'} z-10`}>
-                <img 
-                  src={Server} 
-                  alt="Server and security" 
+              <div
+                className={`absolute inset-0 transition-opacity duration-500 ${
+                  currentPhraseIndex === 2 ? 'opacity-100' : 'opacity-0'
+                } z-10`}
+              >
+                <img
+                  src={Server}
+                  alt="Server and security"
                   className="absolute object-contain"
-                   style={{
-                    height:'450px',
-                    width:'1070px',
-                    right:'-80px',
-                    top:'80px'
+                  style={{
+                    height: '450px',
+                    width: '1070px',
+                    right: '-80px',
+                    top: '80px'
                   }}
                 />
               </div>
             </div>
           </div>
+          ;
         </div>
       </SidePadding>
 
