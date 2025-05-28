@@ -134,7 +134,7 @@ export default function Blog() {
                     </p>
                     <Link
                       to={`/blog/${blog._id}`}
-                      className="text-blue-500 text-xs font-medium mt-2 inline-block"
+                      className="text-primary text-xs font-medium mt-2 inline-block"
                       onClick={() => handleViewBlog(blog._id)}
                     >
                       Read More →

@@ -416,7 +416,7 @@ const SolutionCategoryForm: React.FC = () => {
           <button
             type="button"
             onClick={addSolution}
-            className="mt-2 bg-indigo-100 text-indigo-700 px-3 py-1.5 text-sm md:text-base rounded-md transition duration-200 w-full md:w-auto"
+            className="mt-2 bg-indigo-100 text-primary px-3 py-1.5 text-sm md:text-base rounded-md transition duration-200 w-full md:w-auto"
           >
             + Add Solution
           </button>
@@ -497,7 +497,7 @@ const SolutionCategoryForm: React.FC = () => {
                             editCategory(category)
                             setIsMenuOpen(null)
                           }}
-                          className="block w-full text-left px-3 py-1.5 text-xs text-gray-700 hover:bg-indigo-50 hover:text-indigo-800"
+                          className="block w-full text-left px-3 py-1.5 text-xs text-primary hover:bg-primary hover:text-indigo-800"
                         >
                           Edit
                         </button>

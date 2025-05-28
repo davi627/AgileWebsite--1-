@@ -40,7 +40,8 @@ function OurSolns() {
   const [theFAQs, setTheFAQs] = useState<
     { q: string; a: string; solutionId: number }[]
   >([])
-  const [selected, setSelected] = useState<number | null>(null)
+  // Changed: Use a string to create unique identifiers for each FAQ
+  const [selected, setSelected] = useState<string | null>(null)
   const [visibleColumns, setVisibleColumns] = useState(2)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -116,8 +117,9 @@ function OurSolns() {
     }
   }, [selectedCategory])
 
-  const toggle = (i: number | null) => {
-    setSelected(selected === i ? null : i)
+  //  Create unique identifier for each FAQ item
+  const toggle = (uniqueId: string) => {
+    setSelected(selected === uniqueId ? null : uniqueId)
   }
 
   const handleReadMore = (solutionId: number) => {
@@ -190,49 +192,55 @@ function OurSolns() {
                       (
                         qn: { q: string; a: string; solutionId: number },
                         i: number
-                      ) => (
-                        <div key={i} className="mb-4">
-                          <button
-                            type="button"
-                            className="mb-2 flex w-full items-center justify-between gap-4 text-left font-medium"
-                            onClick={() => toggle(i)}
-                          >
-                            <p className="text-base md:text-lg">{qn.q}</p>
-                            <motion.img
-                              src={chevDown}
-                              alt="v"
-                              className="size-5"
-                              animate={{ rotate: selected === i ? 180 : 0 }}
-                              transition={{ duration: 0.3 }}
-                            />
-                          </button>
+                      ) => {
+                        // Changed: Create unique identifier combining column and row indices
+                        const uniqueId = `${colIndex}-${i}`
+                        const isSelected = selected === uniqueId
 
-                          <AnimatePresence>
-                            {selected === i && (
-                              <motion.div
-                                initial="hidden"
-                                animate="visible"
-                                exit="hidden"
-                                variants={faqItem}
-                                className="overflow-hidden"
-                              >
-                                <p className="text-gray-700 text-sm md:text-base">
-                                  {qn.a}
-                                  <button
-                                    onClick={() =>
-                                      handleReadMore(qn.solutionId)
-                                    }
-                                    className="ml-2 text-blue-600 hover:underline"
-                                  >
-                                    Read more
-                                  </button>
-                                </p>
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                          <hr className="mt-4" />
-                        </div>
-                      )
+                        return (
+                          <div key={uniqueId} className="mb-4">
+                            <button
+                              type="button"
+                              className="mb-2 flex w-full items-center justify-between gap-4 text-left font-medium"
+                              onClick={() => toggle(uniqueId)}
+                            >
+                              <p className="text-base md:text-lg">{qn.q}</p>
+                              <motion.img
+                                src={chevDown}
+                                alt="v"
+                                className="size-5"
+                                animate={{ rotate: isSelected ? 180 : 0 }}
+                                transition={{ duration: 0.3 }}
+                              />
+                            </button>
+
+                            <AnimatePresence>
+                              {isSelected && (
+                                <motion.div
+                                  initial="hidden"
+                                  animate="visible"
+                                  exit="hidden"
+                                  variants={faqItem}
+                                  className="overflow-hidden"
+                                >
+                                  <p className="text-gray-700 text-sm md:text-base">
+                                    {qn.a}
+                                    <button
+                                      onClick={() =>
+                                        handleReadMore(qn.solutionId)
+                                      }
+                                      className="ml-2 text-primary hover:underline"
+                                    >
+                                      Read more
+                                    </button>
+                                  </p>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                            <hr className="mt-4" />
+                          </div>
+                        )
+                      }
                     )}
                   </div>
                 ))}
@@ -243,11 +251,11 @@ function OurSolns() {
             <div className="mt-6">
               <button
                 onClick={toggleShowMoreColumns}
-                className="text-blue-600 font-medium hover:text-blue-800 hover:underline flex items-center"
+                className="text-primary font-medium hover:text-blue-800 hover:underline flex items-center"
               >
                 {visibleColumns < displayedFAQs.length
-                  ? 'Show More Columns'
-                  : 'Show Less Columns'}
+                  ? 'Show More '
+                  : 'Show Less '}
                 <motion.svg
                   className="ml-1 h-4 w-4"
                   animate={{

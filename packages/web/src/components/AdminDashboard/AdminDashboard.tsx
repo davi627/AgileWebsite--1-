@@ -2,9 +2,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { isAuthenticated, getUserRole } from 'services/AuthService'
 import axios from 'axios'
-import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
-import SecurityKeyModal from 'components/SercurityKeyModal/SercurityKeyModal'
 import ViewBlogs from 'components/ViewBlogs/ViewBlogs'
 import ViewSolutions from 'components/ViewSolutions/ViewSolutions'
 import UpdateSecurityKey from 'components/UpdateSercurityKey/UpdateSercurityKey'
@@ -610,8 +608,8 @@ const AdminDashboard: React.FC = () => {
             <li>
               <button
                 onClick={() => handleMenuItemClick('statistics')}
-                className={`block w-full text-left p-4 hover:bg-indigo-500 transition duration-200 ${
-                  activeSection === 'statistics' ? 'bg-indigo-500' : ''
+                className={`block w-full text-left p-4 hover:bg-primary transition duration-200 ${
+                  activeSection === 'statistics' ? 'bg-primary' : ''
                 }`}
               >
                 Statistics
@@ -620,8 +618,8 @@ const AdminDashboard: React.FC = () => {
             <li>
               <button
                 onClick={() => handleMenuItemClick('add-partners')}
-                className={`block w-full text-left p-4 hover:bg-indigo-500 transition duration-200 ${
-                  activeSection === 'add-partners' ? 'bg-indigo-500' : ''
+                className={`block w-full text-left p-4 hover:bg-primary transition duration-200 ${
+                  activeSection === 'add-partners' ? 'bg-primary' : ''
                 }`}
               >
                 Add Partners
@@ -631,8 +629,8 @@ const AdminDashboard: React.FC = () => {
             <li>
               <button
                 onClick={() => handleMenuItemClick('view-testimonials')}
-                className={`block w-full text-left p-4 hover:bg-indigo-500 transition duration-200 ${
-                  activeSection === 'view-testimonials' ? 'bg-indigo-500' : ''
+                className={`block w-full text-left p-4 hover:bg-primary transition duration-200 ${
+                  activeSection === 'view-testimonials' ? 'bg-primary' : ''
                 }`}
               >
                 View Testimonials
@@ -642,8 +640,8 @@ const AdminDashboard: React.FC = () => {
               <li>
                 <button
                   onClick={() => handleMenuItemClick('view-blogs')}
-                  className={`block w-full text-left p-4 hover:bg-indigo-700 transition duration-200 ${
-                    activeSection === 'view-blogs' ? 'bg-indigo-700' : ''
+                  className={`block w-full text-left p-4 hover:bg-primary transition duration-200 ${
+                    activeSection === 'view-blogs' ? 'bg-primary' : ''
                   }`}
                 >
                   View Blogs
@@ -652,9 +650,9 @@ const AdminDashboard: React.FC = () => {
                 <li>
                   <button
                     onClick={() => handleMenuItemClick('moderate-comments')}
-                    className={`block w-full text-left p-4 hover:bg-indigo-500 transition duration-200 ${
+                    className={`block w-full text-left p-4 hover:bg-primary transition duration-200 ${
                       activeSection === 'moderate-comments'
-                        ? 'bg-indigo-500'
+                        ? 'bg-primary'
                         : ''
                     }`}
                   >
@@ -664,9 +662,9 @@ const AdminDashboard: React.FC = () => {
                 <li>
                   <button
                     onClick={() => handleMenuItemClick('manage-solutions')}
-                    className={`block w-full text-left p-4 hover:bg-indigo-700 transition duration-200 ${
+                    className={`block w-full text-left p-4 hover:bg-primary transition duration-200 ${
                       activeSection === 'manage-solutions'
-                        ? 'bg-indigo-700'
+                        ? 'bg-primary'
                         : ''
                     }`}
                   >

@@ -312,7 +312,7 @@ const BlogDetail = () => {
 
                   <button
                     type="submit"
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg transition-colors font-medium shadow-sm"
+                    className="bg-alternate hover:bg-primary text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg transition-colors font-medium shadow-sm"
                   >
                     Submit Comment
                   </button>

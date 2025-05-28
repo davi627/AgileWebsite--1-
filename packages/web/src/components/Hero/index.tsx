@@ -167,8 +167,7 @@ export default function Hero() {
         </div>
       </SidePadding>
 
-      {/* Bottom accent line */}
-      <div className="w-full h-2 bg-blue-500 absolute bottom-0 z-40"></div>
+
     </main>
   )
 }

@@ -2,7 +2,7 @@
   "MONGO_URI": "mongodb+srv://davidmbita001:Jamadova1234@cluster0.ssxheop.mongodb.net/AgileWebsite",
   "JWT_SECRET": "secret",
   "PORT": 5000,
-  "CLIENT_URL": "http://webtest-api.agilebiz.co.ke:5000",
+  "CLIENT_URL": "http://webtest.agilebiz.co.ke",
   "SMTP_HOST": "smtp.office365.com",
   "SMTP_PORT": 587,
   "SMTP_USER": "erp@agilebiz.co.ke",
