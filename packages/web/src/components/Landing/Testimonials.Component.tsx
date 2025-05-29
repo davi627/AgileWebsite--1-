@@ -6,7 +6,7 @@ import SidePadding from 'components/Shared/SidePadding.Component'
 import { useNavigate } from 'react-router-dom'
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'http://webtest.agilebiz.co.ke:5000'
+  import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000'
 
 interface Comment {
   _id: string
@@ -90,14 +90,15 @@ function Testimonials() {
     )
   }
 
+  // Conditional slider settings based on number of comments
   const sliderSettings = {
-    dots: true,
-    infinite: true,
+    dots: comments.length > 1,
+    infinite: comments.length > 1,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    autoplay: true,
-    arrows: true,
+    autoplay: comments.length > 1,
+    arrows: comments.length > 1,
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
     appendDots: (dots: React.ReactNode) => (
@@ -120,52 +121,100 @@ function Testimonials() {
 
         {comments.length > 0 ? (
           <div className="relative mt-14">
-            <Slider ref={sliderRef} {...sliderSettings}>
-              {comments.map((comment) => (
-                <div
-                  key={comment._id}
-                  className="shadow-top-bottom rounded-xl p-6 md:p-10"
-                >
-                  <div className="flex flex-col gap-5 md:flex-row">
-                    <div className="flex w-full flex-col items-start justify-evenly gap-6 md:w-1/2">
-                      <img
-                        src={`${API_BASE_URL}${comment.logo}`}
-                        alt="logo"
-                        className="h-10 w-auto"
-                      />
-                      <div>
-                        <p>{comment.description}</p>
-                        <p className="mt-4 text-sm italic text-gray-600">
-                          - {comment.author}
-                        </p>
-                      </div>
-
-                      <div>
-                        <p className="font-medium">Products</p>
-                        <div className="mt-2 flex flex-wrap gap-4 text-sm font-light">
-                          {comment.products.map((product, index) => (
-                            <div
-                              key={index}
-                              className="flex items-center gap-2"
-                            >
-                              <p>{product}</p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
+            {comments.length === 1 ? (
+              // Render single testimonial without slider
+              <div className="shadow-top-bottom rounded-xl p-6 md:p-10">
+                <div className="flex flex-col gap-5 md:flex-row">
+                  <div className="flex w-full flex-col items-start justify-evenly gap-6 md:w-1/2">
+                    <img
+                      src={`${API_BASE_URL}${comments[0].logo}`}
+                      alt="logo"
+                      className="h-10 w-auto"
+                    />
+                    <div>
+                      <p>{comments[0].description}</p>
+                      <p className="mt-4 text-sm italic text-gray-600">
+                        - {comments[0].author}
+                      </p>
                     </div>
 
-                    <div className="hidden h-[28rem] w-1/2 rounded-xl md:block">
+                    <div>
+                      <p className="font-medium">Products</p>
+                      <div className="mt-2 flex flex-wrap gap-4 text-sm font-light">
+                        {comments[0].products.map((product, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center gap-2"
+                          >
+                            <p>{product}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="hidden md:flex md:w-1/2 md:items-center md:justify-center">
+                    <div className="h-80 w-80 rounded-full bg-primary p-4">
                       <img
-                        src={`http://webtest-api.agilebiz.co.ke:5000${comment.image}`}
+                        src={`${API_BASE_URL}${comments[0].image}`}
                         alt="testimonial"
-                        className="h-full w-full rounded-xl object-cover object-center"
+                        className="h-full w-full rounded-full object-contain object-center"
                       />
                     </div>
                   </div>
                 </div>
-              ))}
-            </Slider>
+              </div>
+            ) : (
+              // Render multiple testimonials with slider
+              <Slider ref={sliderRef} {...sliderSettings}>
+                {comments.map((comment) => (
+                  <div
+                    key={comment._id}
+                    className="shadow-top-bottom rounded-xl p-6 md:p-10"
+                  >
+                    <div className="flex flex-col gap-5 md:flex-row">
+                      <div className="flex w-full flex-col items-start justify-evenly gap-6 md:w-1/2">
+                        <img
+                          src={`${API_BASE_URL}${comment.logo}`}
+                          alt="logo"
+                          className="h-10 w-auto"
+                        />
+                        <div>
+                          <p>{comment.description}</p>
+                          <p className="mt-4 text-sm italic text-gray-600">
+                            - {comment.author}
+                          </p>
+                        </div>
+
+                        <div>
+                          <p className="font-medium">Products</p>
+                          <div className="mt-2 flex flex-wrap gap-4 text-sm font-light">
+                            {comment.products.map((product, index) => (
+                              <div
+                                key={index}
+                                className="flex items-center gap-2"
+                              >
+                                <p>{product}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="hidden md:flex md:w-1/2 md:items-center md:justify-center">
+                        <div className="h-80 w-80">
+                          <img
+                            src={`${API_BASE_URL}${comment.image}`}
+                            alt="testimonial"
+                            className="h-full w-full rounded-lg border-4 border-primary object-contain object-center"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </Slider>
+            )}
           </div>
         ) : (
           <p className="mt-14 text-center text-gray-600">
