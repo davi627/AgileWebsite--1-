@@ -1,34 +1,95 @@
-// @ts-nocheck
+import React, { useEffect } from 'react';
 
-import { useEffect } from 'react'
+// TypeScript interface for Voiceflow
+interface VoiceflowWidget {
+  chat: {
+    load: (config: {
+      verify: { projectID: string };
+      url: string;
+      versionID: string;
+      voice: {
+        url: string;
+      };
+    }) => void;
+  };
+}
 
-const VoiceflowWidget = () => {
+// Extend Window interface to include voiceflow
+declare global {
+  interface Window {
+    voiceflow?: VoiceflowWidget;
+  }
+}
+
+const VoiceflowChat: React.FC = () => {
   useEffect(() => {
-    // Create a new script tag
-    const script = document.createElement('script')
-    script.type = 'text/javascript'
-    script.src = 'https://cdn.voiceflow.com/widget/bundle.mjs'
+    // Add custom CSS for Voiceflow widget styling
+    const addCustomStyles = () => {
+      const existingStyle = document.getElementById('voiceflow-custom-styles');
+      if (!existingStyle) {
+        const style = document.createElement('style');
+        style.id = 'voiceflow-custom-styles';
+        style.textContent = `
+          /* Voiceflow widget custom styles */
+          .vfrc-launcher {
+            background-color: #your-color !important;
+          }
+          .vfrc-header {
+            background-color: #your-color !important;
+          }
+          .vfrc-chat--container {
+            --vf-brand-color: #your-color;
+          }
+          /* Add more custom styles as needed */
+        `;
+        document.head.appendChild(style);
+      }
+    };
+
+    // Check if the script is already loaded
+    if (document.querySelector('script[src="https://cdn.voiceflow.com/widget-next/bundle.mjs"]')) {
+      addCustomStyles();
+      return;
+    }
+
+    // Create script element
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = 'https://cdn.voiceflow.com/widget-next/bundle.mjs';
+
+    // Set up onload handler
     script.onload = () => {
-      // Initialize the Voiceflow widget
       if (window.voiceflow && window.voiceflow.chat) {
         window.voiceflow.chat.load({
           verify: { projectID: '67177cd9c0ab47ef9cb1b302' },
           url: 'https://general-runtime.voiceflow.com',
-          versionID: 'production'
-        })
+          versionID: 'production',
+          voice: {
+            url: "https://runtime-api.voiceflow.com"
+          }
+        });
+        // Apply custom styles after widget loads
+        addCustomStyles();
       }
-    }
+    };
 
-    // Append the script to the document body
-    document.body.appendChild(script)
+    // Append script to document head
+    document.head.appendChild(script);
 
-    // Cleanup: Remove the script tag when the component unmounts
+    // Cleanup function to remove script when component unmounts
     return () => {
-      document.body.removeChild(script)
-    }
-  }, []) // Empty dependency array ensures this runs only once
+      const existingScript = document.querySelector('script[src="https://cdn.voiceflow.com/widget-next/bundle.mjs"]');
+      const existingStyle = document.getElementById('voiceflow-custom-styles');
+      if (existingScript) {
+        existingScript.remove();
+      }
+      if (existingStyle) {
+        existingStyle.remove();
+      }
+    };
+  }, []);
 
-  return null // This component doesn't render any visible elements
-}
+  return null; // This component doesn't render anything visible
+};
 
-export default VoiceflowWidget
+export default VoiceflowChat;
