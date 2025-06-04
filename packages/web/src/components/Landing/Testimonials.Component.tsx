@@ -111,7 +111,7 @@ function Testimonials() {
     )
   }
 
-  return (
+ return (
     <SidePadding>
       <div className="py-20 font-Poppins ">
         <p className="text-3xl font-medium leading-9 md:text-4xl">
@@ -154,11 +154,11 @@ function Testimonials() {
                   </div>
 
                   <div className="hidden md:flex md:w-1/2 md:items-center md:justify-center">
-                    <div className="h-80 w-80 rounded-full bg-primary p-4">
+                    <div className="h-80 w-80 rounded-lg border-4 border-primary bg-white p-2 shadow-md">
                       <img
                         src={`${API_BASE_URL}${comments[0].image}`}
                         alt="testimonial"
-                        className="h-full w-full rounded-full object-contain object-center"
+                        className="h-full w-full object-fill"
                       />
                     </div>
                   </div>
@@ -202,11 +202,11 @@ function Testimonials() {
                       </div>
 
                       <div className="hidden md:flex md:w-1/2 md:items-center md:justify-center">
-                        <div className="h-80 w-80">
+                        <div className="h-80 w-80 rounded-lg border-4 border-primary bg-white p-2 shadow-md">
                           <img
                             src={`${API_BASE_URL}${comment.image}`}
                             alt="testimonial"
-                            className="h-full w-full rounded-lg border-4 border-primary object-contain object-center"
+                            className="h-full w-full rounded-md object-contain object-center"
                           />
                         </div>
                       </div>

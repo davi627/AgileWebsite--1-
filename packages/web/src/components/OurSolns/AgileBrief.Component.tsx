@@ -16,7 +16,7 @@ function AgileBrief() {
             With Cutting Edge
             <br />
             Management Information Systems <br />
-            From Agile Business Solutions
+            From Agile Business Solutions Limited
           </p>
           <RequestDemoBtn />
         </div>
