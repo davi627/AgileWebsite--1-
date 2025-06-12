@@ -130,7 +130,7 @@ const Register: React.FC = () => {
             <div>
               <button
                 type="submit"
-                className="bg-primary w-full rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
+                className="bg-primary w-full rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-alternate"
               >
                 Register
               </button>
@@ -142,7 +142,7 @@ const Register: React.FC = () => {
           Already have an account?{' '}
           <a
             href="/login"
-            className="text-primary font-semibold hover:text-indigo-500"
+            className="text-primary font-semibold hover:text-alternate"
           >
             Login
           </a>

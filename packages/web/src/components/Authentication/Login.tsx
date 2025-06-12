@@ -106,7 +106,7 @@ const Login: React.FC = () => {
               <div className="text-sm leading-6">
                 <a
                   href="/reset"
-                  className="text-primary font-semibold hover:text-indigo-500"
+                  className="text-primary font-semibold hover:text-alternate"
                 >
                   Forgot password?
                 </a>
@@ -114,7 +114,7 @@ const Login: React.FC = () => {
               <div className="text-sm leading-6">
                 <a
                   href="/register"
-                  className="text-primary font-semibold hover:text-indigo-500"
+                  className="text-primary font-semibold hover:text-alternate"
                 >
                   Register
                 </a>
@@ -124,7 +124,7 @@ const Login: React.FC = () => {
             <div>
               <button
                 type="submit"
-                className="bg-primary focus-visible:outline-primary flex w-full justify-center rounded-md px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                className="bg-primary focus-visible:outline-primary flex w-full justify-center rounded-md px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-alternate focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               >
                 Sign in
               </button>

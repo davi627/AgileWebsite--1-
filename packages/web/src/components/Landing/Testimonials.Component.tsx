@@ -116,7 +116,7 @@ function Testimonials() {
       <div className="py-20 font-Poppins ">
         <p className="text-3xl font-medium leading-9 md:text-4xl">
           See how organizations grow with <br />
-          Our Microsoft solutions
+          Our solutions
         </p>
 
         {comments.length > 0 ? (

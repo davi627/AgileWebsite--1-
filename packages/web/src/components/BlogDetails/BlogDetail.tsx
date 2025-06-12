@@ -1,82 +1,154 @@
-import React, { useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import axios from 'axios'
-import Navbar from 'components/Navbar'
-import Footer from 'components/Footer'
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import Navbar from 'components/Navbar';
+import Footer from 'components/Footer';
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000';
 
 interface BlogPost {
-  _id: string
-  title: string
-  content: { type: string; data: string }[]
-  imageUrl: string
-  formattedDate: string
-  author: { name: string }
+  _id: string;
+  title: string;
+  content: { type: string; data: string }[];
+  formattedDate: string;
+  author: { name: string };
 }
 
 interface Comment {
-  _id: string
-  text: string
-  author: string
-  date: string
+  _id: string;
+  text: string;
+  author: string;
+  date: string;
 }
 
 const BlogDetail = () => {
-  const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
-  const [blog, setBlog] = useState<BlogPost | null>(null)
-  const [comments, setComments] = useState<Comment[]>([])
-  const [name, setName] = useState('')
-  const [newComment, setNewComment] = useState('')
-  const [showAllComments, setShowAllComments] = useState(false)
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [blog, setBlog] = useState<BlogPost | null>(null);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [name, setName] = useState('');
+  const [newComment, setNewComment] = useState('');
+  const [showAllComments, setShowAllComments] = useState(false);
+  const [hasSkippedCoverImage, setHasSkippedCoverImage] = useState(false);
 
   useEffect(() => {
     const fetchBlog = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/blog/blogs/${id}`)
-        setBlog(response.data)
+        const response = await axios.get(`${API_BASE_URL}/blog/blogs/${id}`);
+        setBlog(response.data);
       } catch (error) {
-        console.error('Error fetching blog:', error)
+        console.error('Error fetching blog:', error);
       }
-    }
+    };
 
     const fetchComments = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/blog/${id}/comments`)
-        setComments(response.data)
+        const response = await axios.get(`${API_BASE_URL}/blog/${id}/comments`);
+        setComments(response.data);
       } catch (error) {
-        console.error('Error fetching comments:', error)
+        console.error('Error fetching comments:', error);
       }
-    }
+    };
 
-    fetchBlog()
-    fetchComments()
-  }, [id])
+    fetchBlog();
+    fetchComments();
+  }, [id]);
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (!name.trim()) {
-      alert('Please enter your name before submitting a comment.')
-      return
+      alert('Please enter your name before submitting a comment.');
+      return;
     }
 
     try {
       await axios.post(`${API_BASE_URL}/blog/${id}/comments`, {
         text: newComment,
         author: name
-      })
+      });
 
-      setNewComment('')
-      setName('')
-      // Refresh comments after submission
-      const response = await axios.get(`${API_BASE_URL}/blog/${id}/comments`)
-      setComments(response.data)
+      setNewComment('');
+      setName('');
+      const response = await axios.get(`${API_BASE_URL}/blog/${id}/comments`);
+      setComments(response.data);
     } catch (error) {
-      console.error('Error submitting comment:', error)
+      console.error('Error submitting comment:', error);
     }
-  }
+  };
+
+  const renderBlogContent = (content: { type: string; data: string }[]) => {
+    return content.map((item, index) => {
+      if (item.type === 'image' && !hasSkippedCoverImage) {
+        setHasSkippedCoverImage(true);
+        return null;
+      }
+
+      if (item.type === 'text') {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = item.data;
+
+        const processNode = (node: ChildNode): React.ReactNode => {
+          if (node.nodeType === Node.TEXT_NODE) {
+            return node.textContent?.split('\n').map((text, i) => (
+              <React.Fragment key={i}>
+                {text}
+                {i < node.textContent!.split('\n').length - 1 && <br />}
+              </React.Fragment>
+            ));
+          }
+
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            const element = node as HTMLElement;
+            const children = Array.from(element.childNodes).map(processNode);
+
+            switch (element.tagName.toLowerCase()) {
+              case 'p':
+                return (
+                  <p key={index} className="text-gray-800 leading-relaxed mb-3 sm:mb-4 text-sm sm:text-base">
+                    {children}
+                  </p>
+                );
+              case 'strong':
+              case 'b':
+                return <strong className="font-bold">{children}</strong>;
+              case 'em':
+              case 'i':
+                return <em className="italic">{children}</em>;
+              case 'u':
+                return <u className="underline">{children}</u>;
+              case 'br':
+                return <br />;
+              default:
+                return <span>{children}</span>;
+            }
+          }
+
+          return null;
+        };
+
+        return Array.from(tempDiv.childNodes).map((node, idx) => (
+          <React.Fragment key={idx}>{processNode(node)}</React.Fragment>
+        ));
+      }
+
+      if (item.type === 'image') {
+        return (
+          <figure key={index} className="my-4 sm:my-6">
+            <img
+              src={item.data}
+              alt={`Content Image ${index}`}
+              className="w-full max-h-60 sm:max-h-80 object-contain rounded-lg shadow-md mx-auto"
+            />
+            <figcaption className="text-center text-xs sm:text-sm text-gray-500 mt-1 sm:mt-2">
+              Image {index}
+            </figcaption>
+          </figure>
+        );
+      }
+
+      return null;
+    });
+  };
 
   if (!blog) {
     return (
@@ -87,7 +159,7 @@ const BlogDetail = () => {
         </div>
         <Footer />
       </div>
-    )
+    );
   }
 
   return (
@@ -95,24 +167,20 @@ const BlogDetail = () => {
       <Navbar />
 
       <main className="flex-grow bg-gradient-to-b from-gray-50 to-gray-100">
-        <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-12 relative font-Poppins">
-          {/* Blog Content Area */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
-            {/* Left Decorative Line (Desktop Only) */}
+        <div className="container mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8 relative font-Poppins">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
             <div className="hidden lg:block col-span-1 relative">
               <div className="sticky top-24 h-full">
                 <div className="w-px h-full bg-gradient-to-b from-gray-200 to-transparent mx-auto"></div>
               </div>
             </div>
 
-            {/* Main Content */}
             <div className="col-span-12 lg:col-span-10">
-              {/* Blog Header */}
-              <header className="text-center mb-6 sm:mb-12">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 leading-tight mt-6 sm:mt-[55px]">
+              <header className="text-center mb-4 sm:mb-6 md:mb-8 mt-28">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 leading-tight mt-4 sm:mt-6">
                   {blog.title}
                 </h1>
-                <div className="flex flex-col sm:flex-row justify-center space-x-0 sm:space-x-4 text-gray-500 mt-3 sm:mt-4 text-sm">
+                <div className="flex flex-col sm:flex-row justify-center items-center space-y-1 sm:space-y-0 sm:space-x-2 text-gray-500 mt-2 sm:mt-3 text-xs sm:text-sm">
                   <time dateTime={blog.formattedDate} className="italic">
                     {blog.formattedDate}
                   </time>
@@ -123,59 +191,28 @@ const BlogDetail = () => {
                 </div>
               </header>
 
-              {/* Blog Content */}
-              <article className="prose prose-lg max-w-none bg-white rounded-xl shadow-sm p-4 sm:p-6 md:p-8 mb-6 sm:mb-12">
-                {blog.content.map((item, index) => {
-                  if (item.type === 'text') {
-                    const cleanedText = item.data.replace(
-                      /(https?:\/\/[^\s]+)/g,
-                      ''
-                    )
-                    return cleanedText.split('\n\n').map((paragraph, idx) => (
-                      <p
-                        key={`${index}-${idx}`}
-                        className="text-gray-800 leading-relaxed mb-4 sm:mb-6"
-                      >
-                        {paragraph}
-                      </p>
-                    ))
-                  } else if (item.type === 'image') {
-                    return (
-                      <figure key={index} className="my-6 sm:my-8">
-                        <img
-                          src={item.data}
-                          alt={`Content Image ${index}`}
-                          className="w-full max-h-80 sm:max-h-96 object-contain rounded-lg shadow-md"
-                        />
-                        <figcaption className="text-center text-xs sm:text-sm text-gray-500 mt-2">
-                          Image {index + 1}
-                        </figcaption>
-                      </figure>
-                    )
-                  }
-                  return null
-                })}
+              <article className="prose prose-sm sm:prose-lg max-w-none bg-white rounded-lg sm:rounded-xl shadow-sm p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 md:mb-8">
+                {renderBlogContent(blog.content)}
               </article>
 
-              {/* Comments Section */}
-              <section className="bg-white rounded-xl shadow-sm p-4 sm:p-6 md:p-8 mb-6 sm:mb-12">
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">
+              <section className="bg-white rounded-lg sm:rounded-xl shadow-sm p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 md:mb-8">
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
                   Comments
                 </h2>
 
                 {comments.length === 0 ? (
-                  <p className="text-gray-500 italic text-sm sm:text-base">
+                  <p className="text-gray-500 italic text-xs sm:text-sm">
                     Be the first to comment on this article!
                   </p>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                     {!showAllComments ? (
                       <>
-                        <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
-                          <p className="text-gray-700 text-sm sm:text-base">
+                        <div className="bg-gray-50 p-2 sm:p-3 rounded-md">
+                          <p className="text-gray-700 text-xs sm:text-sm">
                             {comments[0].text}
                           </p>
-                          <p className="mt-2 text-xs text-gray-500">
+                          <p className="mt-1 text-xs text-gray-500">
                             By{' '}
                             <span className="font-medium">
                               {comments[0].author}
@@ -195,12 +232,12 @@ const BlogDetail = () => {
                         {comments.length > 1 && (
                           <button
                             onClick={() => setShowAllComments(true)}
-                            className="text-blue-600 font-semibold hover:text-blue-800 transition-colors flex items-center"
+                            className="text-blue-600 font-medium hover:text-blue-800 transition-colors flex items-center text-xs sm:text-sm"
                           >
                             <span>View All {comments.length} Comments</span>
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
-                              className="h-4 w-4 ml-1"
+                              className="h-3 w-3 sm:h-4 sm:w-4 ml-1"
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
@@ -217,13 +254,13 @@ const BlogDetail = () => {
                       </>
                     ) : (
                       <>
-                        <div className="space-y-4 divide-y divide-gray-200">
+                        <div className="space-y-3 sm:space-y-4 divide-y divide-gray-200">
                           {comments.map((comment) => (
-                            <div key={comment._id} className="pt-4 first:pt-0">
-                              <p className="text-gray-700 text-sm sm:text-base">
+                            <div key={comment._id} className="pt-3 first:pt-0">
+                              <p className="text-gray-700 text-xs sm:text-sm">
                                 {comment.text}
                               </p>
-                              <p className="text-xs text-gray-500 mt-2">
+                              <p className="text-xs text-gray-500 mt-1">
                                 By{' '}
                                 <span className="font-medium">
                                   {comment.author}
@@ -244,12 +281,12 @@ const BlogDetail = () => {
 
                         <button
                           onClick={() => setShowAllComments(false)}
-                          className="text-blue-600 font-semibold hover:text-blue-800 transition-colors flex items-center"
+                          className="text-blue-600 font-medium hover:text-blue-800 transition-colors flex items-center text-xs sm:text-sm"
                         >
                           <span>Show Less</span>
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            className="h-4 w-4 ml-1"
+                            className="h-3 w-3 sm:h-4 sm:w-4 ml-1"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
@@ -268,19 +305,18 @@ const BlogDetail = () => {
                 )}
               </section>
 
-              {/* Comments Form */}
-              <section className="bg-white rounded-xl shadow-sm p-4 sm:p-6 md:p-8">
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">
+              <section className="bg-white rounded-lg sm:rounded-xl shadow-sm p-3 sm:p-4 md:p-6">
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
                   Leave a Comment
                 </h2>
                 <form
                   onSubmit={handleCommentSubmit}
-                  className="space-y-3 sm:space-y-4"
+                  className="space-y-2 sm:space-y-3"
                 >
                   <div>
                     <label
                       htmlFor="name"
-                      className="block text-sm font-medium text-gray-700 mb-1"
+                      className="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
                     >
                       Your Name
                     </label>
@@ -289,14 +325,14 @@ const BlogDetail = () => {
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      className="w-full p-2 border border-gray-300 rounded-md sm:rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-xs sm:text-sm"
                     />
                   </div>
 
                   <div>
                     <label
                       htmlFor="comment"
-                      className="block text-sm font-medium text-gray-700 mb-1"
+                      className="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
                     >
                       Your Comment
                     </label>
@@ -304,7 +340,7 @@ const BlogDetail = () => {
                       id="comment"
                       value={newComment}
                       onChange={(e) => setNewComment(e.target.value)}
-                      className="w-full p-2 sm:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      className="w-full p-2 border border-gray-300 rounded-md sm:rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-xs sm:text-sm"
                       rows={3}
                       required
                     />
@@ -312,7 +348,7 @@ const BlogDetail = () => {
 
                   <button
                     type="submit"
-                    className="bg-alternate hover:bg-primary text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg transition-colors font-medium shadow-sm"
+                    className="bg-primary hover:bg-alternate text-white px-3 sm:px-4 py-1 sm:py-2 rounded-md sm:rounded-lg transition-colors font-medium text-xs sm:text-sm shadow-sm"
                   >
                     Submit Comment
                   </button>
@@ -325,7 +361,7 @@ const BlogDetail = () => {
 
       <Footer />
     </div>
-  )
-}
+  );
+};
 
-export default BlogDetail
+export default BlogDetail;

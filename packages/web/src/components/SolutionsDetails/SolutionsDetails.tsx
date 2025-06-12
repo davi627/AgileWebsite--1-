@@ -127,7 +127,7 @@ function SolutionsDetails() {
 
             {solution && category && (
               <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
-                <div className="bg-[#34C4EC] text-white p-6">
+                <div className="bg-[#167AA1] text-white p-6">
                   <h1 className="text-2xl font-bold">{solution.name}</h1>
                   <p className="mt-2">{category.title}</p>
                 </div>

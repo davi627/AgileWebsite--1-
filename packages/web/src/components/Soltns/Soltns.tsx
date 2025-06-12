@@ -34,8 +34,8 @@ const Soltns = () => {
     primaryHover: 'hover:bg-[#12688a]',
     text: 'text-[#167AA0]',
     border: 'border-[#167AA0]',
-    gradientFrom: 'from-[#167AA0]',
-    gradientTo: 'to-[#12688a]'
+    gradientFrom: 'from-[#167AA1]',
+    gradientTo: 'to-[#167AA1]'
   }
 
   useEffect(() => {

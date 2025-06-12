@@ -26,12 +26,10 @@ router.post('/upload-image', upload.single('image'), (req, res) => {
     return res.status(400).json({ error: 'No file uploaded' })
   }
 
-  // Construct the URL of the uploaded image
   const imageUrl = `${req.protocol}://${req.get('host')}/uploads/blogs/${req.file.filename}`
-
-  // Return the image URL
   res.json({ imageUrl })
 })
+
 
 // Create new blog post
 router.post('/blogs', async (req, res) => {
@@ -280,6 +278,52 @@ router.delete('/blogs/:id', async (req, res) => {
     res.status(200).json({ message: 'Blog deleted successfully' })
   } catch (error) {
     res.status(500).json({ message: 'Failed to delete Blog', error })
+  }
+})
+
+
+// Update an existing blog post
+router.put('/blogs/:id', async (req, res) => {
+  const { id } = req.params
+  const { title, content, author, imageUrl } = req.body
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: 'Invalid blog ID' })
+  }
+
+  if (content && !Array.isArray(content)) {
+    return res.status(400).json({ message: 'Content must be an array' })
+  }
+
+  if (content) {
+    for (const item of content) {
+      if (!item.type || !item.data) {
+        return res.status(400).json({
+          message: 'Each content item must have a type and data'
+        })
+      }
+    }
+  }
+
+  try {
+    const updatedBlog = await Blogs.findByIdAndUpdate(
+      id,
+      {
+        ...(title && { title }),
+        ...(content && { content }),
+        ...(imageUrl && { imageUrl }),
+        ...(author?.name && { author: { name: author.name } })
+      },
+      { new: true, runValidators: true }
+    )
+
+    if (!updatedBlog) {
+      return res.status(404).json({ message: 'Blog not found' })
+    }
+
+    res.json(updatedBlog)
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to update blog', error: error.message })
   }
 })
 

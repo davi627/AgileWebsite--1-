@@ -14,6 +14,13 @@ interface BlogPost {
   views: number
 }
 
+// Utility function to strip HTML tags and get plain text
+const stripHtml = (html: string) => {
+  const tmp = document.createElement('div')
+  tmp.innerHTML = html
+  return tmp.textContent || tmp.innerText || ''
+}
+
 export default function TopBlogs() {
   const [blogs, setBlogs] = useState<BlogPost[]>([])
   const [loading, setLoading] = useState(true)
@@ -52,10 +59,18 @@ export default function TopBlogs() {
 
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {blogs.map((blog) => {
-            const textContent =
-              blog.content.find((item) => item.type === 'text')?.data || ''
-            const truncatedContent =
-              textContent.split('\n')[0].slice(0, 60) + '...'
+            // Find the first text content item
+            const textContentItem = blog.content.find(item => item.type === 'text')
+            const rawContent = textContentItem ? textContentItem.data : ''
+
+            // Strip HTML tags and get plain text
+            const plainText = stripHtml(rawContent)
+
+            // Get the first paragraph or first 60 characters
+            const firstParagraph = plainText.split('\n')[0]
+            const previewText = firstParagraph.length > 60
+              ? firstParagraph.substring(0, 60) + '...'
+              : firstParagraph
 
             return (
               <article
@@ -76,8 +91,8 @@ export default function TopBlogs() {
                   <p className="text-xs text-gray-600">
                     By: {blog.author.name} • {blog.views || 0} views
                   </p>
-                  <p className="text-sm text-gray-500 mt-1 line-clamp-1">
-                    {truncatedContent}
+                  <p className="text-sm text-gray-500 mt-1 line-clamp-2 whitespace-pre-line">
+                    {previewText}
                   </p>
                   <Link
                     to={`/blog/${blog._id}`}
