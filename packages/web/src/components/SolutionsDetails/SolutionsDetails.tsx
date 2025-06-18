@@ -5,8 +5,7 @@ import SidePadding from 'components/Shared/SidePadding.Component'
 import Navbar from 'components/Navbar'
 import Footer from 'components/Footer'
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
 
 interface ISolution {
   id: number
@@ -22,6 +21,39 @@ interface ISolutionCategory {
   title: string
   imageUrl: string
   solutions: ISolution[]
+}
+
+const FormattedText: React.FC<{ html: string, className?: string }> = ({ html, className = '' }) => {
+  // Convert HTML to properly formatted paragraphs with spacing
+  const formatHtml = (content: string) => {
+    // Create a temporary div to parse the HTML
+    const tempDiv = document.createElement('div')
+    tempDiv.innerHTML = content
+
+    // Process each element to ensure proper spacing
+    const paragraphs = Array.from(tempDiv.children).map(el => {
+      // For list items, convert them to paragraphs
+      if (el.tagName === 'LI') {
+        return `<p class="mb-6">${el.innerHTML}</p>`
+      }
+      // For paragraphs, ensure they have the proper spacing class
+      if (el.tagName === 'P') {
+        el.classList.add('mb-6')
+        return el.outerHTML
+      }
+      // For other elements, wrap in a paragraph if needed
+      return `<p class="mb-6">${el.innerHTML}</p>`
+    })
+
+    return paragraphs.join('')
+  }
+
+  return (
+    <div
+      className={`prose max-w-none ${className}`}
+      dangerouslySetInnerHTML={{ __html: formatHtml(html) }}
+    />
+  )
 }
 
 function SolutionsDetails() {
@@ -43,9 +75,7 @@ function SolutionsDetails() {
 
       try {
         setLoading(true)
-        const response = await axios.get(
-          `${API_BASE_URL}/api/solution-categories`
-        )
+        const response = await axios.get(`${API_BASE_URL}/api/solution-categories`)
         const categories = response.data
         const foundCategory = categories.find(
           (cat: ISolutionCategory) => cat._id === categoryId
@@ -79,7 +109,7 @@ function SolutionsDetails() {
   }, [categoryId, solutionId, navigate])
 
   const handleGoBack = () => {
-    navigate('/')
+    navigate('/solns')
   }
 
   if (loading) {
@@ -133,37 +163,28 @@ function SolutionsDetails() {
                 </div>
 
                 <div className="p-6">
-                  <div className="mb-6">
-                    <h2 className="text-xl font-semibold mb-2">Overview</h2>
-                    {/* Display plain text with proper line breaks */}
-                    <div className="text-gray-700 whitespace-pre-line">
-                      {solution.fullDesc}
-                    </div>
+                  <div className="mb-8">
+                    <h2 className="text-xl font-semibold mb-4">Overview</h2>
+                    <FormattedText html={solution.fullDesc} />
                   </div>
 
-                  <div className="mb-6">
-                    <h2 className="text-xl font-semibold mb-2">Key Features</h2>
-                    <ul className="list-disc pl-5 space-y-2">
+                  <div className="mb-8">
+                    <h2 className="text-xl font-semibold mb-4">Key Features</h2>
+                    <div className="space-y-6">
                       {solution.features.map((feature, index) => (
-                        <li
+                        <FormattedText
                           key={index}
-                          className="text-gray-700 whitespace-pre-line"
-                        >
-                          {feature.text}
-                        </li>
+                          html={feature.text}
+                          className="border-l-4 border-[#167AA1] pl-4"
+                        />
                       ))}
-                    </ul>
+                    </div>
                   </div>
 
                   {solution.implementation && (
                     <div>
-                      <h2 className="text-xl font-semibold mb-2">
-                        Implementation
-                      </h2>
-                      {/* Display plain text with proper line breaks */}
-                      <div className="text-gray-700 whitespace-pre-line">
-                        {solution.implementation}
-                      </div>
+                      <h2 className="text-xl font-semibold mb-4">Implementation</h2>
+                      <FormattedText html={solution.implementation} />
                     </div>
                   )}
                 </div>

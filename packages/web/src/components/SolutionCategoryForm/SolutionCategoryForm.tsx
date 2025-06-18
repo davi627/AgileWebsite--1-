@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000'
+  import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
 
 interface Feature {
   text: string
@@ -40,24 +40,62 @@ const FeatureItem: React.FC<FeatureItemProps> = ({
   onRemove
 }) => {
   const editor = useEditor({
-    extensions: [StarterKit],
+    extensions: [
+      StarterKit.configure({
+        paragraph: {
+          HTMLAttributes: {
+            class: 'mb-4', // Double spacing between paragraphs
+          },
+        },
+        bulletList: {
+          HTMLAttributes: {
+            class: 'list-none', // Remove list styling
+          },
+        },
+        orderedList: {
+          HTMLAttributes: {
+            class: 'list-none', // Remove list styling
+          },
+        },
+        listItem: {
+          HTMLAttributes: {
+            class: 'mb-4', // Add spacing between list items (now paragraphs)
+          },
+        },
+      }),
+    ],
     content: feature.text || '',
     onUpdate: ({ editor }) => {
-      onChange(index, editor.getText())
-    }
+      const html = editor.getHTML()
+      onChange(index, html)
+    },
+    editorProps: {
+      attributes: {
+        class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[80px] p-2',
+      },
+    },
   })
 
+  // Update editor content when feature changes
+  useEffect(() => {
+    if (editor && feature.text && feature.text !== editor.getHTML()) {
+      editor.commands.setContent(feature.text, false, {
+        preserveWhitespace: 'full'
+      })
+    }
+  }, [editor, feature.text])
+
   return (
-    <div className="flex flex-col gap-2 mb-3">
-      <div className="border border-gray-300 rounded-md p-2 min-h-32">
-        <EditorContent editor={editor} className="min-h-32" />
+    <div className="flex gap-2 mb-3 items-start">
+      <div className="flex-1 border border-gray-300 rounded-md min-h-20">
+        <EditorContent editor={editor} />
       </div>
       <button
         type="button"
         onClick={() => onRemove(index)}
-        className="self-end text-red-500 hover:text-red-700 text-xs md:text-sm bg-red-50 hover:bg-red-100 px-2 py-1 rounded"
+        className="text-red-500 hover:text-red-700 text-xs md:text-sm bg-red-50 hover:bg-red-100 px-2 py-1 rounded flex-shrink-0 mt-1"
       >
-        Remove Feature
+        Remove
       </button>
     </div>
   )
@@ -83,20 +121,63 @@ const SolutionItem: React.FC<SolutionItemProps> = ({
   onRemove
 }) => {
   const fullDescEditor = useEditor({
-    extensions: [StarterKit],
+    extensions: [
+      StarterKit.configure({
+        paragraph: {
+          HTMLAttributes: {
+            class: 'mb-4',
+          },
+        },
+      }),
+    ],
     content: solution.fullDesc || '',
     onUpdate: ({ editor }) => {
-      onChange(index, 'fullDesc', editor.getText())
-    }
+      onChange(index, 'fullDesc', editor.getHTML())
+    },
+    editorProps: {
+      attributes: {
+        class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[120px] p-3',
+      },
+    },
   })
 
   const implementationEditor = useEditor({
-    extensions: [StarterKit],
+    extensions: [
+      StarterKit.configure({
+        paragraph: {
+          HTMLAttributes: {
+            class: 'mb-4',
+          },
+        },
+      }),
+    ],
     content: solution.implementation || '',
     onUpdate: ({ editor }) => {
-      onChange(index, 'implementation', editor.getText())
-    }
+      onChange(index, 'implementation', editor.getHTML())
+    },
+    editorProps: {
+      attributes: {
+        class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[120px] p-3',
+      },
+    },
   })
+
+  // Update editors when solution data changes
+  useEffect(() => {
+    if (fullDescEditor && solution.fullDesc && solution.fullDesc !== fullDescEditor.getHTML()) {
+      fullDescEditor.commands.setContent(solution.fullDesc, false, {
+        preserveWhitespace: 'full'
+      })
+    }
+  }, [fullDescEditor, solution.fullDesc])
+
+  useEffect(() => {
+    if (implementationEditor && solution.implementation && solution.implementation !== implementationEditor.getHTML()) {
+      implementationEditor.commands.setContent(solution.implementation, false, {
+        preserveWhitespace: 'full'
+      })
+    }
+  }, [implementationEditor, solution.implementation])
 
   return (
     <div className="mb-3 p-3 md:p-4 border rounded-lg">
@@ -143,18 +224,24 @@ const SolutionItem: React.FC<SolutionItemProps> = ({
           <label className="block text-xs md:text-sm font-medium text-gray-700">
             Full Description
           </label>
-          <div className="mt-1 border border-gray-300 rounded-md p-2 min-h-32">
-            <EditorContent editor={fullDescEditor} className="min-h-32" />
+          <div className="mt-1 border border-gray-300 rounded-md min-h-32">
+            <EditorContent editor={fullDescEditor} />
           </div>
+          <p className="text-xs text-gray-500 mt-1">
+            Use formatting tools: Bold (Ctrl+B), Italic (Ctrl+I), etc.
+          </p>
         </div>
 
         <div>
           <label className="block text-xs md:text-sm font-medium text-gray-700">
             Implementation
           </label>
-          <div className="mt-1 border border-gray-300 rounded-md p-2 min-h-32">
-            <EditorContent editor={implementationEditor} className="min-h-32" />
+          <div className="mt-1 border border-gray-300 rounded-md min-h-32">
+            <EditorContent editor={implementationEditor} />
           </div>
+          <p className="text-xs text-gray-500 mt-1">
+            Use formatting tools: Bold (Ctrl+B), Italic (Ctrl+I), etc.
+          </p>
         </div>
 
         <div>
@@ -182,6 +269,11 @@ const SolutionItem: React.FC<SolutionItemProps> = ({
               onRemove={(featIndex) => onRemoveFeature(index, featIndex)}
             />
           ))}
+          {solution.features.length > 0 && (
+            <p className="text-xs text-gray-500 mt-1">
+              Each feature will be displayed as a separate paragraph with proper spacing
+            </p>
+          )}
         </div>
       </div>
     </div>
@@ -300,15 +392,27 @@ const SolutionCategoryForm: React.FC = () => {
     setIsLoading(true)
 
     try {
+      const dataToSend = {
+        ...currentCategory,
+        solutions: currentCategory.solutions.map(solution => ({
+          ...solution,
+          fullDesc: solution.fullDesc || '',
+          implementation: solution.implementation || '',
+          features: solution.features.map(feature => ({
+            text: feature.text || ''
+          }))
+        }))
+      }
+
       if (editingId) {
         await axios.put(
           `${API_BASE_URL}/api/solution-categories/${editingId}`,
-          currentCategory
+          dataToSend
         )
       } else {
         await axios.post(
           `${API_BASE_URL}/api/solution-categories`,
-          currentCategory
+          dataToSend
         )
       }
       fetchCategories()
@@ -321,7 +425,15 @@ const SolutionCategoryForm: React.FC = () => {
   }
 
   const editCategory = (category: SolutionCategory) => {
-    setCurrentCategory(category)
+    const categoryToEdit = {
+      ...category,
+      solutions: category.solutions.map(solution => ({
+        ...solution,
+        features: [...solution.features]
+      }))
+    }
+
+    setCurrentCategory(categoryToEdit)
     if (category._id) {
       setEditingId(category._id)
     }
@@ -400,6 +512,13 @@ const SolutionCategoryForm: React.FC = () => {
 
         <div>
           <h3 className="text-md md:text-lg font-medium mb-2">Solutions</h3>
+          <div className="bg-blue-50 border-l-4 border-blue-400 p-3 mb-4">
+            <p className="text-sm text-blue-700">
+              <strong>Rich Text Support:</strong> All text fields support formatting like <strong>bold</strong>, <em>italic</em>, and paragraphs.
+              Features will be displayed as separate paragraphs with proper spacing.
+            </p>
+          </div>
+
           {currentCategory.solutions.map((solution, solIndex) => (
             <SolutionItem
               key={solIndex}

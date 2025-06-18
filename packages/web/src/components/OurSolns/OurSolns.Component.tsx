@@ -12,7 +12,7 @@ import chevDown from '../../assets/chevron-down.svg'
 import './faq.css'
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000'
+  import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
 
 interface ISolution {
   id: number
@@ -30,6 +30,47 @@ interface ISolutionCategory {
   solutions: ISolution[]
 }
 
+// Utility component to truncate text to 5 lines
+const TruncatedText = ({ text, maxLines = 5 }: { text: string; maxLines?: number }) => {
+  const [isTruncated, setIsTruncated] = useState(true)
+  const textRef = useRef<HTMLParagraphElement>(null)
+  const [needsTruncation, setNeedsTruncation] = useState(false)
+
+  useEffect(() => {
+    if (textRef.current) {
+      // Check if text exceeds 5 lines
+      const lineHeight = parseInt(getComputedStyle(textRef.current).lineHeight)
+      const maxHeight = lineHeight * maxLines
+      setNeedsTruncation(textRef.current.scrollHeight > maxHeight)
+    }
+  }, [text, maxLines])
+
+  return (
+    <div>
+      <p
+        ref={textRef}
+        className="text-gray-700 text-sm md:text-base"
+        style={{
+          display: '-webkit-box',
+          WebkitLineClamp: isTruncated && needsTruncation ? maxLines : undefined,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden',
+        }}
+      >
+        {text.replace(/<[^>]*>/g, '')}
+      </p>
+      {needsTruncation && (
+        <button
+          onClick={() => setIsTruncated(!isTruncated)}
+          className="mt-1 text-primary hover:underline text-sm"
+        >
+          {isTruncated ? 'Read more' : 'Show less'}
+        </button>
+      )}
+    </div>
+  )
+}
+
 function OurSolns() {
   const navigate = useNavigate()
   const [categories, setCategories] = useState<ISolutionCategory[]>([])
@@ -40,7 +81,6 @@ function OurSolns() {
   const [theFAQs, setTheFAQs] = useState<
     { q: string; a: string; solutionId: number }[]
   >([])
-  // Changed: Use a string to create unique identifiers for each FAQ
   const [selected, setSelected] = useState<string | null>(null)
   const [visibleColumns, setVisibleColumns] = useState(2)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -117,7 +157,6 @@ function OurSolns() {
     }
   }, [selectedCategory])
 
-  //  Create unique identifier for each FAQ item
   const toggle = (uniqueId: string) => {
     setSelected(selected === uniqueId ? null : uniqueId)
   }
@@ -177,7 +216,6 @@ function OurSolns() {
             exit="exit"
           >
             Transform your Business with <br /> {selectedCategory.title}{' '}
-            solutions
           </motion.p>
         </AnimatePresence>
 
@@ -193,7 +231,6 @@ function OurSolns() {
                         qn: { q: string; a: string; solutionId: number },
                         i: number
                       ) => {
-                        // Changed: Create unique identifier combining column and row indices
                         const uniqueId = `${colIndex}-${i}`
                         const isSelected = selected === uniqueId
 
@@ -223,17 +260,13 @@ function OurSolns() {
                                   variants={faqItem}
                                   className="overflow-hidden"
                                 >
-                                  <p className="text-gray-700 text-sm md:text-base">
-                                    {qn.a}
-                                    <button
-                                      onClick={() =>
-                                        handleReadMore(qn.solutionId)
-                                      }
-                                      className="ml-2 text-primary hover:underline"
-                                    >
-                                      Read more
-                                    </button>
-                                  </p>
+                                  <TruncatedText text={qn.a} />
+                                  <button
+                                    onClick={() => handleReadMore(qn.solutionId)}
+                                    className="mt-2 text-primary hover:underline text-sm"
+                                  >
+                                    View full details
+                                  </button>
                                 </motion.div>
                               )}
                             </AnimatePresence>
