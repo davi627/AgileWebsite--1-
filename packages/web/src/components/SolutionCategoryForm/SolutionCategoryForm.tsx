@@ -1,89 +1,86 @@
-import { useEditor, EditorContent } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
-import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ket:5000';
 
 interface Feature {
-  text: string
+  text: string;
 }
 
 interface Solution {
-  id: number
-  name: string
-  shortDesc: string
-  fullDesc: string
-  features: Feature[]
-  implementation: string
+  id: number;
+  name: string;
+  shortDesc: string;
+  fullDesc: string;
+  features: Feature[];
+  implementation: string;
 }
 
 interface SolutionCategory {
-  _id?: string
-  title: string
-  imageUrl: string
-  solutions: Solution[]
+  _id?: string;
+  title: string;
+  imageUrl: string;
+  solutions: Solution[];
 }
+
+// Utility function to clean HTML content
+const cleanHtmlContent = (html: string) => {
+  if (!html) return '';
+
+  // Ensure all paragraphs have proper spacing
+  let cleaned = html.replace(/<p>/g, '<p class="mb-4">');
+
+  // Remove empty paragraphs
+  cleaned = cleaned
+    .replace(/<p class="mb-4"><\/p>/g, '')
+    .replace(/<p><\/p>/g, '')
+    .replace(/<p>(<br>|\s)*<\/p>/g, '');
+
+  return cleaned;
+};
 
 interface FeatureItemProps {
-  feature: Feature
-  index: number
-  onChange: (index: number, value: string) => void
-  onRemove: (index: number) => void
+  feature: Feature;
+  index: number;
+  onChange: (index: number, value: string) => void;
+  onRemove: (index: number) => void;
 }
 
-const FeatureItem: React.FC<FeatureItemProps> = ({
-  feature,
-  index,
-  onChange,
-  onRemove
-}) => {
+const FeatureItem: React.FC<FeatureItemProps> = ({ feature, index, onChange, onRemove }) => {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
         paragraph: {
           HTMLAttributes: {
-            class: 'mb-4', // Double spacing between paragraphs
+            class: 'mb-4',
           },
         },
-        bulletList: {
-          HTMLAttributes: {
-            class: 'list-none', // Remove list styling
-          },
-        },
-        orderedList: {
-          HTMLAttributes: {
-            class: 'list-none', // Remove list styling
-          },
-        },
-        listItem: {
-          HTMLAttributes: {
-            class: 'mb-4', // Add spacing between list items (now paragraphs)
-          },
-        },
+        bulletList: false,
+        orderedList: false,
+        listItem: false,
       }),
     ],
     content: feature.text || '',
     onUpdate: ({ editor }) => {
-      const html = editor.getHTML()
-      onChange(index, html)
+      const html = editor.getHTML();
+      onChange(index, cleanHtmlContent(html));
     },
     editorProps: {
       attributes: {
         class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[80px] p-2',
       },
     },
-  })
+  });
 
-  // Update editor content when feature changes
   useEffect(() => {
     if (editor && feature.text && feature.text !== editor.getHTML()) {
-      editor.commands.setContent(feature.text, false, {
+      editor.commands.setContent(cleanHtmlContent(feature.text), false, {
         preserveWhitespace: 'full'
-      })
+      });
     }
-  }, [editor, feature.text])
+  }, [editor, feature.text]);
 
   return (
     <div className="flex gap-2 mb-3 items-start">
@@ -98,17 +95,17 @@ const FeatureItem: React.FC<FeatureItemProps> = ({
         Remove
       </button>
     </div>
-  )
-}
+  );
+};
 
 interface SolutionItemProps {
-  solution: Solution
-  index: number
-  onChange: (index: number, field: string, value: string) => void
-  onFeatureChange: (solIndex: number, featIndex: number, value: string) => void
-  onAddFeature: (solIndex: number) => void
-  onRemoveFeature: (solIndex: number, featIndex: number) => void
-  onRemove: (index: number) => void
+  solution: Solution;
+  index: number;
+  onChange: (index: number, field: string, value: string) => void;
+  onFeatureChange: (solIndex: number, featIndex: number, value: string) => void;
+  onAddFeature: (solIndex: number) => void;
+  onRemoveFeature: (solIndex: number, featIndex: number) => void;
+  onRemove: (index: number) => void;
 }
 
 const SolutionItem: React.FC<SolutionItemProps> = ({
@@ -130,16 +127,16 @@ const SolutionItem: React.FC<SolutionItemProps> = ({
         },
       }),
     ],
-    content: solution.fullDesc || '',
+    content: cleanHtmlContent(solution.fullDesc),
     onUpdate: ({ editor }) => {
-      onChange(index, 'fullDesc', editor.getHTML())
+      onChange(index, 'fullDesc', cleanHtmlContent(editor.getHTML()));
     },
     editorProps: {
       attributes: {
         class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[120px] p-3',
       },
     },
-  })
+  });
 
   const implementationEditor = useEditor({
     extensions: [
@@ -151,33 +148,32 @@ const SolutionItem: React.FC<SolutionItemProps> = ({
         },
       }),
     ],
-    content: solution.implementation || '',
+    content: cleanHtmlContent(solution.implementation),
     onUpdate: ({ editor }) => {
-      onChange(index, 'implementation', editor.getHTML())
+      onChange(index, 'implementation', cleanHtmlContent(editor.getHTML()));
     },
     editorProps: {
       attributes: {
         class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[120px] p-3',
       },
     },
-  })
+  });
 
-  // Update editors when solution data changes
   useEffect(() => {
     if (fullDescEditor && solution.fullDesc && solution.fullDesc !== fullDescEditor.getHTML()) {
-      fullDescEditor.commands.setContent(solution.fullDesc, false, {
+      fullDescEditor.commands.setContent(cleanHtmlContent(solution.fullDesc), false, {
         preserveWhitespace: 'full'
-      })
+      });
     }
-  }, [fullDescEditor, solution.fullDesc])
+  }, [fullDescEditor, solution.fullDesc]);
 
   useEffect(() => {
     if (implementationEditor && solution.implementation && solution.implementation !== implementationEditor.getHTML()) {
-      implementationEditor.commands.setContent(solution.implementation, false, {
+      implementationEditor.commands.setContent(cleanHtmlContent(solution.implementation), false, {
         preserveWhitespace: 'full'
-      })
+      });
     }
-  }, [implementationEditor, solution.implementation])
+  }, [implementationEditor, solution.implementation]);
 
   return (
     <div className="mb-3 p-3 md:p-4 border rounded-lg">
@@ -388,41 +384,41 @@ const SolutionCategoryForm: React.FC = () => {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
 
     try {
       const dataToSend = {
         ...currentCategory,
         solutions: currentCategory.solutions.map(solution => ({
           ...solution,
-          fullDesc: solution.fullDesc || '',
-          implementation: solution.implementation || '',
+          fullDesc: cleanHtmlContent(solution.fullDesc || ''),
+          implementation: cleanHtmlContent(solution.implementation || ''),
           features: solution.features.map(feature => ({
-            text: feature.text || ''
+            text: cleanHtmlContent(feature.text || '')
           }))
         }))
-      }
+      };
 
       if (editingId) {
         await axios.put(
           `${API_BASE_URL}/api/solution-categories/${editingId}`,
           dataToSend
-        )
+        );
       } else {
         await axios.post(
           `${API_BASE_URL}/api/solution-categories`,
           dataToSend
-        )
+        );
       }
-      fetchCategories()
-      resetForm()
+      fetchCategories();
+      resetForm();
     } catch (error) {
-      console.error('Failed to save category:', error)
+      console.error('Failed to save category:', error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const editCategory = (category: SolutionCategory) => {
     const categoryToEdit = {
