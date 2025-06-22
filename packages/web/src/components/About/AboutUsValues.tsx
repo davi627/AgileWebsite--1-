@@ -19,7 +19,7 @@ const values = [
   {
     name: 'Teamwork',
     description:
-      'Collaborating with trust, respect, and shared purpose to achieve common goals. Together, we create greater success than any one individual could alone.'
+      'Collaborating with trust, respect, and shared purpose to achieve common goals, we unlock success beyond individual limits.'
   },
   {
     name: 'Integrity',

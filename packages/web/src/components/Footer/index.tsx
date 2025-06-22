@@ -132,7 +132,7 @@ export default function Footer() {
               <p>Phone: +254 723929999</p>
               <p>Email: info@agilebiz.co.ke</p>
               <p>Contact Us: sales@agilebiz.co.ke</p>
-              <p>Address: Jumuia Place II Lenana</p>
+              <p>Address: 1st Floor,Jumuia Place II, Lenana Rd, Nairobi</p>
             </div>
 
             {/* Certifications - Responsive Image Sizing */}

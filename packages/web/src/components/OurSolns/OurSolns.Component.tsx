@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import clsx from 'clsx'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import axios from 'axios'
 import { motion, AnimatePresence } from 'framer-motion'
 import SidePadding from 'components/Shared/SidePadding.Component'
@@ -12,7 +12,7 @@ import chevDown from '../../assets/chevron-down.svg'
 import './faq.css'
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000'
+  import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
 
 interface ISolution {
   id: number
@@ -30,7 +30,6 @@ interface ISolutionCategory {
   solutions: ISolution[]
 }
 
-// Utility component to truncate text to 5 lines
 const TruncatedText = ({ text, maxLines = 5 }: { text: string; maxLines?: number }) => {
   const [isTruncated, setIsTruncated] = useState(true)
   const textRef = useRef<HTMLParagraphElement>(null)
@@ -38,7 +37,6 @@ const TruncatedText = ({ text, maxLines = 5 }: { text: string; maxLines?: number
 
   useEffect(() => {
     if (textRef.current) {
-      // Check if text exceeds 5 lines
       const lineHeight = parseInt(getComputedStyle(textRef.current).lineHeight)
       const maxHeight = lineHeight * maxLines
       setNeedsTruncation(textRef.current.scrollHeight > maxHeight)
@@ -73,6 +71,7 @@ const TruncatedText = ({ text, maxLines = 5 }: { text: string; maxLines?: number
 
 function OurSolns() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [categories, setCategories] = useState<ISolutionCategory[]>([])
   const [selectedCategory, setSelectedCategory] =
     useState<ISolutionCategory | null>(null)
@@ -157,13 +156,27 @@ function OurSolns() {
     }
   }, [selectedCategory])
 
+  useEffect(() => {
+    if (location.state?.scrollToCategory) {
+      const categoryToScroll = categories.find(c => c._id === location.state.scrollToCategory)
+      if (categoryToScroll) {
+        setSelectedCategory(categoryToScroll)
+        setTimeout(() => {
+          containerRef.current?.scrollIntoView({ behavior: 'smooth' })
+        }, 100)
+      }
+    }
+  }, [location.state, categories])
+
   const toggle = (uniqueId: string) => {
     setSelected(selected === uniqueId ? null : uniqueId)
   }
 
   const handleReadMore = (solutionId: number) => {
     if (selectedCategory) {
-      navigate(`/solns/${selectedCategory._id}/${solutionId}`)
+      navigate(`/solns/${selectedCategory._id}/${solutionId}`, {
+        state: { fromCategory: selectedCategory._id }
+      })
     }
   }
 

@@ -54,8 +54,8 @@ const HeroSection: React.FC = () => {
               </h1>
               <p className="relative mt-6 text-lg leading-8 text-gray-600 sm:max-w-md lg:max-w-none">
                 With deep roots in our industry, Agile was established to
-                provide adequate and efficient superior IT solutions through
-                customization and that is exactly what we have been doing.
+                provide adequate and efficient IT solutions through customization
+                and that is exactly what we have been doing.
               </p>
             </div>
             <div className="relative flex justify-center lg:w-1/2 lg:justify-end xl:w-1/3">
