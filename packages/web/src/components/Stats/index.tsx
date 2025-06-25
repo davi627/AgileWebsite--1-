@@ -5,7 +5,7 @@ import axios from 'axios'
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
-  'http://webtest-api.agilebiz.co.ke:5000/stats'
+  'https://webtest-api.agilebiz.co.ke:5000/stats'
 
 interface Stat {
   id: number

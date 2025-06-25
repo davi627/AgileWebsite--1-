@@ -1,86 +1,93 @@
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useEditor, EditorContent } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000'
 
 interface Feature {
-  text: string;
+  text: string
 }
 
 interface Solution {
-  id: number;
-  name: string;
-  shortDesc: string;
-  fullDesc: string;
-  features: Feature[];
-  implementation: string;
+  id: number
+  name: string
+  shortDesc: string
+  fullDesc: string
+  features: Feature[]
+  implementation: string
 }
 
 interface SolutionCategory {
-  _id?: string;
-  title: string;
-  imageUrl: string;
-  solutions: Solution[];
+  _id?: string
+  title: string
+  imageUrl: string
+  solutions: Solution[]
 }
 
 // Utility function to clean HTML content
 const cleanHtmlContent = (html: string) => {
-  if (!html) return '';
+  if (!html) return ''
 
   // Ensure all paragraphs have proper spacing
-  let cleaned = html.replace(/<p>/g, '<p class="mb-4">');
+  let cleaned = html.replace(/<p>/g, '<p class="mb-4">')
 
   // Remove empty paragraphs
   cleaned = cleaned
     .replace(/<p class="mb-4"><\/p>/g, '')
     .replace(/<p><\/p>/g, '')
-    .replace(/<p>(<br>|\s)*<\/p>/g, '');
+    .replace(/<p>(<br>|\s)*<\/p>/g, '')
 
-  return cleaned;
-};
-
-interface FeatureItemProps {
-  feature: Feature;
-  index: number;
-  onChange: (index: number, value: string) => void;
-  onRemove: (index: number) => void;
+  return cleaned
 }
 
-const FeatureItem: React.FC<FeatureItemProps> = ({ feature, index, onChange, onRemove }) => {
+interface FeatureItemProps {
+  feature: Feature
+  index: number
+  onChange: (index: number, value: string) => void
+  onRemove: (index: number) => void
+}
+
+const FeatureItem: React.FC<FeatureItemProps> = ({
+  feature,
+  index,
+  onChange,
+  onRemove
+}) => {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
         paragraph: {
           HTMLAttributes: {
-            class: 'mb-4',
-          },
+            class: 'mb-4'
+          }
         },
         bulletList: false,
         orderedList: false,
-        listItem: false,
-      }),
+        listItem: false
+      })
     ],
     content: feature.text || '',
     onUpdate: ({ editor }) => {
-      const html = editor.getHTML();
-      onChange(index, cleanHtmlContent(html));
+      const html = editor.getHTML()
+      onChange(index, cleanHtmlContent(html))
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[80px] p-2',
-      },
-    },
-  });
+        class:
+          'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[80px] p-2'
+      }
+    }
+  })
 
   useEffect(() => {
     if (editor && feature.text && feature.text !== editor.getHTML()) {
       editor.commands.setContent(cleanHtmlContent(feature.text), false, {
         preserveWhitespace: 'full'
-      });
+      })
     }
-  }, [editor, feature.text]);
+  }, [editor, feature.text])
 
   return (
     <div className="flex gap-2 mb-3 items-start">
@@ -95,17 +102,17 @@ const FeatureItem: React.FC<FeatureItemProps> = ({ feature, index, onChange, onR
         Remove
       </button>
     </div>
-  );
-};
+  )
+}
 
 interface SolutionItemProps {
-  solution: Solution;
-  index: number;
-  onChange: (index: number, field: string, value: string) => void;
-  onFeatureChange: (solIndex: number, featIndex: number, value: string) => void;
-  onAddFeature: (solIndex: number) => void;
-  onRemoveFeature: (solIndex: number, featIndex: number) => void;
-  onRemove: (index: number) => void;
+  solution: Solution
+  index: number
+  onChange: (index: number, field: string, value: string) => void
+  onFeatureChange: (solIndex: number, featIndex: number, value: string) => void
+  onAddFeature: (solIndex: number) => void
+  onRemoveFeature: (solIndex: number, featIndex: number) => void
+  onRemove: (index: number) => void
 }
 
 const SolutionItem: React.FC<SolutionItemProps> = ({
@@ -122,58 +129,76 @@ const SolutionItem: React.FC<SolutionItemProps> = ({
       StarterKit.configure({
         paragraph: {
           HTMLAttributes: {
-            class: 'mb-4',
-          },
-        },
-      }),
+            class: 'mb-4'
+          }
+        }
+      })
     ],
     content: cleanHtmlContent(solution.fullDesc),
     onUpdate: ({ editor }) => {
-      onChange(index, 'fullDesc', cleanHtmlContent(editor.getHTML()));
+      onChange(index, 'fullDesc', cleanHtmlContent(editor.getHTML()))
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[120px] p-3',
-      },
-    },
-  });
+        class:
+          'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[120px] p-3'
+      }
+    }
+  })
 
   const implementationEditor = useEditor({
     extensions: [
       StarterKit.configure({
         paragraph: {
           HTMLAttributes: {
-            class: 'mb-4',
-          },
-        },
-      }),
+            class: 'mb-4'
+          }
+        }
+      })
     ],
     content: cleanHtmlContent(solution.implementation),
     onUpdate: ({ editor }) => {
-      onChange(index, 'implementation', cleanHtmlContent(editor.getHTML()));
+      onChange(index, 'implementation', cleanHtmlContent(editor.getHTML()))
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[120px] p-3',
-      },
-    },
-  });
+        class:
+          'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[120px] p-3'
+      }
+    }
+  })
 
   useEffect(() => {
-    if (fullDescEditor && solution.fullDesc && solution.fullDesc !== fullDescEditor.getHTML()) {
-      fullDescEditor.commands.setContent(cleanHtmlContent(solution.fullDesc), false, {
-        preserveWhitespace: 'full'
-      });
+    if (
+      fullDescEditor &&
+      solution.fullDesc &&
+      solution.fullDesc !== fullDescEditor.getHTML()
+    ) {
+      fullDescEditor.commands.setContent(
+        cleanHtmlContent(solution.fullDesc),
+        false,
+        {
+          preserveWhitespace: 'full'
+        }
+      )
     }
-  }, [fullDescEditor, solution.fullDesc]);
+  }, [fullDescEditor, solution.fullDesc])
 
   useEffect(() => {
-    if (implementationEditor && solution.implementation && solution.implementation !== implementationEditor.getHTML()) {
-      implementationEditor.commands.setContent(cleanHtmlContent(solution.implementation), false, {
-        preserveWhitespace: 'full'
-      });
+    if (
+      implementationEditor &&
+      solution.implementation &&
+      solution.implementation !== implementationEditor.getHTML()
+    ) {
+      implementationEditor.commands.setContent(
+        cleanHtmlContent(solution.implementation),
+        false,
+        {
+          preserveWhitespace: 'full'
+        }
+      )
     }
-  }, [implementationEditor, solution.implementation]);
+  }, [implementationEditor, solution.implementation])
 
   return (
     <div className="mb-3 p-3 md:p-4 border rounded-lg">
@@ -267,7 +292,8 @@ const SolutionItem: React.FC<SolutionItemProps> = ({
           ))}
           {solution.features.length > 0 && (
             <p className="text-xs text-gray-500 mt-1">
-              Each feature will be displayed as a separate paragraph with proper spacing
+              Each feature will be displayed as a separate paragraph with proper
+              spacing
             </p>
           )}
         </div>
@@ -286,6 +312,8 @@ const SolutionCategoryForm: React.FC = () => {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState<string | null>(null)
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
 
   useEffect(() => {
     fetchCategories()
@@ -384,52 +412,76 @@ const SolutionCategoryForm: React.FC = () => {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+    e.preventDefault()
+    setIsLoading(true)
 
     try {
-      const dataToSend = {
-        ...currentCategory,
-        solutions: currentCategory.solutions.map(solution => ({
-          ...solution,
-          fullDesc: cleanHtmlContent(solution.fullDesc || ''),
-          implementation: cleanHtmlContent(solution.implementation || ''),
-          features: solution.features.map(feature => ({
-            text: cleanHtmlContent(feature.text || '')
+      const formData = new FormData()
+      formData.append('title', currentCategory.title)
+
+      // Append the image file if it exists
+      if (imageFile) {
+        formData.append('image', imageFile)
+      } else if (currentCategory.imageUrl) {
+        formData.append('imageUrl', currentCategory.imageUrl)
+      }
+
+      // Append solutions data as JSON
+      formData.append(
+        'solutions',
+        JSON.stringify(
+          currentCategory.solutions.map((solution) => ({
+            ...solution,
+            fullDesc: cleanHtmlContent(solution.fullDesc || ''),
+            implementation: cleanHtmlContent(solution.implementation || ''),
+            features: solution.features.map((feature) => ({
+              text: cleanHtmlContent(feature.text || '')
+            }))
           }))
-        }))
-      };
+        )
+      )
+
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
 
       if (editingId) {
         await axios.put(
           `${API_BASE_URL}/api/solution-categories/${editingId}`,
-          dataToSend
-        );
+          formData,
+          config
+        )
       } else {
         await axios.post(
           `${API_BASE_URL}/api/solution-categories`,
-          dataToSend
-        );
+          formData,
+          config
+        )
       }
-      fetchCategories();
-      resetForm();
-    } catch (error) {
-      console.error('Failed to save category:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
+      fetchCategories()
+      resetForm()
+    } catch (error) {
+      console.error('Failed to save category:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
   const editCategory = (category: SolutionCategory) => {
     const categoryToEdit = {
       ...category,
-      solutions: category.solutions.map(solution => ({
+      solutions: category.solutions.map((solution) => ({
         ...solution,
         features: [...solution.features]
       }))
     }
 
     setCurrentCategory(categoryToEdit)
+    setImageFile(null)
+    setImagePreview(null)
+
     if (category._id) {
       setEditingId(category._id)
     }
@@ -452,6 +504,8 @@ const SolutionCategoryForm: React.FC = () => {
       imageUrl: '',
       solutions: []
     })
+    setImageFile(null)
+    setImagePreview(null)
     setEditingId(null)
   }
 
@@ -482,20 +536,50 @@ const SolutionCategoryForm: React.FC = () => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            Image URL
+            Category Image
           </label>
-          <input
-            type="text"
-            name="imageUrl"
-            value={currentCategory.imageUrl}
-            onChange={handleInputChange}
-            className="mt-1 block w-full rounded-md border border-gray-300 p-2 text-sm md:text-base focus:border-indigo-500 focus:ring-indigo-500"
-            placeholder="https://example.com/image.jpg"
-          />
-          {currentCategory.imageUrl && (
+          <div className="mt-1 flex items-center">
+            <label
+              htmlFor="image-upload"
+              className="cursor-pointer bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              {imageFile ? 'Change Image' : 'Upload Image'}
+            </label>
+            <input
+              id="image-upload"
+              type="file"
+              accept="image/*"
+              className="sr-only"
+              onChange={(e) => {
+                if (e.target.files && e.target.files[0]) {
+                  const file = e.target.files[0]
+                  setImageFile(file)
+                  setImagePreview(URL.createObjectURL(file))
+                  // Clear the imageUrl if switching from URL to file upload
+                  setCurrentCategory({
+                    ...currentCategory,
+                    imageUrl: ''
+                  })
+                }
+              }}
+            />
+            {imageFile && (
+              <button
+                type="button"
+                onClick={() => {
+                  setImageFile(null)
+                  setImagePreview(null)
+                }}
+                className="ml-2 bg-red-100 text-red-600 py-2 px-3 rounded-md text-sm"
+              >
+                Remove
+              </button>
+            )}
+          </div>
+          {(imagePreview || currentCategory.imageUrl) && (
             <div className="mt-2">
               <img
-                src={currentCategory.imageUrl}
+                src={imagePreview || currentCategory.imageUrl}
                 alt="Category preview"
                 className="h-16 md:h-20 object-contain border rounded"
                 onError={(e) => {
@@ -510,8 +594,10 @@ const SolutionCategoryForm: React.FC = () => {
           <h3 className="text-md md:text-lg font-medium mb-2">Solutions</h3>
           <div className="bg-blue-50 border-l-4 border-blue-400 p-3 mb-4">
             <p className="text-sm text-blue-700">
-              <strong>Rich Text Support:</strong> All text fields support formatting like <strong>bold</strong>, <em>italic</em>, and paragraphs.
-              Features will be displayed as separate paragraphs with proper spacing.
+              <strong>Rich Text Support:</strong> All text fields support
+              formatting like <strong>bold</strong>, <em>italic</em>, and
+              paragraphs. Features will be displayed as separate paragraphs with
+              proper spacing.
             </p>
           </div>
 

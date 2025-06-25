@@ -3,7 +3,7 @@ import axios from 'axios'
 import SecurityKeyModal from 'components/SercurityKeyModal/SercurityKeyModal'
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000'
+  import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000'
 const ViewSolutions: React.FC = () => {
   const [solutions, setSolutions] = useState<{ _id: string; title: string }[]>(
     []

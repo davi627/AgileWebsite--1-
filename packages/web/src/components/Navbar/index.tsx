@@ -16,7 +16,8 @@ const navigation = [
   { name: 'Solutions', href: '#erp-solutions' },
   { name: 'About Us', href: '/about-us' },
   { name: 'Contact Us', href: '/contact-us' },
-  { name: 'Blogs', href: '/blogs' }
+  { name: 'Blogs', href: '/blogs' },
+  { name: 'Careers', href: 'https://careers.agilebiz.co.ke', external: true }
 ]
 
 export default function Navbar() {
@@ -24,10 +25,18 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const handleNavigation = (href: string) => {
+    if (href === '/careers') {
+      // Navigate to external careers site
+      window.location.href = 'https://careers.agilebiz.co.ke'
+      return
+    }
+
     const [path, hash] = href.split('#')
+
     if (path) {
       navigate(path, { replace: false })
     }
+
     if (hash) {
       navigate('/', { replace: false })
 
@@ -63,39 +72,27 @@ export default function Navbar() {
             </button>
           </div>
           <div className="hidden lg:flex lg:gap-x-12 font-medium">
-            {navigation.map((item) => (
-              // <a key={item.name} href={item.href} className="leading-6">
-              //   {item.name}
-              // </a>
-              <button
-                key={item.name}
-                onClick={() => handleNavigation(item.href)}
-                className="hover:text-primary leading-6"
-              >
-                {item.name}
-              </button>
-            ))}
-          </div>
-          <div className="hidden items-center gap-4 lg:flex">
-            <a
-              href="https://www.linkedin.com/company/10384226/
- "
-              target="blank"
-            >
-              <img src={liIcon} alt="linkedin" className="size-8" />
-            </a>
-            <a href="https://x.com/AgilebizKE" target="blank">
-              <img src={twitterIcon} alt="twitter" className="size-6" />
-            </a>
-            <a href="https://www.facebook.com/agilebizKE" target="blank">
-              <img src={fBIcon} alt="facebook" className="size-8" />
-            </a>
-            <a
-              href="https://www.instagram.com/agilebizsolutions/"
-              target="blank"
-            >
-              <img src={instaIcon} alt="instagram" className="size-8" />
-            </a>
+            {navigation.map((item) =>
+              item.external ? (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-primary leading-6"
+                >
+                  {item.name}
+                </a>
+              ) : (
+                <button
+                  key={item.name}
+                  onClick={() => handleNavigation(item.href)}
+                  className="hover:text-primary leading-6"
+                >
+                  {item.name}
+                </button>
+              )
+            )}
           </div>
           {/* HAS A USEFUL GET QUOTE MODAL */}
           {/* <div className="hidden lg:flex lg:flex-1 lg:justify-end">

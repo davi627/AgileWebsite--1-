@@ -2,7 +2,7 @@ import axios from 'axios'
 import { Solution } from '../types/Solutions'
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000'
+  import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000'
 
 const getAuthHeaders = () => ({
   Authorization: `Bearer ${localStorage.getItem('token')}`

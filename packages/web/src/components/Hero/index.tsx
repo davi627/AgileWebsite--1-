@@ -5,7 +5,7 @@ import HeroBg from '../../assets/Image 1.png'
 import Phone from '../../assets/phone.png'
 import Investment from '../../assets/Investment.png'
 import Microsoft from '../../assets/Image 2.png'
-import Server from '../../assets/Image 3.png'
+import Server from '../../assets/Server3.png'
 
 export default function Hero() {
   const phrases = [
@@ -116,7 +116,7 @@ export default function Hero() {
                   alt="Software interface"
                   className="absolute object-contain"
                   style={{
-                    height: '600px',
+                    height: '800px',
                     width: '700px',
                     right: '-80px',
                     top: '-30px'
@@ -144,6 +144,7 @@ export default function Hero() {
               </div>
 
               {/* THIRD IMAGE GROUP - Server */}
+              {/* THIRD IMAGE GROUP */}
               <div
                 className={`absolute inset-0 transition-opacity duration-500 ${
                   currentPhraseIndex === 2 ? 'opacity-100' : 'opacity-0'
@@ -151,14 +152,13 @@ export default function Hero() {
               >
                 <img
                   src={Server}
-                  alt="Server and security"
-                  className="absolute object-contain"
-                  style={{
-                    height: '450px',
-                    width: '1070px',
-                    right: '-80px',
-                    top: '80px'
-                  }}
+                  alt="Server solutions"
+                  className="absolute object-contain
+      h-[350px] md:h-[200px] lg:h-[450px]     // Height control
+      w-[800px] md:w-[300px] lg:w-[1070px]    // Width control
+      -right-[40px] md:-right-[70px] lg:-right-[80px]  // Positioning
+      top-[70px] md:top-[80px] lg:top-[80px]  // Vertical alignment
+    "
                 />
               </div>
             </div>
@@ -166,8 +166,6 @@ export default function Hero() {
           ;
         </div>
       </SidePadding>
-
-
     </main>
   )
 }

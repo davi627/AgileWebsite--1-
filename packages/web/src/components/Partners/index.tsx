@@ -8,7 +8,7 @@ interface Logo {
 }
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'http://webtest-api.agilebiz.co.ke:5000'
+  import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000'
 
 export default function Partners() {
   const [logos, setLogos] = useState<Logo[]>([])
