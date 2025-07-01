@@ -4,22 +4,22 @@ const contactItems = [
   {
     title: 'Sales',
     email: 'sales@agilebiz.co.ke',
-    phone: '+2547 239-299-99'
+    phone: '+254 723 929 999'
   },
   {
     title: 'Careers',
     email: 'careers@agilebiz.co.ke',
-    phone: '+2547 239-299-99'
+    phone: '+254 723 929 999'
   },
   {
     title: 'Data Privacy Controller',
     email: 'privacy@agilebiz.co.ke',
-    phone: '+2547 332-906-55'
+    phone: '+254 733 290 655'
   },
   {
     title: 'Customer Service',
     email: 'support@agilebiz.co.ke',
-    phone: '+2547 332-906-55'
+    phone: '+254 733 290 655'
   }
 ]
 
