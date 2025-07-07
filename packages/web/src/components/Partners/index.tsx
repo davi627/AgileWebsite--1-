@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import axios from 'axios'
 
 interface Logo {
   _id: string
@@ -7,22 +8,34 @@ interface Logo {
   colorLogoUrl: string
 }
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000'
 
 export default function Partners() {
   const [logos, setLogos] = useState<Logo[]>([])
+  const [error, setError] = useState<string | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const scrollSpeed = 0.5
 
   useEffect(() => {
     const fetchLogos = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/log/logo`)
-        const data = await response.json()
-        setLogos(data)
+        const response = await axios.get(`${API_BASE_URL}/log/logo`, {
+          headers: { 'Content-Type': 'application/json' },
+        })
+        console.log('API Response Status:', response.status)
+        console.log('API Response Data:', response.data)
+        if (Array.isArray(response.data)) {
+          setLogos(response.data)
+        } else {
+          throw new Error('Invalid data format: Expected an array of logos')
+        }
       } catch (error) {
         console.error('Failed to fetch logos:', error)
+        if (error instanceof Error) {
+          setError(error.message)
+        } else {
+          setError('Failed to fetch logos')
+        }
       }
     }
 
@@ -42,12 +55,9 @@ export default function Partners() {
 
     const animateScroll = () => {
       scrollPosition += scrollSpeed
-
-      // Reset scroll position when we've scrolled through one set of logos
       if (scrollPosition >= containerWidth) {
         scrollPosition = 0
       }
-
       scrollContainer.scrollLeft = scrollPosition
       animationFrameId = requestAnimationFrame(animateScroll)
     }
@@ -69,25 +79,32 @@ export default function Partners() {
           className="mx-4 flex gap-10 md:gap-16 overflow-x-hidden whitespace-nowrap"
           style={{ maxWidth: '80rem' }}
         >
-          {/* Render two sets of logos for seamless looping */}
-          {[...logos, ...logos].map((logo, index) => (
-            <div
-              key={`${logo._id}-${index}`}
-              className="group relative flex items-center justify-center h-20 w-32 shrink-0 bg-white rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300"
-            >
-              <img
-                data-logo
-                src={`${API_BASE_URL}${logo.bwLogoUrl}`}
-                alt={`${logo.name} (BW)`}
-                className="absolute max-w-24 max-h-16 object-contain transition-opacity duration-300 group-hover:opacity-0"
-              />
-              <img
-                src={`${API_BASE_URL}${logo.colorLogoUrl}`}
-                alt={`${logo.name} (Color)`}
-                className="absolute max-w-24 max-h-16 object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-              />
-            </div>
-          ))}
+          {error ? (
+            <p className="text-red-500">Error: {error}</p>
+          ) : logos.length === 0 ? (
+            <p className="text-gray-500">Loading logos...</p>
+          ) : (
+            [...logos, ...logos].map((logo, index) => (
+              <div
+                key={`${logo._id}-${index}`}
+                className="group relative flex items-center justify-center h-20 w-32 shrink-0 bg-white rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300"
+              >
+                <img
+                  data-logo
+                  src={logo.bwLogoUrl} // Use raw URL from response
+                  alt={`${logo.name} (BW)`}
+                  className="absolute max-w-24 max-h-16 object-contain transition-opacity duration-300 group-hover:opacity-0"
+                  onError={(e) => console.error(`Image load error for ${logo.name} (BW):`, e)}
+                />
+                <img
+                  src={logo.colorLogoUrl} // Use raw URL from response
+                  alt={`${logo.name} (Color)`}
+                  className="absolute max-w-24 max-h-16 object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                  onError={(e) => console.error(`Image load error for ${logo.name} (Color):`, e)}
+                />
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 {
-  "MONGO_URI": "mongodb://webuser:Uno2%23r*z@40.113.34.251:27017/AGILEWEBSITE?authSource=admin",
+  "MONGO_URI": "mongodb+srv://davidmbita001:Jamadova1234@cluster0.ssxheop.mongodb.net/AgileWebsite",
   "JWT_SECRET": "secret",
   "PORT": 5000,
   "CLIENT_URL": "http://localhost:5173",

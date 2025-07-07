@@ -5,8 +5,7 @@ import 'slick-carousel/slick/slick-theme.css'
 import SidePadding from 'components/Shared/SidePadding.Component'
 import { useNavigate } from 'react-router-dom'
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000'
 
 interface Comment {
   _id: string
@@ -20,18 +19,31 @@ interface Comment {
 
 function Testimonials() {
   const [comments, setComments] = useState<Comment[]>([])
+  const [error, setError] = useState<string | null>(null)
   const sliderRef = useRef<Slider>(null)
+  const navigate = useNavigate()
 
   const fetchApprovedComments = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/comments/comments`)
+      const response = await fetch(`${API_BASE_URL}/comments/comments`, {
+        headers: { 'Content-Type': 'application/json' },
+      })
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
       const data = await response.json()
+      console.log('API Response Data:', data)
       const approvedComments = data.filter(
         (comment: Comment) => comment.status === 'approved'
       )
       setComments(approvedComments)
     } catch (error) {
       console.error('Failed to fetch comments:', error)
+      if (error instanceof Error) {
+        setError(error.message)
+      } else {
+        setError('Failed to fetch comments')
+      }
     }
   }
 
@@ -111,15 +123,17 @@ function Testimonials() {
     )
   }
 
- return (
+  return (
     <SidePadding>
-      <div className="py-20 font-Poppins ">
+      <div className="py-20 font-Poppins">
         <p className="text-3xl font-medium leading-9 md:text-4xl">
           See how organizations grow with <br />
           Our solutions
         </p>
 
-        {comments.length > 0 ? (
+        {error ? (
+          <p className="mt-14 text-center text-red-500">Error: {error}</p>
+        ) : comments.length > 0 ? (
           <div className="relative mt-14">
             {comments.length === 1 ? (
               // Render single testimonial without slider
@@ -127,9 +141,10 @@ function Testimonials() {
                 <div className="flex flex-col gap-5 md:flex-row">
                   <div className="flex w-full flex-col items-start justify-evenly gap-6 md:w-1/2">
                     <img
-                      src={`${API_BASE_URL}${comments[0].logo}`}
+                      src={comments[0].logo} // Use full URL from response
                       alt="logo"
                       className="h-10 w-auto"
+                      onError={(e) => console.error(`Image load error for ${comments[0].author} logo:`, e)}
                     />
                     <div>
                       <p>{comments[0].description}</p>
@@ -142,10 +157,7 @@ function Testimonials() {
                       <p className="font-medium">Products</p>
                       <div className="mt-2 flex flex-wrap gap-4 text-sm font-light">
                         {comments[0].products.map((product, index) => (
-                          <div
-                            key={index}
-                            className="flex items-center gap-2"
-                          >
+                          <div key={index} className="flex items-center gap-2">
                             <p>{product}</p>
                           </div>
                         ))}
@@ -156,9 +168,10 @@ function Testimonials() {
                   <div className="hidden md:flex md:w-1/2 md:items-center md:justify-center">
                     <div className="h-80 w-80 rounded-lg border-4 border-primary bg-white p-2 shadow-md">
                       <img
-                        src={`${API_BASE_URL}${comments[0].image}`}
+                        src={comments[0].image} // Use full URL from response
                         alt="testimonial"
-                        className="h-full w-full object-fill"
+                        className="h-full w-full rounded-md object-contain object-center"
+                        onError={(e) => console.error(`Image load error for ${comments[0].author} image:`, e)}
                       />
                     </div>
                   </div>
@@ -175,9 +188,10 @@ function Testimonials() {
                     <div className="flex flex-col gap-5 md:flex-row">
                       <div className="flex w-full flex-col items-start justify-evenly gap-6 md:w-1/2">
                         <img
-                          src={`${API_BASE_URL}${comment.logo}`}
+                          src={comment.logo} // Use full URL from response
                           alt="logo"
                           className="h-10 w-auto"
+                          onError={(e) => console.error(`Image load error for ${comment.author} logo:`, e)}
                         />
                         <div>
                           <p>{comment.description}</p>
@@ -190,10 +204,7 @@ function Testimonials() {
                           <p className="font-medium">Products</p>
                           <div className="mt-2 flex flex-wrap gap-4 text-sm font-light">
                             {comment.products.map((product, index) => (
-                              <div
-                                key={index}
-                                className="flex items-center gap-2"
-                              >
+                              <div key={index} className="flex items-center gap-2">
                                 <p>{product}</p>
                               </div>
                             ))}
@@ -204,9 +215,10 @@ function Testimonials() {
                       <div className="hidden md:flex md:w-1/2 md:items-center md:justify-center">
                         <div className="h-80 w-80 rounded-lg border-4 border-primary bg-white p-2 shadow-md">
                           <img
-                            src={`${API_BASE_URL}${comment.image}`}
+                            src={comment.image} // Use full URL from response
                             alt="testimonial"
                             className="h-full w-full rounded-md object-contain object-center"
+                            onError={(e) => console.error(`Image load error for ${comment.author} image:`, e)}
                           />
                         </div>
                       </div>

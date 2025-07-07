@@ -1,18 +1,21 @@
-import { useState, useEffect, useRef, JSXElementConstructor, ReactElement, ReactNode, ReactPortal } from 'react'
-import clsx from 'clsx'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import axios from 'axios'
 import { motion, AnimatePresence } from 'framer-motion'
 import SidePadding from 'components/Shared/SidePadding.Component'
-import Pill from './Pill.Component'
-
-import feature1 from '../../assets/feature1.png'
-import chevDown from '../../assets/chevron-down.svg'
+import { FaChevronLeft, FaChevronRight, FaArrowLeft } from 'react-icons/fa'
+import { BsArrowRight } from 'react-icons/bs'
 
 import './faq.css'
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000'
+
+// Helper function to construct full image URL
+const getImageUrl = (imageUrl: string): string => {
+  if (!imageUrl) return ''
+  if (imageUrl.startsWith('http')) return imageUrl
+  return `${API_BASE_URL}/${imageUrl.startsWith('/') ? imageUrl.slice(1) : imageUrl}`
+}
 
 interface ISolution {
   id: number
@@ -27,117 +30,44 @@ interface ISolutionCategory {
   _id: string
   title: string
   imageUrl: string
+  description: string
   solutions: ISolution[]
 }
 
-const TruncatedText = ({ text, maxLines = 5 }: { text: string; maxLines?: number }) => {
-  const [isTruncated, setIsTruncated] = useState(true)
-  const textRef = useRef<HTMLParagraphElement>(null)
-  const [needsTruncation, setNeedsTruncation] = useState(false)
-
-  useEffect(() => {
-    if (textRef.current) {
-      const lineHeight = parseInt(getComputedStyle(textRef.current).lineHeight)
-      const maxHeight = lineHeight * maxLines
-      setNeedsTruncation(textRef.current.scrollHeight > maxHeight)
-    }
-  }, [text, maxLines])
-
-  return (
-    <div>
-      <p
-        ref={textRef}
-        className="text-gray-700 text-sm md:text-base"
-        style={{
-          display: '-webkit-box',
-          WebkitLineClamp: isTruncated && needsTruncation ? maxLines : undefined,
-          WebkitBoxOrient: 'vertical',
-          overflow: 'hidden',
-        }}
-      >
-        {text.replace(/<[^>]*>/g, '')}
-      </p>
-      {needsTruncation && (
-        <button
-          onClick={() => setIsTruncated(!isTruncated)}
-          className="mt-1 text-primary hover:underline text-sm"
-        >
-          {isTruncated ? 'Read more' : 'Show less'}
-        </button>
-      )}
-    </div>
-  )
+interface ISolutionFAQ {
+  q: string
+  a: string
+  solutionId: number
 }
 
 function OurSolns() {
   const navigate = useNavigate()
   const location = useLocation()
   const [categories, setCategories] = useState<ISolutionCategory[]>([])
-  const [selectedCategory, setSelectedCategory] =
-    useState<ISolutionCategory | null>(null)
-  const [selectedSolution, setSelectedSolution] = useState<number>(0)
-  const [featureImg, setFeatureImg] = useState(feature1)
-  const [theFAQs, setTheFAQs] = useState<
-    { q: string; a: string; solutionId: number }[]
-  >([])
-  const [selected, setSelected] = useState<string | null>(null)
-  const [visibleColumns, setVisibleColumns] = useState(2)
-  const [currentScrollIndex, setCurrentScrollIndex] = useState(0)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const [selectedCategory, setSelectedCategory] = useState<ISolutionCategory | null>(null)
+  const [theFAQs, setTheFAQs] = useState<ISolutionFAQ[]>([])
+  const [currentPage, setCurrentPage] = useState(0)
+  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set())
   const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   const fadeIn = {
     hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5, ease: 'easeOut' }
-    },
-    exit: {
-      opacity: 0,
-      y: -20,
-      transition: { duration: 0.3, ease: 'easeIn' }
-    }
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+    exit: { opacity: 0, y: -20, transition: { duration: 0.3, ease: 'easeIn' } }
   }
 
-  const faqItem = {
-    hidden: { opacity: 0, height: 0 },
-    visible: {
-      opacity: 1,
-      height: 'auto',
-      transition: { duration: 0.3 }
-    }
-  }
-
-  const chunkFAQs = (
-    faqs: { q: string; a: string; solutionId: number }[],
-    chunkSize: number
-  ) => {
-    const chunks: any[] = []
-    for (let i = 0; i < faqs.length; i += chunkSize) {
-      chunks.push(faqs.slice(i, i + chunkSize))
-    }
-    return chunks
-  }
-
-  const displayedFAQs = chunkFAQs(theFAQs, 5)
-  const hasMoreColumns = displayedFAQs.length > visibleColumns
+  const cardsPerPage = 6
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(
-          `${API_BASE_URL}/api/solution-categories`
-        )
+        const response = await axios.get(`${API_BASE_URL}/api/solution-categories`)
+        console.log('Fetched categories:', response.data)
         setCategories(response.data)
-        if (response.data.length > 0) {
-          setSelectedCategory(response.data[0])
-        }
       } catch (error) {
         console.error('Failed to fetch solution categories:', error)
       }
     }
-
     fetchCategories()
   }, [])
 
@@ -150,11 +80,7 @@ function OurSolns() {
           solutionId: solution.id
         }))
       )
-
-      setSelectedSolution(0)
-      setSelected(null)
-
-      containerRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
+      setCurrentPage(0)
     }
   }, [selectedCategory])
 
@@ -163,275 +89,241 @@ function OurSolns() {
       const categoryToScroll = categories.find(c => c._id === location.state.scrollToCategory)
       if (categoryToScroll) {
         setSelectedCategory(categoryToScroll)
-        setTimeout(() => {
-          containerRef.current?.scrollIntoView({ behavior: 'smooth' })
-        }, 100)
       }
     }
   }, [location.state, categories])
 
-  const toggle = (uniqueId: string) => {
-    setSelected(selected === uniqueId ? null : uniqueId)
+  const handleCategoryClick = (categoryId: string) => {
+    const category = categories.find(c => c._id === categoryId)
+    setSelectedCategory(category || null)
+    setCurrentPage(0)
   }
 
-  const handleReadMore = (solutionId: number) => {
-    if (selectedCategory) {
-      navigate(`/solns/${selectedCategory._id}/${solutionId}`, {
-        state: { fromCategory: selectedCategory._id }
-      })
+  const handleBackToCategories = () => {
+    setSelectedCategory(null)
+    setCurrentPage(0)
+  }
+
+  const handleReadMore = (categoryId: string, solutionId: number) => {
+    navigate(`/solns/${categoryId}/${solutionId}`, { state: { fromCategory: categoryId } })
+  }
+
+  const handleImageError = (categoryId: string) => {
+    console.error(`Image failed to load for category ${categoryId}`)
+    setImageErrors(prev => new Set(prev).add(categoryId))
+  }
+
+  const handleScroll = (direction: 'left' | 'right') => {
+    const totalPages = Math.ceil(theFAQs.length / cardsPerPage)
+    if (direction === 'left' && currentPage > 0) {
+      setCurrentPage(currentPage - 1)
+    } else if (direction === 'right' && currentPage < totalPages - 1) {
+      setCurrentPage(currentPage + 1)
     }
-  }
-
-  const toggleShowMoreColumns = () => {
-    setVisibleColumns((prev) => (prev < displayedFAQs.length ? prev + 1 : 2))
-  }
-
-  const handleScroll = () => {
-    if (scrollContainerRef.current) {
-      const scrollPosition = scrollContainerRef.current.scrollLeft
+    if (scrollContainerRef.current && !selectedCategory) {
       const containerWidth = scrollContainerRef.current.clientWidth
-      const currentIndex = Math.round(scrollPosition / containerWidth)
-      setCurrentScrollIndex(currentIndex)
+      const scrollAmount = containerWidth
+      const maxScroll = containerWidth * (totalPages - 1)
+      const newScroll = currentPage * scrollAmount
+
+      scrollContainerRef.current.scrollTo({ left: newScroll, behavior: 'smooth' })
     }
   }
 
-  const scrollToIndex = (index: number) => {
-    if (scrollContainerRef.current) {
-      const containerWidth = scrollContainerRef.current.clientWidth
-      scrollContainerRef.current.scrollTo({
-        left: index * containerWidth,
-        behavior: 'smooth'
-      })
-    }
-  }
+  const canScrollLeft = currentPage > 0
+  const canScrollRight = currentPage < Math.ceil(theFAQs.length / cardsPerPage) - 1
 
-  if (!selectedCategory || selectedCategory.solutions.length === 0) {
-    return <div>Loading...</div>
+  const paginatedFAQs = theFAQs.slice(currentPage * cardsPerPage, (currentPage + 1) * cardsPerPage)
+
+  if (!categories.length) {
+    return (
+      <SidePadding>
+        <div className="py-14 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <span className="ml-3 text-gray-600">Loading solutions...</span>
+        </div>
+      </SidePadding>
+    )
   }
 
   return (
     <SidePadding>
-      <div
-        id="erp-solutions"
-        className="py-14 font-Poppins relative"
-        ref={containerRef}
-      >
-        <AnimatePresence mode="wait">
-          <motion.img
-            key={selectedCategory._id}
-            src={selectedCategory.imageUrl}
-            alt="Logo"
-            className="h-24"
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            variants={fadeIn}
-          />
-        </AnimatePresence>
-
-        <div className="mt-10 flex flex-wrap gap-4 relative z-10">
-          {categories.map((category) => (
-            <Pill
-              key={category._id}
-              title={category.title}
-              onPress={() => setSelectedCategory(category)}
-              selected={category._id === selectedCategory._id}
-            />
-          ))}
+      <div id="erp-solutions" className="py-14 font-Poppins">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-semibold text-gray-900 mb-4">
+            {selectedCategory ? selectedCategory.title : 'Solutions'}
+          </h1>
+          <p className="text-gray-600 text-lg max-w-3xl mx-auto leading-relaxed">
+            {selectedCategory
+              ? selectedCategory.description || 'Explore our comprehensive solutions designed to meet your specific business needs.'
+              : 'Discover our comprehensive range of technology solutions designed to transform your business and drive sustainable growth.'
+            }
+          </p>
         </div>
 
-        <AnimatePresence mode="wait">
-          <motion.p
-            key={`title-${selectedCategory._id}`}
-            className="mt-6 text-xl font-medium leading-tight md:text-[2rem] relative z-10"
-            variants={fadeIn}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-          >
-            Transform your Business with <br /> {selectedCategory.title}{' '}
-          </motion.p>
-        </AnimatePresence>
+        {/* Navigation */}
+        {selectedCategory && (
+          <div className="mb-8">
+            <button
+              onClick={handleBackToCategories}
+              className="flex items-center gap-2 text-black hover:text-gray-700 font-medium transition-colors"
+            >
+              <FaArrowLeft size={16} />
+              Back to All Solutions
+            </button>
+          </div>
+        )}
 
-        <div className="mt-12 w-full relative z-10">
-          {/* Mobile View */}
-          <div className="block md:hidden">
-            <div className="relative">
+        {/* Cards Container */}
+        <div className="relative">
+          <div className="flex items-center gap-4 sm:gap-4">
+            {/* Left Arrow - Hidden on small screens */}
+            <button
+              onClick={() => handleScroll('left')}
+              className={`p-4 bg-white rounded-full shadow-lg transition-all hidden sm:block ${
+                canScrollLeft
+                  ? 'text-black hover:bg-gray-200'
+                  : 'text-gray-400 cursor-not-allowed bg-gray-300'
+              }`}
+              disabled={!canScrollLeft}
+            >
+              <FaChevronLeft size={24} />
+            </button>
+
+            {/* Cards Grid */}
+            <div className="flex-1 overflow-y-auto sm:overflow-x-auto">
               <div
-                className="overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory"
                 ref={scrollContainerRef}
-                onScroll={handleScroll}
+                className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+                style={{
+                  maxHeight: '900px',
+                }}
               >
-                <div className="flex gap-6 w-max">
-                  {displayedFAQs.map((column, colIndex) => (
-                    <div
-                      key={colIndex}
-                      className="w-[calc(100vw-2rem)] flex-shrink-0 px-2 snap-start"
-                    >
-                      <div className="flex flex-col gap-6">
-                        {column.map((qn: { q: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | null | undefined; a: string; solutionId: number }, i: any) => {
-                          const uniqueId = `${colIndex}-${i}`;
-                          const isSelected = selected === uniqueId;
-
-                          return (
-                            <div key={uniqueId} className="mb-4">
-                              <button
-                                type="button"
-                                className="mb-2 flex w-full items-center justify-between gap-4 text-left font-medium"
-                                onClick={() => toggle(uniqueId)}
-                              >
-                                <p className="text-base md:text-lg">{qn.q}</p>
-                                <motion.img
-                                  src={chevDown}
-                                  alt="v"
-                                  className="size-5"
-                                  animate={{ rotate: isSelected ? 180 : 0 }}
-                                  transition={{ duration: 0.3 }}
+                <AnimatePresence mode="wait">
+                  {!selectedCategory ? (
+                    // Category Cards
+                    categories.map((category) => (
+                      <motion.div
+                        key={category._id}
+                        className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer group border border-gray-200 min-h-[250px] sm:min-h-[280px]"
+                        onClick={() => handleCategoryClick(category._id)}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        whileHover={{ y: -2 }}
+                      >
+                        <div className="p-4 sm:p-6 h-full flex flex-col">
+                          {/* Icon in square container */}
+                          <div className="mb-4">
+                            <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gray-100 rounded-lg flex items-center justify-center">
+                              {category.imageUrl && !imageErrors.has(category._id) ? (
+                                <img
+                                  src={getImageUrl(category.imageUrl)}
+                                  alt={`${category.title} icon`}
+                                  className="w-6 h-6 sm:w-8 sm:h-8 object-contain"
+                                  onError={() => handleImageError(category._id)}
+                                  onLoad={() => console.log('Image loaded:', getImageUrl(category.imageUrl))}
                                 />
-                              </button>
-
-                              <AnimatePresence>
-                                {isSelected && (
-                                  <motion.div
-                                    initial="hidden"
-                                    animate="visible"
-                                    exit="hidden"
-                                    variants={faqItem}
-                                    className="overflow-hidden"
-                                  >
-                                    <TruncatedText text={qn.a} />
-                                    <button
-                                      onClick={() => handleReadMore(qn.solutionId)}
-                                      className="mt-2 text-primary hover:underline text-sm"
-                                    >
-                                      View full details
-                                    </button>
-                                  </motion.div>
-                                )}
-                              </AnimatePresence>
-                              <hr className="mt-4" />
+                              ) : (
+                                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gray-300 rounded flex items-center justify-center">
+                                  <span className="text-gray-500 text-xs sm:text-sm font-bold">
+                                    {category.title.charAt(0).toUpperCase()}
+                                  </span>
+                                </div>
+                              )}
                             </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+                          </div>
 
-              {/* Scroll indicators */}
-              {displayedFAQs.length > 1 && (
-                <div className="flex justify-center mt-4 gap-2">
-                  {displayedFAQs.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => scrollToIndex(index)}
-                      className={`w-3 h-3 rounded-full transition-colors ${
-                        index === currentScrollIndex
-                          ? 'bg-primary'
-                          : 'bg-gray-300'
-                      }`}
-                      aria-label={`Go to slide ${index + 1}`}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
+                          {/* Title */}
+                          <h3 className="text-sm sm:text-base font-semibold text-black mb-3 sm:mb-4 group-hover:text-gray-700 transition-colors">
+                            {category.title}
+                          </h3>
 
-          {/* Desktop View */}
-          <div className="hidden md:block">
-            <div className="overflow-x-auto">
-              <div className="grid gap-6 grid-flow-col auto-cols-[minmax(300px,_1fr)]">
-                {displayedFAQs
-                  .slice(0, visibleColumns)
-                  .map((column, colIndex) => (
-                    <div key={colIndex} className="flex flex-col gap-6 w-80">
-                      {column.map(
-                        (
-                          qn: { q: string; a: string; solutionId: number },
-                          i: number
-                        ) => {
-                          const uniqueId = `${colIndex}-${i}`
-                          const isSelected = selected === uniqueId
+                          {/* Description */}
+                          <p className="text-gray-600 text-sm sm:text-base mb-4 sm:mb-6 flex-grow">
+                            {category.description || 'Comprehensive business consulting and strategic solutions to drive growth and efficiency across your organization.'}
+                          </p>
 
-                          return (
-                            <div key={uniqueId} className="mb-4">
-                              <button
-                                type="button"
-                                className="mb-2 flex w-full items-center justify-between gap-4 text-left font-medium"
-                                onClick={() => toggle(uniqueId)}
-                              >
-                                <p className="text-base md:text-lg">{qn.q}</p>
-                                <motion.img
-                                  src={chevDown}
-                                  alt="v"
-                                  className="size-5"
-                                  animate={{ rotate: isSelected ? 180 : 0 }}
-                                  transition={{ duration: 0.3 }}
-                                />
-                              </button>
+                          {/* Learn More Button with Arrowhead */}
+                          <div className="mt-auto">
+                            <button
+                              onClick={() => handleCategoryClick(category._id)}
+                              className="w-full px-4 sm:px-6 py-2 sm:py-3 bg-white text-black rounded-lg hover:bg-gray-100 transition-colors font-medium border border-gray-300 flex items-center justify-between text-sm sm:text-base"
+                            >
+                              <span>Learn More</span>
+                              <BsArrowRight size={14} />
+                            </button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))
+                  ) : (
+                    // FAQ Cards
+                    paginatedFAQs.map((faq) => (
+                      <motion.div
+                        key={faq.solutionId}
+                        className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-200 min-h-[220px] sm:min-h-[250px]"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        whileHover={{ y: -2 }}
+                      >
+                        <div className="p-4 sm:p-6 h-full flex flex-col">
+                          {/* Question */}
+                          <h3 className="text-lg sm:text-xl font-bold text-black mb-3">
+                            {faq.q}
+                          </h3>
 
-                              <AnimatePresence>
-                                {isSelected && (
-                                  <motion.div
-                                    initial="hidden"
-                                    animate="visible"
-                                    exit="hidden"
-                                    variants={faqItem}
-                                    className="overflow-hidden"
-                                  >
-                                    <TruncatedText text={qn.a} />
-                                    <button
-                                      onClick={() => handleReadMore(qn.solutionId)}
-                                      className="mt-2 text-primary hover:underline text-sm"
-                                    >
-                                      View full details
-                                    </button>
-                                  </motion.div>
-                                )}
-                              </AnimatePresence>
-                              <hr className="mt-4" />
-                            </div>
-                          )
-                        }
-                      )}
-                    </div>
-                  ))}
+                          {/* Answer */}
+                          <p className="text-gray-600 text-sm sm:text-base mb-4 flex-grow" style={{
+                            display: '-webkit-box',
+                            WebkitLineClamp: 4,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
+                          }}>
+                            {faq.a.replace(/<[^>]*>/g, '')}
+                          </p>
+
+                          {/* Action Button with Arrowhead */}
+                          <div className="mt-auto">
+                            <button
+                              onClick={() => handleReadMore(selectedCategory._id, faq.solutionId)}
+                              className="w-full px-4 sm:px-6 py-2 sm:py-3 bg-white text-black rounded-lg hover:bg-gray-100 transition-colors font-medium border border-gray-300 flex items-center justify-between text-sm sm:text-base"
+                            >
+                              <span>View Details</span>
+                              <BsArrowRight size={14} />
+                            </button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))
+                  )}
+                </AnimatePresence>
               </div>
             </div>
 
-            {hasMoreColumns && (
-              <div className="mt-6">
-                <button
-                  onClick={toggleShowMoreColumns}
-                  className="text-primary font-medium hover:text-blue-800 hover:underline flex items-center"
-                >
-                  {visibleColumns < displayedFAQs.length
-                    ? 'Show More '
-                    : 'Show Less '}
-                  <motion.svg
-                    className="ml-1 h-4 w-4"
-                    animate={{
-                      rotate: visibleColumns < displayedFAQs.length ? 0 : 180
-                    }}
-                    transition={{ duration: 0.3 }}
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </motion.svg>
-                </button>
-              </div>
-            )}
+            {/* Right Arrow - Hidden on small screens */}
+            <button
+              onClick={() => handleScroll('right')}
+              className={`p-4 bg-white rounded-full shadow-lg transition-all hidden sm:block ${
+                canScrollRight
+                  ? 'text-black hover:bg-gray-200'
+                  : 'text-gray-400 cursor-not-allowed bg-gray-300'
+              }`}
+              disabled={!canScrollRight}
+            >
+              <FaChevronRight size={24} />
+            </button>
           </div>
         </div>
+
+        {/* Empty State */}
+        {selectedCategory && theFAQs.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-600 text-lg">No solutions available for this category.</p>
+          </div>
+        )}
       </div>
     </SidePadding>
   )

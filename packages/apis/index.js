@@ -11,8 +11,6 @@ import { BlogsRouter } from './Routes/Blogs.js'
 import { CommentRouter } from './Routes/Comment.js'
 import { emailRouter } from './Routes/Email.js'
 import bodyParser from 'body-parser'
-import { SecurityKey } from './Models/SercurityKey.js'
-import './Models/Blogs.js'
 import { getConfig, updateConfig, getAllConfig } from './configManager.js'
 import { solutionCategoriesRouter } from './Routes/SolutionsCategory.js'
 
@@ -21,98 +19,76 @@ const app = express()
 // Get the directory name using import.meta.url
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
+
 // Trust proxy headers from IIS
 app.set('trust proxy', 1)
 
-
-
 // Serve static files from React's "web/build" folder
 app.use(express.static(path.join(__dirname, '../web/build')))
-// Middleware
-app.use(express.json())
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
+// Serve uploaded files from public/uploads
+app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')))
 
+app.use(express.json())
+app.use(bodyParser.json())
+
+// CORS configuration with fallback
+const clientUrl = getConfig('CLIENT_URL')
 app.use(
   cors({
-    origin: [getConfig('CLIENT_URL')],
+    origin: clientUrl ? [clientUrl] : '*',
     credentials: true,
     optionsSuccessStatus: 200,
     allowedHeaders: ['Content-Type', 'Authorization']
   })
 )
-app.use(bodyParser.json())
 
-// Initialize security key if not present
-const initializeSecurityKey = async () => {
-  const existingKey = await SecurityKey.findOne()
-  if (!existingKey) {
-    await SecurityKey.create({ key: '1234' })
-    console.log('Default security key set.')
-  }
-}
 
-// Security key routes
-app.post('/validate-security-key', async (req, res) => {
-  const { key } = req.body
-  try {
-    const storedKey = await SecurityKey.findOne()
-    if (!storedKey) {
-      return res.status(500).json({ error: 'Security key not found' })
-    }
-    res.json({ isValid: key === storedKey.key })
-  } catch (error) {
-    console.error(error)
-    res.status(500).json({ error: 'Server error' })
-  }
-})
 
-app.post('/update-security-key', async (req, res) => {
-  const { newKey } = req.body
-  try {
-    const updatedKey = await SecurityKey.findOneAndUpdate(
-      {},
-      { key: newKey },
-      { new: true, upsert: true }
-    )
-    res.json({ success: true, updatedKey })
-  } catch (error) {
-    console.error(error)
-    res.status(500).json({ error: 'Failed to update security key' })
-  }
-})
+
 
 // Configuration management routes
 app.get('/api/config', (req, res) => {
-  res.json(getAllConfig())
+  try {
+    res.json(getAllConfig())
+  } catch (error) {
+    console.error('Error fetching config:', error)
+    res.status(500).json({ error: 'Failed to fetch config' })
+  }
 })
 
 app.post('/api/config', (req, res) => {
   const { key, value } = req.body
-  if (!key || value === undefined) {
-    return res.status(400).json({ error: 'Both key and value are required' })
-  }
-
-  const success = updateConfig(key, value)
-  if (success) {
-    res.json({ success: true, message: 'Config updated successfully' })
-
-    // Special handling for PORT changes
-    if (key === 'PORT') {
-      console.log(
-        `PORT changed to ${value}. Please restart the server for changes to take effect.`
-      )
+  try {
+    if (!key || value === undefined) {
+      return res.status(400).json({ error: 'Both key and value are required' })
     }
 
-    // Special handling for MongoDB URI changes
-    if (key === 'MONGO_URI') {
-      mongoose
-        .disconnect()
-        .then(() => mongoose.connect(value))
-        .then(() => console.log('Reconnected to MongoDB with new URI'))
-        .catch((err) => console.error('Error reconnecting to MongoDB:', err))
+    const success = updateConfig(key, value)
+    if (success) {
+      res.json({ success: true, message: 'Config updated successfully' })
+
+      if (key === 'PORT') {
+        console.log(
+          `PORT changed to ${value}. Please restart the server for changes to take effect.`
+        )
+      }
+
+      if (key === 'MONGO_URI') {
+        mongoose
+          .disconnect()
+          .then(() => mongoose.connect(value))
+          .then(() => console.log('Reconnected to MongoDB with new URI'))
+          .catch((err) => {
+            console.error('Error reconnecting to MongoDB:', err)
+            res.status(500).json({ error: 'Failed to reconnect to MongoDB' })
+          })
+      }
+    } else {
+      res.status(500).json({ error: 'Failed to update config' })
     }
-  } else {
-    res.status(500).json({ error: 'Failed to update config' })
+  } catch (error) {
+    console.error('Error updating config:', error)
+    res.status(500).json({ error: 'Server error' })
   }
 })
 
@@ -126,9 +102,20 @@ app.use('/comments', CommentRouter)
 app.use('/email', emailRouter)
 app.use('/api/solution-categories', solutionCategoriesRouter)
 
-// All other requests go to React (for client-side routing)
+// All other requests go to React
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../web/build', 'index.html'))
+  res.sendFile(path.join(__dirname, '../web/build', 'index.html'), (err) => {
+    if (err) {
+      console.error('Error serving index.html:', err)
+      res.status(500).send('Server error')
+    }
+  })
+})
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error('Unexpected error:', err.stack)
+  res.status(500).json({ error: 'Internal server error' })
 })
 
 // Connect to the database
@@ -136,13 +123,24 @@ mongoose
   .connect(getConfig('MONGO_URI'))
   .then(() => {
     console.log('Connected to MongoDB')
-    initializeSecurityKey()
+   
   })
   .catch((err) => console.error('Mongo connection error:', err))
 
 // Start the server
-const port = getConfig('PORT')
+const port = getConfig('PORT') || 3000
 app.listen(port, () => {
   console.log(`Server running on port ${port}`)
-  console.log(`Client URL: ${getConfig('CLIENT_URL')}`)
+  console.log(`Client URL: ${getConfig('CLIENT_URL') || 'Not configured'}`)
+})
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err)
+  process.exit(1)
+})
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason)
+  process.exit(1)
 })

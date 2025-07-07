@@ -16,6 +16,7 @@ const solutionSchema = new mongoose.Schema({
 const solutionCategorySchema = new mongoose.Schema({
   title: String,
   imageUrl: String,
+  description: String, 
   solutions: [solutionSchema]
 })
 

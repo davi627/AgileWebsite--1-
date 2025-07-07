@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000'
 
 interface BlogPost {
   _id: string
@@ -30,11 +29,14 @@ export default function TopBlogs() {
     const fetchTopBlogs = async () => {
       try {
         const response = await fetch(`${API_BASE_URL}/blog/blogs/top`)
-        if (!response.ok)
-          throw new Error(`HTTP error! Status: ${response.status}`)
-
-        const data: BlogPost[] = await response.json()
-        setBlogs(data)
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`)
+        const data = await response.json()
+        console.log('API Response Data:', data)
+        if (Array.isArray(data)) {
+          setBlogs(data)
+        } else {
+          throw new Error('Invalid data format: Expected an array of blogs')
+        }
       } catch (error) {
         console.error('Error fetching top blogs:', error)
         setError('Top Blogs Not Available. Please try again later.')
@@ -47,8 +49,7 @@ export default function TopBlogs() {
   }, [])
 
   if (loading) return <div className="text-center py-10">Loading...</div>
-  if (error)
-    return <div className="text-center py-10 text-red-500">{error}</div>
+  if (error) return <div className="text-center py-10 text-red-500">{error}</div>
 
   return (
     <div className="mt-10 bg-gray-100 py-10 Poppins">
@@ -59,14 +60,9 @@ export default function TopBlogs() {
 
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {blogs.map((blog) => {
-            // Find the first text content item
-            const textContentItem = blog.content.find(item => item.type === 'text')
+            const textContentItem = blog.content.find((item) => item.type === 'text')
             const rawContent = textContentItem ? textContentItem.data : ''
-
-            // Strip HTML tags and get plain text
             const plainText = stripHtml(rawContent)
-
-            // Get the first paragraph or first 60 characters
             const firstParagraph = plainText.split('\n')[0]
             const previewText = firstParagraph.length > 60
               ? firstParagraph.substring(0, 60) + '...'

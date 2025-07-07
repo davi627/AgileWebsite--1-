@@ -8,8 +8,7 @@ import BulletList from '@tiptap/extension-bullet-list'
 import OrderedList from '@tiptap/extension-ordered-list'
 import ListItem from '@tiptap/extension-list-item'
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000'
 
 interface BlogContent {
   type: 'text' | 'image'
@@ -23,6 +22,7 @@ interface Blog {
   author: { name: string }
   content: BlogContent[]
   createdAt: string
+  views: number
 }
 
 const ViewBlogs: React.FC = () => {
@@ -40,52 +40,23 @@ const ViewBlogs: React.FC = () => {
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null)
   const [coverImageUrl, setCoverImageUrl] = useState('')
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
-        bulletList: {
-          HTMLAttributes: {
-            class: 'list-disc pl-5 my-2',
-          },
-        },
-        orderedList: {
-          HTMLAttributes: {
-            class: 'list-decimal pl-5 my-2',
-          },
-        },
-        listItem: {
-          HTMLAttributes: {
-            class: 'mb-1',
-          },
-        },
-        paragraph: {
-          HTMLAttributes: {
-            class: 'mb-2',
-          },
-        },
-        bold: {
-          HTMLAttributes: {
-            class: 'font-bold',
-          },
-        },
-        italic: {
-          HTMLAttributes: {
-            class: 'italic',
-          },
-        },
+        bulletList: { HTMLAttributes: { class: 'list-disc pl-5 my-2' } },
+        orderedList: { HTMLAttributes: { class: 'list-decimal pl-5 my-2' } },
+        listItem: { HTMLAttributes: { class: 'mb-1' } },
+        paragraph: { HTMLAttributes: { class: 'mb-2' } },
+        bold: { HTMLAttributes: { class: 'font-bold' } },
+        italic: { HTMLAttributes: { class: 'italic' } },
       }),
-      Underline.configure({
-        HTMLAttributes: {
-          class: 'underline',
-        },
-      }),
+      Underline.configure({ HTMLAttributes: { class: 'underline' } }),
       Image.configure({
         inline: false,
         allowBase64: true,
-        HTMLAttributes: {
-          class: 'mx-auto my-4 rounded-lg max-w-full h-auto block',
-        },
+        HTMLAttributes: { class: 'mx-auto my-4 rounded-lg max-w-full h-auto block' },
       }),
     ],
     content: '',
@@ -94,7 +65,7 @@ const ViewBlogs: React.FC = () => {
         class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-xl mx-auto focus:outline-none p-4 min-h-[200px] max-w-none',
       },
     },
-  });
+  })
 
   const handleWithConfirmation = (action: () => void) => {
     setCurrentAction(() => action)
@@ -113,19 +84,22 @@ const ViewBlogs: React.FC = () => {
   const fetchBlogs = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/blog/blogs`)
-      setBlogs(response.data)
+      console.log('API Response Data:', response.data)
+      if (Array.isArray(response.data)) {
+        setBlogs(response.data)
+      } else {
+        throw new Error('Invalid data format: Expected an array of blogs')
+      }
     } catch (error) {
       console.error('Failed to fetch blogs:', error)
-      alert('Failed to fetch blogs. Please try again.')
+      setError('Failed to fetch blogs. Please try again.')
     }
   }
 
   const handleDelete = async (blogId: string) => {
     handleWithConfirmation(async () => {
       try {
-        const response = await axios.delete(
-          `${API_BASE_URL}/blog/blogs/${blogId}`
-        )
+        const response = await axios.delete(`${API_BASE_URL}/blog/blogs/${blogId}`)
         if (response.status === 200) {
           alert('Blog deleted successfully!')
           fetchBlogs()
@@ -138,27 +112,27 @@ const ViewBlogs: React.FC = () => {
   }
 
   const handleEdit = (blog: Blog) => {
-    setIsCreatingBlog(true);
-    setIsEditingBlog(true);
-    setEditingBlogId(blog._id);
-    setTitle(blog.title);
-    setAuthor(blog.author.name);
-    setContent(blog.content);
-    setCoverImageUrl(blog.imageUrl || '');
+    setIsCreatingBlog(true)
+    setIsEditingBlog(true)
+    setEditingBlogId(blog._id)
+    setTitle(blog.title)
+    setAuthor(blog.author.name)
+    setContent(blog.content)
+    setCoverImageUrl(blog.imageUrl)
 
-    let htmlContent = '';
+    let htmlContent = ''
     blog.content.forEach((item) => {
       if (item.type === 'text') {
-        htmlContent += item.data;
+        htmlContent += item.data
       } else if (item.type === 'image') {
-        htmlContent += `<img src="${item.data}" alt="Blog Image" class="mx-auto my-4 rounded-lg max-w-full h-auto block" />`;
+        htmlContent += `<img src="${item.data}" alt="Blog Image" class="mx-auto my-4 rounded-lg max-w-full h-auto block" />`
       }
-    });
+    })
 
     if (editor) {
-      editor.commands.setContent(htmlContent);
+      editor.commands.setContent(htmlContent)
     }
-  };
+  }
 
   const handleImageUploadInEditor = async () => {
     const input = document.createElement('input')
@@ -174,14 +148,9 @@ const ViewBlogs: React.FC = () => {
 
         try {
           setLoading(true)
-          const response = await axios.post(
-            `${API_BASE_URL}/blog/upload-image`,
-            formData,
-            {
-              headers: { 'Content-Type': 'multipart/form-data' }
-            }
-          )
-
+          const response = await axios.post(`${API_BASE_URL}/blog/upload-image`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+          })
           if (response.data.imageUrl && editor) {
             editor.commands.setImage({ src: response.data.imageUrl })
           }
@@ -201,14 +170,9 @@ const ViewBlogs: React.FC = () => {
 
     try {
       setLoading(true)
-      const response = await axios.post(
-        `${API_BASE_URL}/blog/upload-image`,
-        formData,
-        {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        }
-      )
-
+      const response = await axios.post(`${API_BASE_URL}/blog/upload-image`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
       if (response.data.imageUrl) {
         setCoverImageUrl(response.data.imageUrl)
       }
@@ -226,21 +190,15 @@ const ViewBlogs: React.FC = () => {
 
     try {
       const html = editor?.getHTML() || ''
-
       const tempDiv = document.createElement('div')
       tempDiv.innerHTML = html
-
       const images = Array.from(tempDiv.getElementsByTagName('img'))
       const blogContent: BlogContent[] = []
-
       images.forEach(img => img.remove())
-
       const textContent = tempDiv.innerHTML.trim()
-
       if (textContent) {
         blogContent.push({ type: 'text', data: textContent })
       }
-
       images.forEach((img) => {
         blogContent.push({ type: 'image', data: img.src })
       })
@@ -249,24 +207,16 @@ const ViewBlogs: React.FC = () => {
         title,
         content: blogContent,
         author: { name: author },
-        imageUrl: coverImageUrl
+        imageUrl: coverImageUrl,
       }
 
       if (isEditingBlog && editingBlogId) {
-        const response = await axios.put(
-          `${API_BASE_URL}/blog/blogs/${editingBlogId}`,
-          blogData
-        )
-
+        const response = await axios.put(`${API_BASE_URL}/blog/blogs/${editingBlogId}`, blogData)
         if (response.status === 200) {
           alert('Blog updated successfully!')
         }
       } else {
-        const response = await axios.post(
-          `${API_BASE_URL}/blog/blogs`,
-          blogData
-        )
-
+        const response = await axios.post(`${API_BASE_URL}/blog/blogs`, blogData)
         if (response.status === 201) {
           alert('Blog created successfully!')
         }
@@ -281,7 +231,6 @@ const ViewBlogs: React.FC = () => {
       setIsCreatingBlog(false)
       setIsEditingBlog(false)
       setEditingBlogId(null)
-
       fetchBlogs()
     } catch (error) {
       console.error('Failed to submit blog:', error)
@@ -294,8 +243,7 @@ const ViewBlogs: React.FC = () => {
   const renderBlogContent = (content: BlogContent[]) => {
     return content.map((item, index) => {
       if (item.type === 'text') {
-        const hasHtmlTags = /<[^>]*>/g.test(item.data);
-
+        const hasHtmlTags = /<[^>]*>/g.test(item.data)
         if (hasHtmlTags) {
           return (
             <div
@@ -305,11 +253,7 @@ const ViewBlogs: React.FC = () => {
             />
           )
         } else {
-          return (
-            <div key={index} className="text-gray-700 mb-2">
-              {item.data}
-            </div>
-          )
+          return <div key={index} className="text-gray-700 mb-2">{item.data}</div>
         }
       } else if (item.type === 'image') {
         return (
@@ -406,9 +350,7 @@ const ViewBlogs: React.FC = () => {
                     type="button"
                     onClick={() => editor?.chain().focus().toggleBold().run()}
                     className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                      editor?.isActive('bold')
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-white text-gray-700 hover:bg-gray-100 border'
+                      editor?.isActive('bold') ? 'bg-blue-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border'
                     }`}
                     title="Bold"
                   >
@@ -418,9 +360,7 @@ const ViewBlogs: React.FC = () => {
                     type="button"
                     onClick={() => editor?.chain().focus().toggleItalic().run()}
                     className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                      editor?.isActive('italic')
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-white text-gray-700 hover:bg-gray-100 border'
+                      editor?.isActive('italic') ? 'bg-blue-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border'
                     }`}
                     title="Italic"
                   >
@@ -430,9 +370,7 @@ const ViewBlogs: React.FC = () => {
                     type="button"
                     onClick={() => editor?.chain().focus().toggleUnderline().run()}
                     className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                      editor?.isActive('underline')
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-white text-gray-700 hover:bg-gray-100 border'
+                      editor?.isActive('underline') ? 'bg-blue-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border'
                     }`}
                     title="Underline"
                   >
@@ -442,9 +380,7 @@ const ViewBlogs: React.FC = () => {
                     type="button"
                     onClick={() => editor?.chain().focus().toggleBulletList().run()}
                     className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                      editor?.isActive('bulletList')
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-white text-gray-700 hover:bg-gray-100 border'
+                      editor?.isActive('bulletList') ? 'bg-blue-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border'
                     }`}
                     title="Bullet List"
                   >
@@ -454,9 +390,7 @@ const ViewBlogs: React.FC = () => {
                     type="button"
                     onClick={() => editor?.chain().focus().toggleOrderedList().run()}
                     className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                      editor?.isActive('orderedList')
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-white text-gray-700 hover:bg-gray-100 border'
+                      editor?.isActive('orderedList') ? 'bg-blue-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border'
                     }`}
                     title="Numbered List"
                   >
@@ -503,7 +437,8 @@ const ViewBlogs: React.FC = () => {
         </div>
       )}
 
-      {/* Blog List */}
+      {error && <p className="text-red-500 mb-4">{error}</p>}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {blogs.map((blog) => (
           <div key={blog._id} className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
@@ -520,14 +455,11 @@ const ViewBlogs: React.FC = () => {
               <p className="text-xs text-gray-500 mb-4">
                 {new Date(blog.createdAt).toLocaleDateString()}
               </p>
-
-              {/* Blog Content Preview */}
               <div className="mb-4 text-sm text-gray-700 max-h-20 overflow-hidden">
                 <div className="line-clamp-3">
                   {renderBlogContent(blog.content.slice(0, 1))}
                 </div>
               </div>
-
               <div className="flex gap-2">
                 <button
                   onClick={() => setViewingBlog(blog)}
@@ -553,7 +485,6 @@ const ViewBlogs: React.FC = () => {
         ))}
       </div>
 
-      {/* Blog View Modal */}
       {viewingBlog && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50">
           <div className="bg-white p-6 rounded shadow-md max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
@@ -566,7 +497,6 @@ const ViewBlogs: React.FC = () => {
                 ✕
               </button>
             </div>
-
             {viewingBlog.imageUrl && (
               <img
                 src={viewingBlog.imageUrl}
@@ -574,12 +504,10 @@ const ViewBlogs: React.FC = () => {
                 className="w-full h-64 object-cover mb-4 rounded-lg"
               />
             )}
-
             <p className="text-sm text-gray-600 mb-4">By {viewingBlog.author.name}</p>
             <p className="text-xs text-gray-500 mb-6">
               {new Date(viewingBlog.createdAt).toLocaleDateString()}
             </p>
-
             <div className="prose max-w-none">
               {renderBlogContent(viewingBlog.content)}
             </div>
@@ -587,7 +515,6 @@ const ViewBlogs: React.FC = () => {
         </div>
       )}
 
-      {/* Confirmation modal */}
       {showConfirmation && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50">
           <div className="bg-white p-6 rounded shadow-md max-w-sm w-full mx-4">

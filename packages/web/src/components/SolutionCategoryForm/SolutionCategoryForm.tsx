@@ -23,6 +23,7 @@ interface SolutionCategory {
   _id?: string
   title: string
   imageUrl: string
+  description: string
   solutions: Solution[]
 }
 
@@ -40,6 +41,13 @@ const cleanHtmlContent = (html: string) => {
     .replace(/<p>(<br>|\s)*<\/p>/g, '')
 
   return cleaned
+}
+
+// Helper function to construct full image URL
+const getImageUrl = (imageUrl: string): string => {
+  if (!imageUrl) return ''
+  if (imageUrl.startsWith('http')) return imageUrl
+  return `${API_BASE_URL}/${imageUrl.startsWith('/') ? imageUrl.slice(1) : imageUrl}`
 }
 
 interface FeatureItemProps {
@@ -307,6 +315,7 @@ const SolutionCategoryForm: React.FC = () => {
   const [currentCategory, setCurrentCategory] = useState<SolutionCategory>({
     title: '',
     imageUrl: '',
+    description: '',
     solutions: []
   })
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -321,20 +330,28 @@ const SolutionCategoryForm: React.FC = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get(
-        `${API_BASE_URL}/api/solution-categories`
-      )
+      const response = await axios.get(`${API_BASE_URL}/api/solution-categories`)
+      console.log('API Response:', response.data) // Debug log
       setCategories(response.data)
     } catch (error) {
       console.error('Failed to fetch categories:', error)
     }
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target
     setCurrentCategory({
       ...currentCategory,
       [name]: value
+    })
+  }
+
+  const handleDescriptionChange = (value: string) => {
+    setCurrentCategory({
+      ...currentCategory,
+      description: value
     })
   }
 
@@ -418,15 +435,12 @@ const SolutionCategoryForm: React.FC = () => {
     try {
       const formData = new FormData()
       formData.append('title', currentCategory.title)
-
-      // Append the image file if it exists
+      formData.append('description', currentCategory.description || '')
       if (imageFile) {
         formData.append('image', imageFile)
       } else if (currentCategory.imageUrl) {
         formData.append('imageUrl', currentCategory.imageUrl)
       }
-
-      // Append solutions data as JSON
       formData.append(
         'solutions',
         JSON.stringify(
@@ -469,19 +483,21 @@ const SolutionCategoryForm: React.FC = () => {
       setIsLoading(false)
     }
   }
+
   const editCategory = (category: SolutionCategory) => {
     const categoryToEdit = {
       ...category,
+      imageUrl: getImageUrl(category.imageUrl), // Convert to full URL
+      description: category.description || '',
       solutions: category.solutions.map((solution) => ({
         ...solution,
         features: [...solution.features]
       }))
     }
-
+    console.log('Edited Category Image URL:', categoryToEdit.imageUrl) // Debug log
     setCurrentCategory(categoryToEdit)
     setImageFile(null)
     setImagePreview(null)
-
     if (category._id) {
       setEditingId(category._id)
     }
@@ -502,6 +518,7 @@ const SolutionCategoryForm: React.FC = () => {
     setCurrentCategory({
       title: '',
       imageUrl: '',
+      description: '',
       solutions: []
     })
     setImageFile(null)
@@ -536,6 +553,20 @@ const SolutionCategoryForm: React.FC = () => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700">
+            Category Description
+          </label>
+          <textarea
+            name="description"
+            value={currentCategory.description}
+            onChange={handleInputChange}
+            className="mt-1 block w-full rounded-md border border-gray-300 p-2 text-sm md:text-base focus:border-indigo-500 focus:ring-indigo-500 min-h-[100px]"
+            required
+            placeholder="Enter a brief description that will be displayed on the solutions page"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
             Category Image
           </label>
           <div className="mt-1 flex items-center">
@@ -555,7 +586,6 @@ const SolutionCategoryForm: React.FC = () => {
                   const file = e.target.files[0]
                   setImageFile(file)
                   setImagePreview(URL.createObjectURL(file))
-                  // Clear the imageUrl if switching from URL to file upload
                   setCurrentCategory({
                     ...currentCategory,
                     imageUrl: ''
@@ -579,10 +609,11 @@ const SolutionCategoryForm: React.FC = () => {
           {(imagePreview || currentCategory.imageUrl) && (
             <div className="mt-2">
               <img
-                src={imagePreview || currentCategory.imageUrl}
+                src={imagePreview || getImageUrl(currentCategory.imageUrl)}
                 alt="Category preview"
                 className="h-16 md:h-20 object-contain border rounded"
                 onError={(e) => {
+                  console.error('Image load error:', (e.target as HTMLImageElement).src)
                   ;(e.target as HTMLImageElement).style.display = 'none'
                 }}
               />
@@ -656,10 +687,11 @@ const SolutionCategoryForm: React.FC = () => {
                 <div className="flex items-center gap-2 md:gap-3">
                   {category.imageUrl && (
                     <img
-                      src={category.imageUrl}
+                      src={getImageUrl(category.imageUrl)}
                       alt={category.title}
                       className="h-8 w-8 md:h-10 md:w-10 object-cover rounded"
                       onError={(e) => {
+                        console.error('Image load error in list:', (e.target as HTMLImageElement).src)
                         ;(e.target as HTMLImageElement).style.display = 'none'
                       }}
                     />
