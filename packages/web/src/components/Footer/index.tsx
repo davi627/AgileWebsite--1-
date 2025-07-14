@@ -85,7 +85,7 @@ export default function Footer() {
         {/* Contact Info */}
         <div className="flex flex-col items-center lg:items-start gap-3 text-gray-100 text-sm text-center lg:text-left">
           <h3 className="text-white font-semibold">Contact Us</h3>
-          <p><span className="font-medium">Phone:</span> +254 712 345 678</p>
+          <p><span className="font-medium">Phone:</span> +254 723 929 999</p>
           <p><span className="font-medium">Email:</span> info@agilebiz.co.ke</p>
           <p><span className="font-medium">Email:</span> sales@agilebiz.co.ke</p>
           <p>

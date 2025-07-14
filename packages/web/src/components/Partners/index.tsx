@@ -91,13 +91,13 @@ export default function Partners() {
               >
                 <img
                   data-logo
-                  src={logo.bwLogoUrl} // Use raw URL from response
+                  src={logo.bwLogoUrl}
                   alt={`${logo.name} (BW)`}
                   className="absolute max-w-24 max-h-16 object-contain transition-opacity duration-300 group-hover:opacity-0"
                   onError={(e) => console.error(`Image load error for ${logo.name} (BW):`, e)}
                 />
                 <img
-                  src={logo.colorLogoUrl} // Use raw URL from response
+                  src={logo.colorLogoUrl}
                   alt={`${logo.name} (Color)`}
                   className="absolute max-w-24 max-h-16 object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                   onError={(e) => console.error(`Image load error for ${logo.name} (Color):`, e)}

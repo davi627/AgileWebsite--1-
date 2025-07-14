@@ -1,10 +1,10 @@
 import React from 'react'
 
 const stats = [
-  { label: 'Happy Clients', value: '100+' },
-  { label: 'Complete Projects', value: '100+' },
+  { label: 'Happy Clients', value: '150+' },
+  { label: 'Complete Projects', value: '150+' },
   { label: 'Networth', value: ' $ 100B' },
-  { label: 'Qualified Staff', value: ' 100+' }
+  { label: 'Qualified Staff', value: ' 150+' }
 ]
 
 const ContentSection: React.FC = () => {

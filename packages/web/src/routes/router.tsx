@@ -55,7 +55,7 @@ const AppRouter: React.FC = () => {
           <Route path="/reset" element={<Reset />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/solns" element={<Soltns />} />
-          <Route path="/patners" element={<Partners />} />
+          //<Route path="/patners" element={<Partners />} />
           <Route path="/solutionsdetails" element={<SolutionsDetails />} />
           <Route
             path="/solns/:categoryId/:solutionId"

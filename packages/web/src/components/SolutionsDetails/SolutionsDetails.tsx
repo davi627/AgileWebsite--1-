@@ -1,27 +1,26 @@
-import React, { useState, useEffect } from 'react'
-import { useParams, useNavigate, useLocation } from 'react-router-dom'
-import axios from 'axios'
-import SidePadding from 'components/Shared/SidePadding.Component'
-import Navbar from 'components/Navbar'
-import Footer from 'components/Footer'
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
+import SidePadding from 'components/Shared/SidePadding.Component';
+import Navbar from 'components/Navbar';
+import Footer from 'components/Footer';
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000';
 
 interface ISolution {
-  id: number
-  name: string
-  shortDesc?: string
-  fullDesc: string
-  features: { text: string }[]
-  implementation?: string
+  id: number;
+  name: string;
+  shortDesc?: string;
+  fullDesc: string;
+  features: { text: string }[];
+  implementation?: string;
 }
 
 interface ISolutionCategory {
-  _id: string
-  title: string
-  imageUrl?: string
-  solutions?: ISolution[]
+  _id: string;
+  title: string;
+  imageUrl?: string;
+  solutions?: ISolution[];
 }
 
 const FormattedText: React.FC<{ html: string; className?: string }> = ({
@@ -29,68 +28,67 @@ const FormattedText: React.FC<{ html: string; className?: string }> = ({
   className = ''
 }) => {
   const formatHtml = (content: string) => {
-    if (!content) return ''
-
-    let formatted = content.trim()
+    if (!content) return '';
+    let formatted = content.trim();
 
     if (!formatted.includes('<') && !formatted.includes('>')) {
-      const paragraphs = formatted.split(/\n\s*\n/)
+      const paragraphs = formatted.split(/\n\s*\n/);
       formatted = paragraphs
         .filter((p) => p.trim())
         .map((p) => `<p class="mb-4">${p.trim().replace(/\n/g, '<br>')}</p>`)
-        .join('')
+        .join('');
     } else {
-      formatted = formatted.replace(/<p(?![^>]*class)>/g, '<p class="mb-4">')
+      formatted = formatted.replace(/<p(?![^>]*class)>/g, '<p class="mb-4">');
       formatted = formatted.replace(
         /<p class="([^"]*)">/g,
         (match, classes) => {
           if (!classes.includes('mb-')) {
-            return `<p class="${classes} mb-4">`
+            return `<p class="${classes} mb-4">`;
           }
-          return match
+          return match;
         }
-      )
+      );
       formatted = formatted.replace(
         /<h([1-6])(?![^>]*class)>/g,
         '<h$1 class="font-semibold mb-3 mt-6">'
-      )
+      );
       formatted = formatted.replace(
         /<ul(?![^>]*class)>/g,
         '<ul class="list-disc mb-4 ml-6 space-y-2">'
-      )
+      );
       formatted = formatted.replace(
         /<ol(?![^>]*class)>/g,
         '<ol class="list-decimal mb-4 ml-6 space-y-2">'
-      )
+      );
       formatted = formatted.replace(
         /<li(?![^>]*class)>/g,
         '<li class="mb-2 leading-relaxed">'
-      )
+      );
       formatted = formatted.replace(
         /<div(?![^>]*class)>/g,
         '<div class="mb-4">'
-      )
+      );
       formatted = formatted.replace(
         /<strong(?![^>]*class)>/g,
         '<strong class="font-bold">'
-      )
+      );
       formatted = formatted.replace(
         /<b(?![^>]*class)>/g,
         '<b class="font-bold">'
-      )
+      );
       formatted = formatted.replace(
         /<em(?![^>]*class)>/g,
         '<em class="italic">'
-      )
-      formatted = formatted.replace(/<i(?![^>]*class)>/g, '<i class="italic">')
+      );
+      formatted = formatted.replace(/<i(?![^>]*class)>/g, '<i class="italic">');
     }
 
     formatted = formatted
       .replace(/<p[^>]*>\s*<\/p>/g, '')
-      .replace(/<div[^>]*>\s*<\/div>/g, '')
+      .replace(/<div[^>]*>\s*<\/div>/g, '');
 
-    return formatted
-  }
+    return formatted;
+  };
 
   return (
     <div
@@ -101,28 +99,28 @@ const FormattedText: React.FC<{ html: string; className?: string }> = ({
         lineHeight: '1.7'
       }}
     />
-  )
-}
+  );
+};
 
 const TextContent: React.FC<{ content: string; className?: string }> = ({
   content,
   className = ''
 }) => {
-  if (!content) return null
+  if (!content) return null;
 
-  const hasHtml = content.includes('<') && content.includes('>')
+  const hasHtml = content.includes('<') && content.includes('>');
 
   if (hasHtml) {
-    return <FormattedText html={content} className={className} />
+    return <FormattedText html={content} className={className} />;
   }
 
   const formatPlainText = (text: string) => {
-    const lines = text.split('\n')
-    const elements: React.ReactNode[] = []
-    let currentParagraph: string[] = []
-    let inOrderedList = false
-    let inUnorderedList = false
-    let listItems: React.ReactNode[] = []
+    const lines = text.split('\n');
+    const elements: React.ReactNode[] = [];
+    let currentParagraph: string[] = [];
+    let inOrderedList = false;
+    let inUnorderedList = false;
+    let listItems: React.ReactNode[] = [];
 
     const flushParagraph = () => {
       if (currentParagraph.length > 0) {
@@ -130,10 +128,10 @@ const TextContent: React.FC<{ content: string; className?: string }> = ({
           <p key={elements.length} className="mb-4 leading-relaxed">
             {currentParagraph.join(' ')}
           </p>
-        )
-        currentParagraph = []
+        );
+        currentParagraph = [];
       }
-    }
+    };
 
     const flushList = () => {
       if (listItems.length > 0) {
@@ -145,179 +143,168 @@ const TextContent: React.FC<{ content: string; className?: string }> = ({
             >
               {listItems}
             </ol>
-          )
+          );
         } else if (inUnorderedList) {
           elements.push(
             <ul key={elements.length} className="list-disc mb-4 ml-6 space-y-2">
               {listItems}
             </ul>
-          )
+          );
         }
-        listItems = []
-        inOrderedList = false
-        inUnorderedList = false
+        listItems = [];
+        inOrderedList = false;
+        inUnorderedList = false;
       }
-    }
+    };
 
     for (let i = 0; i < lines.length; i++) {
-      const line = lines[i].trim()
+      const line = lines[i].trim();
 
       if (line === '') {
         if (inOrderedList || inUnorderedList) {
-          continue
+          continue;
         } else if (currentParagraph.length > 0) {
-          flushParagraph()
+          flushParagraph();
         }
-        continue
+        continue;
       }
 
-      const numberedMatch = line.match(/^(\d+)\.\s*(.+)$/)
+      const numberedMatch = line.match(/^(\d+)\.\s*(.+)$/);
       if (numberedMatch) {
-        flushParagraph()
+        flushParagraph();
         if (!inOrderedList) {
-          flushList()
-          inOrderedList = true
+          flushList();
+          inOrderedList = true;
         }
-        const [, , itemText] = numberedMatch
+        const [, , itemText] = numberedMatch;
         listItems.push(
           <li key={listItems.length} className="mb-2 leading-relaxed">
             {itemText}
           </li>
-        )
-        continue
+        );
+        continue;
       }
 
-      const bulletMatch = line.match(/^[•\-*]\s*(.+)$/)
+      const bulletMatch = line.match(/^[•\-*]\s*(.+)$/);
       if (bulletMatch) {
-        flushParagraph()
+        flushParagraph();
         if (!inUnorderedList) {
-          flushList()
-          inUnorderedList = true
+          flushList();
+          inUnorderedList = true;
         }
-        const [, itemText] = bulletMatch
+        const [, itemText] = bulletMatch;
         listItems.push(
           <li key={listItems.length} className="mb-2 leading-relaxed">
             {itemText}
           </li>
-        )
-        continue
+        );
+        continue;
       }
 
       if (inOrderedList || inUnorderedList) {
         if (line.startsWith('   ') || line.startsWith('\t')) {
           if (listItems.length > 0) {
-            const lastItem = listItems[listItems.length - 1]
+            const lastItem = listItems[listItems.length - 1];
             listItems[listItems.length - 1] = React.cloneElement(
               lastItem as React.ReactElement,
               {},
               `${
                 (lastItem as React.ReactElement).props.children
               } ${line.trim()}`
-            )
+            );
           }
-          continue
+          continue;
         } else {
-          flushList()
+          flushList();
         }
       }
 
-      currentParagraph.push(line)
+      currentParagraph.push(line);
     }
 
-    flushParagraph()
-    flushList()
+    flushParagraph();
+    flushList();
 
-    return elements
-  }
+    return elements;
+  };
 
   return (
     <div className={`text-gray-700 ${className}`}>
       {formatPlainText(content)}
     </div>
-  )
-}
+  );
+};
 
 function SolutionsDetails() {
   const { categoryId, solutionId } = useParams<{
-    categoryId: string
-    solutionId: string
-  }>()
-  const navigate = useNavigate()
-  const location = useLocation()
-  const [loading, setLoading] = useState(true)
-  const [category, setCategory] = useState<ISolutionCategory | null>(null)
-  const [solution, setSolution] = useState<ISolution | null>(null)
-  const [error, setError] = useState<string | null>(null)
+    categoryId: string;
+    solutionId: string;
+  }>();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [loading, setLoading] = useState(true);
+  const [category, setCategory] = useState<ISolutionCategory | null>(null);
+  const [solution, setSolution] = useState<ISolution | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchSolutionDetails = async () => {
       try {
-        setLoading(true)
-        setError(null)
+        setLoading(true);
+        setError(null);
 
         try {
           const [solutionRes, categoryRes] = await Promise.all([
             axios.get(`${API_BASE_URL}/api/solutions/${solutionId}`),
             axios.get(`${API_BASE_URL}/api/solution-categories/${categoryId}`)
-          ])
-          setSolution(solutionRes.data)
-          setCategory(categoryRes.data)
-          setLoading(false)
-          return
+          ]);
+          setSolution(solutionRes.data);
+          setCategory(categoryRes.data);
+          setLoading(false);
+          return;
         } catch (e) {
-          console.log('Falling back to full categories fetch')
+          console.log('Falling back to full categories fetch');
         }
 
         const response = await axios.get(
           `${API_BASE_URL}/api/solution-categories`
-        )
+        );
         const categories = Array.isArray(response.data)
           ? response.data
-          : response.data?.data || []
+          : response.data?.data || [];
 
         const foundCategory = categories.find(
           (cat: ISolutionCategory) => cat._id === categoryId
-        )
-        if (!foundCategory) throw new Error('Category not found')
+        );
+        if (!foundCategory) throw new Error('Category not found');
 
-        const solutionIdNum = parseInt(solutionId || '0')
+        const solutionIdNum = parseInt(solutionId || '0');
         const foundSolution = foundCategory.solutions?.find(
           (sol: ISolution) => sol.id === solutionIdNum
-        )
-        if (!foundSolution) throw new Error('Solution not found in category')
+        );
+        if (!foundSolution) throw new Error('Solution not found in category');
 
-        setCategory(foundCategory)
-        setSolution(foundSolution)
+        setCategory(foundCategory);
+        setSolution(foundSolution);
       } catch (error) {
-        setError(error instanceof Error ? error.message : 'Unknown error')
+        setError(error instanceof Error ? error.message : 'Unknown error');
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchSolutionDetails()
-  }, [categoryId, solutionId, navigate])
+    fetchSolutionDetails();
+  }, [categoryId, solutionId, navigate]);
 
   const handleGoBack = () => {
-    const fromCategory = location.state?.fromCategory
-    if (fromCategory) {
-      // Navigate back to the home page with the specific category
-      navigate('/', {
-        state: {
-          scrollToCategory: fromCategory,
-          scrollToSection: 'erp-solutions'
-        },
-        replace: false
-      })
-    } else {
-      // Navigate back to home page and scroll to solutions section
-      navigate('/', {
-        state: {
-          scrollToSection: 'erp-solutions'
-        }
-      })
-    }
-  }
+    const fromCategory = location.state?.fromCategory || categoryId;
+    navigate('/', {
+      state: {
+        scrollToCategory: fromCategory,
+        shouldScrollToQAndA: true
+      }
+    });
+  };
 
   if (loading) {
     return (
@@ -331,7 +318,7 @@ function SolutionsDetails() {
         </main>
         <Footer />
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -343,69 +330,7 @@ function SolutionsDetails() {
             <div className="py-14">
               <button
                 onClick={handleGoBack}
-                className="mb-6 flex items-center text-[#34C4EC] hover:underline transition-colors"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 mr-1"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 19l-7-7 7-7"
-                  />
-                </svg>
-                Back to Solutions
-              </button>
-              <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-                <h2 className="text-xl font-semibold text-red-800 mb-2">
-                  Error
-                </h2>
-                <p className="text-red-700">{error}</p>
-              </div>
-            </div>
-          </SidePadding>
-        </main>
-        <Footer />
-      </div>
-    )
-  }
-
-  if (!solution || !category) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Navbar />
-        <main className="flex-grow flex items-center justify-center">
-          <div className="text-center">
-            <p className="text-xl text-gray-600">Solution not found</p>
-            <button
-              onClick={handleGoBack}
-              className="mt-4 text-[#34C4EC] hover:underline"
-            >
-              Back to Solutions
-            </button>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    )
-  }
-
-  return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <main className="flex-grow">
-        {/* Back Button Above SidePadding - Most Visible */}
-        <div className="bg-gray-100 border-b border-gray-200">
-          <SidePadding>
-            <div className="py-4">
-              <button
-                onClick={handleGoBack}
-                className="flex items-center gap-2 bg-[#167AA1] text-white hover:bg-[#145a7a] px-6 py-3 rounded-lg transition-colors shadow-lg font-semibold"
+                className="mb-6 flex items-center gap-2 bg-[#167AA1] text-white hover:bg-[#145a7a] px-6 py-3 rounded-lg transition-colors shadow-lg font-semibold"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -423,23 +348,75 @@ function SolutionsDetails() {
                 </svg>
                 Back to Solutions
               </button>
+              <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+                <h2 className="text-xl font-semibold text-red-800 mb-2">
+                  Error
+                </h2>
+                <p className="text-red-700">{error}</p>
+              </div>
             </div>
           </SidePadding>
-        </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
+  if (!solution || !category) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-grow flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-xl text-gray-600">Solution not found</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <div className="bg-white border-b border-gray-200">
         <SidePadding>
-          <div className="py-14">
+          <div className="py-4">
+            <button
+              onClick={handleGoBack}
+              className="text-[#167AA1] hover:text-[#145a7a] transition-colors"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+              </svg>
+            </button>
+          </div>
+        </SidePadding>
+      </div>
+
+      <main className="flex-grow">
+        <SidePadding>
+          <div className="py-10">
             <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
-              {/* Header Section */}
               <div className="bg-[#167AA1] text-white p-8 relative">
-                {/* Secondary Back Button in Header */}
                 <button
                   onClick={handleGoBack}
-                  className="absolute top-4 right-4 flex items-center gap-1 bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-md transition-colors text-sm font-medium"
+                  className="absolute left-8 top-8 text-white hover:text-gray-200 transition-colors"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4"
+                    className="h-6 w-6"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -451,13 +428,11 @@ function SolutionsDetails() {
                       d="M10 19l-7-7m0 0l7-7m-7 7h18"
                     />
                   </svg>
-                  Back
                 </button>
-                <h1 className="text-3xl font-bold mb-2">{solution.name}</h1>
-                <p className="text-blue-100 text-lg">{category.title}</p>
+                <h1 className="text-3xl font-bold mb-2 text-center">{solution.name}</h1>
+                <p className="text-blue-100 text-lg text-center">{category.title}</p>
               </div>
 
-              {/* Content Section */}
               <div className="p-8">
                 {solution.shortDesc && (
                   <div className="mb-10">
@@ -514,7 +489,7 @@ function SolutionsDetails() {
       </main>
       <Footer />
     </div>
-  )
+  );
 }
 
-export default SolutionsDetails
+export default SolutionsDetails;
