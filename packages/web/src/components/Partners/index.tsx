@@ -68,7 +68,7 @@ export default function Partners() {
   }, [logos])
 
   return (
-    <div className="bg-[#F3F8FA] py-[4.5rem] overflow-hidden">
+    <div id="partners" className="bg-[#F3F8FA] py-[4.5rem] overflow-hidden">
       <h2 className="text-center text-lg font-medium tracking-wide text-[#1E1E1E] md:tracking-wider font-Poppins">
         We have Partnered with the best
       </h2>

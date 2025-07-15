@@ -13,13 +13,6 @@ interface BlogPost {
   views: number
 }
 
-// Utility function to strip HTML tags and get plain text
-const stripHtml = (html: string) => {
-  const tmp = document.createElement('div')
-  tmp.innerHTML = html
-  return tmp.textContent || tmp.innerText || ''
-}
-
 export default function TopBlogs() {
   const [blogs, setBlogs] = useState<BlogPost[]>([])
   const [loading, setLoading] = useState(true)
@@ -59,47 +52,34 @@ export default function TopBlogs() {
         </h2>
 
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {blogs.map((blog) => {
-            const textContentItem = blog.content.find((item) => item.type === 'text')
-            const rawContent = textContentItem ? textContentItem.data : ''
-            const plainText = stripHtml(rawContent)
-            const firstParagraph = plainText.split('\n')[0]
-            const previewText = firstParagraph.length > 60
-              ? firstParagraph.substring(0, 60) + '...'
-              : firstParagraph
-
-            return (
-              <article
-                key={blog._id}
-                className="bg-white shadow-md rounded-lg overflow-hidden hover:scale-105 transition-transform"
-              >
-                <div className="h-32">
-                  <img
-                    src={blog.imageUrl}
-                    alt={blog.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-4">
-                  <h3 className="text-md font-semibold text-gray-900 line-clamp-1">
-                    {blog.title}
-                  </h3>
-                  <p className="text-xs text-gray-600">
-                    By: {blog.author.name} • {blog.views || 0} views
-                  </p>
-                  <p className="text-sm text-gray-500 mt-1 line-clamp-2 whitespace-pre-line">
-                    {previewText}
-                  </p>
-                  <Link
-                    to={`/blog/${blog._id}`}
-                    className="text-primary text-xs font-medium mt-2 inline-block"
-                  >
-                    Read More →
-                  </Link>
-                </div>
-              </article>
-            )
-          })}
+          {blogs.map((blog) => (
+            <article
+              key={blog._id}
+              className="bg-white shadow-md rounded-lg overflow-hidden hover:scale-105 transition-transform"
+            >
+              <div className="h-32">
+                <img
+                  src={blog.imageUrl}
+                  alt={blog.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="text-md font-semibold text-gray-900 line-clamp-1">
+                  {blog.title}
+                </h3>
+                <p className="text-xs text-gray-600">
+                  {blog.formattedDate}
+                </p>
+                <Link
+                  to={`/blog/${blog._id}`}
+                  className="text-primary text-xs font-medium mt-2 inline-block"
+                >
+                  Read More →
+                </Link>
+              </div>
+            </article>
+          ))}
         </div>
       </div>
     </div>
