@@ -1,3 +1,4 @@
+// SolutionsDetails.tsx
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
@@ -5,7 +6,7 @@ import SidePadding from 'components/Shared/SidePadding.Component';
 import Navbar from 'components/Navbar';
 import Footer from 'components/Footer';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 interface ISolution {
   id: number;
@@ -20,12 +21,13 @@ interface ISolutionCategory {
   _id: string;
   title: string;
   imageUrl?: string;
-  solutions?: ISolution[];
+  description?: string;
+  solutions: ISolution[];
 }
 
 const FormattedText: React.FC<{ html: string; className?: string }> = ({
   html,
-  className = ''
+  className = '',
 }) => {
   const formatHtml = (content: string) => {
     if (!content) return '';
@@ -39,53 +41,24 @@ const FormattedText: React.FC<{ html: string; className?: string }> = ({
         .join('');
     } else {
       formatted = formatted.replace(/<p(?![^>]*class)>/g, '<p class="mb-4">');
-      formatted = formatted.replace(
-        /<p class="([^"]*)">/g,
-        (match, classes) => {
-          if (!classes.includes('mb-')) {
-            return `<p class="${classes} mb-4">`;
-          }
-          return match;
+      formatted = formatted.replace(/<p class="([^"]*)">/g, (match, classes) => {
+        if (!classes.includes('mb-')) {
+          return `<p class="${classes} mb-4">`;
         }
-      );
-      formatted = formatted.replace(
-        /<h([1-6])(?![^>]*class)>/g,
-        '<h$1 class="font-semibold mb-3 mt-6">'
-      );
-      formatted = formatted.replace(
-        /<ul(?![^>]*class)>/g,
-        '<ul class="list-disc mb-4 ml-6 space-y-2">'
-      );
-      formatted = formatted.replace(
-        /<ol(?![^>]*class)>/g,
-        '<ol class="list-decimal mb-4 ml-6 space-y-2">'
-      );
-      formatted = formatted.replace(
-        /<li(?![^>]*class)>/g,
-        '<li class="mb-2 leading-relaxed">'
-      );
-      formatted = formatted.replace(
-        /<div(?![^>]*class)>/g,
-        '<div class="mb-4">'
-      );
-      formatted = formatted.replace(
-        /<strong(?![^>]*class)>/g,
-        '<strong class="font-bold">'
-      );
-      formatted = formatted.replace(
-        /<b(?![^>]*class)>/g,
-        '<b class="font-bold">'
-      );
-      formatted = formatted.replace(
-        /<em(?![^>]*class)>/g,
-        '<em class="italic">'
-      );
+        return match;
+      });
+      formatted = formatted.replace(/<h([1-6])(?![^>]*class)>/g, '<h$1 class="font-semibold mb-3 mt-6">');
+      formatted = formatted.replace(/<ul(?![^>]*class)>/g, '<ul class="list-disc mb-4 ml-6 space-y-2">');
+      formatted = formatted.replace(/<ol(?![^>]*class)>/g, '<ol class="list-decimal mb-4 ml-6 space-y-2">');
+      formatted = formatted.replace(/<li(?![^>]*class)>/g, '<li class="mb-2 leading-relaxed">');
+      formatted = formatted.replace(/<div(?![^>]*class)>/g, '<div class="mb-4">');
+      formatted = formatted.replace(/<strong(?![^>]*class)>/g, '<strong class="font-bold">');
+      formatted = formatted.replace(/<b(?![^>]*class)>/g, '<b class="font-bold">');
+      formatted = formatted.replace(/<em(?![^>]*class)>/g, '<em class="italic">');
       formatted = formatted.replace(/<i(?![^>]*class)>/g, '<i class="italic">');
     }
 
-    formatted = formatted
-      .replace(/<p[^>]*>\s*<\/p>/g, '')
-      .replace(/<div[^>]*>\s*<\/div>/g, '');
+    formatted = formatted.replace(/<p[^>]*>\s*<\/p>/g, '').replace(/<div[^>]*>\s*<\/div>/g, '');
 
     return formatted;
   };
@@ -94,17 +67,14 @@ const FormattedText: React.FC<{ html: string; className?: string }> = ({
     <div
       className={`prose prose-lg max-w-none text-gray-700 leading-relaxed ${className}`}
       dangerouslySetInnerHTML={{ __html: formatHtml(html) }}
-      style={{
-        wordBreak: 'break-word',
-        lineHeight: '1.7'
-      }}
+      style={{ wordBreak: 'break-word', lineHeight: '1.7' }}
     />
   );
 };
 
 const TextContent: React.FC<{ content: string; className?: string }> = ({
   content,
-  className = ''
+  className = '',
 }) => {
   if (!content) return null;
 
@@ -137,10 +107,7 @@ const TextContent: React.FC<{ content: string; className?: string }> = ({
       if (listItems.length > 0) {
         if (inOrderedList) {
           elements.push(
-            <ol
-              key={elements.length}
-              className="list-decimal mb-4 ml-6 space-y-2"
-            >
+            <ol key={elements.length} className="list-decimal mb-4 ml-6 space-y-2">
               {listItems}
             </ol>
           );
@@ -159,7 +126,6 @@ const TextContent: React.FC<{ content: string; className?: string }> = ({
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i].trim();
-
       if (line === '') {
         if (inOrderedList || inUnorderedList) {
           continue;
@@ -208,9 +174,7 @@ const TextContent: React.FC<{ content: string; className?: string }> = ({
             listItems[listItems.length - 1] = React.cloneElement(
               lastItem as React.ReactElement,
               {},
-              `${
-                (lastItem as React.ReactElement).props.children
-              } ${line.trim()}`
+              `${(lastItem as React.ReactElement).props.children} ${line.trim()}`
             );
           }
           continue;
@@ -228,18 +192,11 @@ const TextContent: React.FC<{ content: string; className?: string }> = ({
     return elements;
   };
 
-  return (
-    <div className={`text-gray-700 ${className}`}>
-      {formatPlainText(content)}
-    </div>
-  );
+  return <div className={`text-gray-700 ${className}`}>{formatPlainText(content)}</div>;
 };
 
 function SolutionsDetails() {
-  const { categoryId, solutionId } = useParams<{
-    categoryId: string;
-    solutionId: string;
-  }>();
+  const { categoryId, solutionId } = useParams<{ categoryId: string; solutionId: string }>();
   const navigate = useNavigate();
   const location = useLocation();
   const [loading, setLoading] = useState(true);
@@ -253,56 +210,39 @@ function SolutionsDetails() {
         setLoading(true);
         setError(null);
 
-        try {
-          const [solutionRes, categoryRes] = await Promise.all([
-            axios.get(`${API_BASE_URL}/api/solutions/${solutionId}`),
-            axios.get(`${API_BASE_URL}/api/solution-categories/${categoryId}`)
-          ]);
-          setSolution(solutionRes.data);
-          setCategory(categoryRes.data);
-          setLoading(false);
-          return;
-        } catch (e) {
-          console.log('Falling back to full categories fetch');
+        // Fetch category by ID
+        const response = await axios.get(`${API_BASE_URL}/api/solution-categories/${categoryId}`);
+        const foundCategory = response.data;
+        if (!foundCategory) {
+          throw new Error('Category not found');
         }
 
-        const response = await axios.get(
-          `${API_BASE_URL}/api/solution-categories`
-        );
-        const categories = Array.isArray(response.data)
-          ? response.data
-          : response.data?.data || [];
-
-        const foundCategory = categories.find(
-          (cat: ISolutionCategory) => cat._id === categoryId
-        );
-        if (!foundCategory) throw new Error('Category not found');
-
+        // Find solution within category
         const solutionIdNum = parseInt(solutionId || '0');
         const foundSolution = foundCategory.solutions?.find(
           (sol: ISolution) => sol.id === solutionIdNum
         );
-        if (!foundSolution) throw new Error('Solution not found in category');
+        if (!foundSolution) {
+          throw new Error('Solution not found in category');
+        }
 
         setCategory(foundCategory);
         setSolution(foundSolution);
-      } catch (error) {
-        setError(error instanceof Error ? error.message : 'Unknown error');
+      } catch (error: any) {
+        console.error('Error fetching solution details:', error);
+        setError(error.message || 'Failed to load solution details. Please try again later.');
       } finally {
         setLoading(false);
       }
     };
 
     fetchSolutionDetails();
-  }, [categoryId, solutionId, navigate]);
+  }, [categoryId, solutionId]);
 
   const handleGoBack = () => {
     const fromCategory = location.state?.fromCategory || categoryId;
-    navigate('/', {
-      state: {
-        scrollToCategory: fromCategory,
-        shouldScrollToQAndA: true
-      }
+    navigate(`/solutions/${fromCategory}`, {
+      state: { scrollToCategory: fromCategory, shouldScrollToQAndA: true },
     });
   };
 
@@ -340,18 +280,12 @@ function SolutionsDetails() {
                   stroke="currentColor"
                   strokeWidth={2.5}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
                 Back to Solutions
               </button>
               <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-                <h2 className="text-xl font-semibold text-red-800 mb-2">
-                  Error
-                </h2>
+                <h2 className="text-xl font-semibold text-red-800 mb-2">Error</h2>
                 <p className="text-red-700">{error}</p>
               </div>
             </div>
@@ -369,6 +303,22 @@ function SolutionsDetails() {
         <main className="flex-grow flex items-center justify-center">
           <div className="text-center">
             <p className="text-xl text-gray-600">Solution not found</p>
+            <button
+              onClick={handleGoBack}
+              className="mt-4 flex items-center gap-2 bg-[#167AA1] text-white hover:bg-[#145a7a] px-6 py-3 rounded-lg transition-colors shadow-lg font-semibold"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2.5}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              Back to Solutions
+            </button>
           </div>
         </main>
         <Footer />
@@ -394,11 +344,7 @@ function SolutionsDetails() {
                 stroke="currentColor"
                 strokeWidth={2}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
             </button>
           </div>
@@ -422,14 +368,10 @@ function SolutionsDetails() {
                     stroke="currentColor"
                     strokeWidth={2}
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                    />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                   </svg>
                 </button>
-                <h1 className="text-3xl font-bold mb-2 text-center">{solution.name}</h1>
+                <h1 className="text-3xl font-bold mb-2 text-center">{solution. name}</h1>
                 <p className="text-blue-100 text-lg text-center">{category.title}</p>
               </div>
 

@@ -38,7 +38,7 @@ export default function Hero() {
           {/* Text content */}
           <div className="relative text-primary w-full md:w-7/12 lg:w-2/3 md:-mt-24 flex flex-col gap-4">
             <div className="text-[24px] md:text-[28px] lg:text-[36px] font-bold leading-tight font-Poppins">
-              {/* First line (now visible) */}
+
               <p className="z-30">One-stop shop for all your</p>
 
               {/* Rotating phrases */}
