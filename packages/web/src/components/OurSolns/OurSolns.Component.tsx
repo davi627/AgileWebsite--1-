@@ -91,7 +91,7 @@ function OurSolns() {
           <div className="flex-1 overflow-y-auto sm:overflow-x-auto">
             <div
               ref={scrollContainerRef}
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
               style={{ maxHeight: '900px' }}
             >
               <AnimatePresence mode="wait">
@@ -99,49 +99,56 @@ function OurSolns() {
                   <motion.div
                     key={category._id}
                     id={`category-${category._id}`}
-                    className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer group border border-gray-200 min-h-[250px] sm:min-h-[280px]"
+                    className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group border border-gray-100 overflow-hidden flex flex-col"
                     onClick={() => handleCategoryClick(category._id)}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
-                    whileHover={{ y: -2 }}
+                    whileHover={{ y: -4 }}
                   >
-                    <div className="p-4 sm:p-6 h-full flex flex-col">
-                      <div className="mb-4">
-                        <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gray-100 rounded-lg flex items-center justify-center">
-                          {category.imageUrl && !imageErrors.has(category._id) ? (
-                            <img
-                              src={getImageUrl(category.imageUrl)}
-                              alt={`${category.title} icon`}
-                              className="w-6 h-6 sm:w-8 sm:h-8 object-contain"
-                              onError={() => handleImageError(category._id)}
-                            />
-                          ) : (
-                            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gray-300 rounded flex items-center justify-center">
-                              <span className="text-gray-500 text-xs sm:text-sm font-bold">
-                                {category.title.charAt(0).toUpperCase()}
-                              </span>
-                            </div>
-                          )}
+                    {/* Image Section */}
+                    <div className="h-32 sm:h-36 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center overflow-hidden">
+                      {category.imageUrl && !imageErrors.has(category._id) ? (
+                        <img
+                          src={getImageUrl(category.imageUrl)}
+                          alt={`${category.title} illustration`}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          onError={() => handleImageError(category._id)}
+                        />
+                      ) : (
+                        <div className="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center">
+                          <span className="text-blue-600 text-xl font-bold">
+                            {category.title.charAt(0).toUpperCase()}
+                          </span>
                         </div>
-                      </div>
+                      )}
+                    </div>
 
-                      <h3 className="text-sm sm:text-base font-semibold text-black mb-3 sm:mb-4 group-hover:text-gray-700 transition-colors">
+                    {/* Content Section */}
+                    <div className="p-5 flex flex-col flex-1">
+                      <h3 className="text-lg font-semibold text-primary mb-2 group-hover:text-primary transition-colors">
                         {category.title}
                       </h3>
 
-                      <p className="text-gray-600 text-sm sm:text-base mb-4 sm:mb-6 flex-grow">
+                      <p className="text-gray-600 text-sm leading-relaxed mb-4 flex-1">
                         {category.description ||
                           'Comprehensive business consulting and strategic solutions to drive growth and efficiency across your organization.'}
                       </p>
 
+                      {/* Learn More Button */}
                       <div className="mt-auto">
                         <button
-                          onClick={() => handleCategoryClick(category._id)}
-                          className="w-full px-4 sm:px-6 py-2 sm:py-3 bg-white text-black rounded-lg hover:bg-gray-100 transition-colors font-medium border border-gray-300 flex items-center justify-between text-sm sm:text-base"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleCategoryClick(category._id);
+                          }}
+                          className="inline-flex items-center justify-center px-4 py-2 bg-white border border-alternate text-alternate font-small text-sm rounded-lg  transition-colors group/button"
                         >
                           <span>Learn More</span>
-                          <BsArrowRight size={14} />
+                          <BsArrowRight
+                            size={14}
+                            className="ml-2 group-hover/button:translate-x-1 transition-transform duration-200"
+                          />
                         </button>
                       </div>
                     </div>
