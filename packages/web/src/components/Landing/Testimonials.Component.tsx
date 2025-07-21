@@ -138,10 +138,10 @@ function Testimonials() {
             {comments.length === 1 ? (
               // Render single testimonial without slider
               <div className="shadow-top-bottom rounded-xl p-6 md:p-10">
-                <div className="flex flex-col gap-5 md:flex-row">
+                <div className="flex flex-col gap-5 md:flex-row md:justify-between">
                   <div className="flex w-full flex-col items-start justify-evenly gap-6 md:w-1/2">
                     <img
-                      src={comments[0].logo} // Use full URL from response
+                      src={comments[0].logo}
                       alt="logo"
                       className="h-10 w-auto"
                       onError={(e) => console.error(`Image load error for ${comments[0].author} logo:`, e)}
@@ -165,12 +165,12 @@ function Testimonials() {
                     </div>
                   </div>
 
-                  <div className="hidden md:flex md:w-1/2 md:items-center md:justify-center">
-                    <div className="h-80 w-80 rounded-lg border-4 border-primary bg-white p-2 shadow-md">
+                  <div className="hidden md:flex md:w-1/2 md:items-center md:justify-end">
+                    <div className="h-80 w-80 rounded-lg border-4 border-primary overflow-hidden">
                       <img
-                        src={comments[0].image} // Use full URL from response
+                        src={comments[0].image}
                         alt="testimonial"
-                        className="h-full w-full rounded-md object-contain object-center"
+                        className="h-full w-full object-cover object-center"
                         onError={(e) => console.error(`Image load error for ${comments[0].author} image:`, e)}
                       />
                     </div>
@@ -185,10 +185,10 @@ function Testimonials() {
                     key={comment._id}
                     className="shadow-top-bottom rounded-xl p-6 md:p-10"
                   >
-                    <div className="flex flex-col gap-5 md:flex-row">
+                    <div className="flex flex-col gap-5 md:flex-row md:justify-between">
                       <div className="flex w-full flex-col items-start justify-evenly gap-6 md:w-1/2">
                         <img
-                          src={comment.logo} // Use full URL from response
+                          src={comment.logo}
                           alt="logo"
                           className="h-10 w-auto"
                           onError={(e) => console.error(`Image load error for ${comment.author} logo:`, e)}
@@ -212,12 +212,12 @@ function Testimonials() {
                         </div>
                       </div>
 
-                      <div className="hidden md:flex md:w-1/2 md:items-center md:justify-center">
-                        <div className="h-80 w-80 rounded-lg border-4 border-primary bg-white p-2 shadow-md">
+                      <div className="hidden md:flex md:w-1/2 md:items-center md:justify-end">
+                        <div className="h-80 w-80 rounded-lg border-4 border-primary overflow-hidden">
                           <img
-                            src={comment.image} // Use full URL from response
+                            src={comment.image}
                             alt="testimonial"
-                            className="h-full w-full rounded-md object-contain object-center"
+                            className="h-full w-full object церезовер object-center"
                             onError={(e) => console.error(`Image load error for ${comment.author} image:`, e)}
                           />
                         </div>

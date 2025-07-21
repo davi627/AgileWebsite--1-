@@ -26,7 +26,6 @@ export default function Blog() {
         const response = await fetch(`${API_BASE_URL}/blog/blogs`)
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`)
         const data = await response.json()
-        console.log('API Response Data:', data)
         if (Array.isArray(data)) {
           setBlogs(data)
         } else {
@@ -60,6 +59,23 @@ export default function Blog() {
     }
   }
 
+  const getContentPreview = (content: { type: string; data: string }[]): string => {
+    const textContent = content
+      .filter(item => item.type === 'text')
+      .map(item => item.data)
+      .join(' ')
+    const sentences = textContent.split(/[.!?]+/).filter(sentence => sentence.trim().length > 0)
+    if (sentences.length >= 3) {
+      return sentences.slice(0, 3).join('. ').trim() + '.'
+    } else if (sentences.length > 0) {
+      return sentences.join('. ').trim() + '.'
+    } else {
+      return textContent.length > 120
+        ? textContent.substring(0, 120).trim() + '...'
+        : textContent
+    }
+  }
+
   if (loading)
     return (
       <div className="flex flex-col min-h-screen">
@@ -81,7 +97,6 @@ export default function Blog() {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-
       <main className="flex-grow bg-gray-50 py-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-6">
@@ -92,45 +107,48 @@ export default function Blog() {
               Home
             </Link>
           </div>
-
           <h2 className="mt-[40px] text-2xl font-bold text-center text-gray-800">
             Latest Blog Articles
           </h2>
-
-          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {blogs.map((blog) => (
-              <article
+              <div
                 key={blog._id}
-                className="bg-white shadow-md rounded-lg overflow-hidden hover:scale-105 transition-transform border"
+                className="flex flex-col"
               >
-                <div className="h-24">
+                <div className="h-48 w-full overflow-hidden rounded-lg bg-gray-200 border border-gray-300">
                   <img
                     src={blog.imageUrl}
                     alt={blog.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain object-center"
+                    onError={(e) => console.error(`Image load error for ${blog.title}:`, e)}
                   />
                 </div>
-                <div className="p-4">
-                  <h3 className="text-md font-semibold text-gray-900 line-clamp-1">
+                <div className="p-4 pt-0 pl-0">
+                  <h3 className="text-md font-semibold text-gray-900 mb-2">
                     {blog.title}
                   </h3>
-                  <p className="text-xs text-gray-600">
-                    {blog.formattedDate}
+                  <p className="text-sm text-gray-600 mb-4 line-clamp-3">
+                    {getContentPreview(blog.content)}
                   </p>
-                  <Link
-                    to={`/blog/${blog._id}`}
-                    className="text-primary text-xs font-medium mt-2 inline-block"
-                    onClick={() => handleViewBlog(blog._id)}
-                  >
-                    Read More →
-                  </Link>
+                  <div className="mt-auto pt-2 border-t border-gray-100">
+                    <p className="text-xs text-gray-600 mb-2">
+                      {blog.formattedDate} • {blog.views} views
+                    </p>
+                    <Link
+                      to={`/blog/${blog._id}`}
+                      className="text-[#167AA1] text-sm font-medium hover:text-blue-800"
+                      onClick={() => handleViewBlog(blog._id)}
+                    >
+                      Read More
+                    </Link>
+                  </div>
                 </div>
-              </article>
+              </div>
             ))}
           </div>
         </div>
       </main>
-
       <Footer />
     </div>
   )
