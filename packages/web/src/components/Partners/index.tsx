@@ -8,7 +8,7 @@ interface Logo {
   colorLogoUrl: string
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
 
 export default function Partners() {
   const [logos, setLogos] = useState<Logo[]>([])
@@ -68,7 +68,7 @@ export default function Partners() {
   }, [logos])
 
   return (
-    <div id="partners" className="bg-[#F3F8FA] py-[4.5rem] overflow-hidden">
+    <div id="partners" className="bg-[#F3F8FA] py-[2.0rem] overflow-hidden">
       <h2 className="text-center text-lg font-medium tracking-wide text-[#1E1E1E] md:tracking-wider font-Poppins">
         We have Partnered with the best
       </h2>

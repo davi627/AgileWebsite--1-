@@ -1,92 +1,68 @@
-import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import { fetchSolutions } from '../../services/SolutionsService'
-import { Solution } from '../../types/Solutions'
-import Loader from '../Loader'
-
-import SidePadding from 'components/Shared/SidePadding.Component'
-import ProductCard from './ProductCard.Component'
-import ArrowRight from '../../assets/arrow-right.png'
+type Solution = {
+  line1: string;
+  line2: string;
+  line3: string;
+  subtext1: string;
+  subtext2: string;
+  buttonText: string;
+};
 
 const ProductsSection = () => {
-  const navigate = useNavigate()
-  const [solutions, setSolutions] = useState<Solution[]>([])
-  const [loading, setLoading] = useState<boolean>(true)
-  const [error, setError] = useState<string | null>(null)
+  const navigate = useNavigate();
+  const [solutions, setSolutions] = useState<Solution[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<null | string>(null);
 
   useEffect(() => {
-    const loadSolutions = async () => {
-      try {
-        const fetchedSolutions = await fetchSolutions(true)
-        const sortedSolutions = fetchedSolutions.sort((a, b) => a.rank - b.rank)
-        setSolutions(sortedSolutions)
-      } catch (err) {
-        if (err instanceof Error) {
-          setError(err.message)
-        } else {
-          setError('An unexpected error occurred')
-        }
-      } finally {
-        setLoading(false)
+    // Simulate static content instead of fetching
+    const staticContent = [
+      {
+        line1: 'Experience The Convenience Of',
+        line2: 'Our Management Information Systems',
+        line3: 'Solutions Clients.',
+        subtext1: 'Connect finance, sales, service, and operations with a solution',
+        subtext2: 'trusted by over 500 small, midsize and large businesses.',
+        buttonText: 'Get in Touch'
       }
-    }
-
-    loadSolutions()
-  }, [])
+    ];
+    setSolutions(staticContent);
+    setLoading(false);
+  }, []);
 
   if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader />
-      </div>
-    )
+    return <div>Loading...</div>;
   }
 
   if (error) {
-    return <div>Error: {error}</div>
+    return <div>Error: {error}</div>;
   }
 
   return (
-    <section className="mt-8 bg-[#F3F8FA] py-20 font-Poppins">
-      <SidePadding>
-        <h2 className="mb-6 text-center text-2xl font-semibold leading-tight tracking-wide md:text-[2.2rem]">
-          Experience the convenience of <br />
-          our Management Information Systems solutions
-        </h2>
-        <p className="text-center text-gray-700">
-          Connect finance, sales, service, and operations with a solution
-          trusted by over 500 small, midsize and large businesses.
-        </p>
-        <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-          {solutions.map((solution, index) => {
-            // const Icon = iconMapping[solution.icon as keyof typeof iconMapping]
-            return (
-              <ProductCard
-                key={index}
-                name={solution.name}
-                description={solution.description}
-                // icon={Icon}
-                slug={solution.slug}
-              />
-            )
-          })}
+    <div style={{ backgroundColor: '#e6f0fa', padding: '20px', textAlign: 'center', border: '1px solid #167AA1' }}>
+      {solutions.map((solution, index) => (
+        <div key={index}>
+          <div style={{ color: '#167AA1', textAlign: 'center', fontFamily: 'Poppins', fontSize: '48px', fontStyle: 'normal', fontWeight: 600, lineHeight: '58px', textTransform: 'capitalize' }}>
+            {solution.line1}<br />
+            {solution.line2}<br />
+            {solution.line3}
+          </div>
+          <p style={{ color: '#000', textAlign: 'center', fontFamily: 'Poppins', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, lineHeight: '24px' }}>
+            {solution.subtext1}<br />
+            {solution.subtext2}
+          </p>
+          <button
+            onClick={() => navigate('/contact-us', { replace: false })}
+            style={{ backgroundColor: '#e6f0fa', color: '#167AA1', border: '1px solid #167AA1', padding: '10px 20px', borderRadius: '20px', cursor: 'pointer' }}
+          >
+            {solution.buttonText} <span style={{ marginLeft: '5px' }}>→</span>
+          </button>
         </div>
-        <button
-          className="bg-primary hover:bg-alternate group mx-auto mt-8 flex items-center rounded-2xl p-5 transition-colors duration-300"
-          onClick={() => {
-            navigate('/contact-us', { replace: false })
-          }}
-        >
-          <span className="w-0 -translate-x-16 whitespace-nowrap text-2xl font-medium text-white opacity-0 transition-all duration-700 group-hover:w-48 group-hover:translate-x-0 group-hover:opacity-100">
-            Get in touch
-          </span>
+      ))}
+    </div>
+  );
+};
 
-          <img src={ArrowRight} alt="arrow-right" className="h-3" />
-        </button>
-      </SidePadding>
-    </section>
-  )
-}
-
-export default ProductsSection
+export default ProductsSection;

@@ -22,10 +22,8 @@ export default function Landing() {
       <Hero />
       <Partners />
       <OurSolns />
-      <ProductsSection />
-      <AgileBrief />
-      <ContactSales />
       <Stats />
+      <ProductsSection />
       <Testimonials />
       {/* <Testimonials /> */}
       <Blog />

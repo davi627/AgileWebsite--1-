@@ -7,13 +7,13 @@ function RequestDemoBtn() {
   return (
     <button
       type='button'
-      className="bg-alternate hover:bg-cyan-700 flex items-center gap-2 rounded-md p-3 text-base text-white transition duration-300 hover:scale-105 md:px-7 md:text-lg"
+      className="bg-alternate hover:bg-cyan-700 flex items-center gap-2 rounded-3xl p-3 text-base text-white transition duration-300 hover:scale-105 md:px-7 md:text-lg"
       onClick={() => {
         navigate('/contact-us', { replace: false })
       }}
     >
       Request Demo
-  
+
     </button>
   )
 }

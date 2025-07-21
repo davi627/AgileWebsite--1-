@@ -1,4 +1,3 @@
-// OurSolns.tsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
@@ -107,16 +106,37 @@ function OurSolns() {
                     whileHover={{ y: -4 }}
                   >
                     {/* Image Section */}
-                    <div className="h-32 sm:h-36 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center overflow-hidden">
+                    <div
+                      style={{
+                        height: '172px',
+                        alignSelf: 'stretch',
+                        borderRadius: '10px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        overflow: 'hidden',
+                        backgroundColor: '#e6f0fa', // Background color for empty space
+                      }}
+                    >
                       {category.imageUrl && !imageErrors.has(category._id) ? (
                         <img
                           src={getImageUrl(category.imageUrl)}
                           alt={`${category.title} illustration`}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
                           onError={() => handleImageError(category._id)}
                         />
                       ) : (
-                        <div className="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center">
+                        <div
+                          style={{
+                            height: '172px',
+                            alignSelf: 'stretch',
+                            borderRadius: '10px',
+                            backgroundColor: '#e6f0fa',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
                           <span className="text-blue-600 text-xl font-bold">
                             {category.title.charAt(0).toUpperCase()}
                           </span>
@@ -125,12 +145,22 @@ function OurSolns() {
                     </div>
 
                     {/* Content Section */}
-                    <div className="p-5 flex flex-col flex-1">
-                      <h3 className="text-lg font-semibold text-primary mb-2 group-hover:text-primary transition-colors">
+                    <div
+                      className="p-5 flex flex-col flex-1 group-hover:bg-[#167aa1] transition-colors duration-300"
+                    >
+                      <h3 className="text-lg font-semibold text-[#000] group-hover:text-[#ffffff] transition-colors mb-2">
                         {category.title}
                       </h3>
-
-                      <p className="text-gray-600 text-sm leading-relaxed mb-4 flex-1">
+                      <p
+                        className="text-gray-600 text-sm leading-relaxed group-hover:text-[#ffffff] transition-colors mb-4 flex-1"
+                        style={{
+                          display: '-webkit-box',
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
                         {category.description ||
                           'Comprehensive business consulting and strategic solutions to drive growth and efficiency across your organization.'}
                       </p>
@@ -142,12 +172,12 @@ function OurSolns() {
                             e.stopPropagation();
                             handleCategoryClick(category._id);
                           }}
-                          className="inline-flex items-center justify-center px-4 py-2 bg-white border border-alternate text-alternate font-small text-sm rounded-lg  transition-colors group/button"
+                          className="inline-flex items-center justify-center px-4 py-2 bg-white border group-hover:border-[#FBAA31] text-primary group-hover:text-[#FBAA31] font-small text-sm rounded-lg transition-colors group/button"
                         >
                           <span>Learn More</span>
                           <BsArrowRight
                             size={14}
-                            className="ml-2 group-hover/button:translate-x-1 transition-transform duration-200"
+                            className="ml-2 group-hover/button:translate-x-1 transition-transform duration-200 group-hover:text-[#FBAA31]"
                           />
                         </button>
                       </div>
