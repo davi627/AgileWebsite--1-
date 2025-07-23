@@ -11,7 +11,8 @@ const navigation = {
     { name: 'About Us', href: '/about-us' },
     { name: 'Blog', href: '/blogs' },
     { name: 'Careers', href: 'https://careers.agilebiz.co.ke' },
-    { name: 'Partners', href: '#partners' }
+    { name: 'Partners', href: '#partners' },
+    {name:'Privacy Policy', href: '/privacy-policy'}
   ],
   social: [
     {

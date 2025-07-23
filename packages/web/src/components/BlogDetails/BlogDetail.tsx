@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -12,6 +13,7 @@ interface BlogPost {
   content: { type: string; data: string }[];
   formattedDate: string;
   author: { name: string };
+  imageUrl: string;
 }
 
 interface Comment {
@@ -29,13 +31,14 @@ const BlogDetail = () => {
   const [name, setName] = useState('');
   const [newComment, setNewComment] = useState('');
   const [showAllComments, setShowAllComments] = useState(false);
-  const [hasSkippedCoverImage, setHasSkippedCoverImage] = useState(false);
+  const [heroImage, setHeroImage] = useState<string>('');
 
   useEffect(() => {
     const fetchBlog = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/blog/blogs/${id}`);
         setBlog(response.data);
+        setHeroImage(response.data.imageUrl || '');
       } catch (error) {
         console.error('Error fetching blog:', error);
       }
@@ -78,11 +81,6 @@ const BlogDetail = () => {
 
   const renderBlogContent = (content: { type: string; data: string }[]) => {
     return content.map((item, index) => {
-      if (item.type === 'image' && !hasSkippedCoverImage) {
-        setHasSkippedCoverImage(true);
-        return null;
-      }
-
       if (item.type === 'text') {
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = item.data;
@@ -104,13 +102,13 @@ const BlogDetail = () => {
             switch (element.tagName.toLowerCase()) {
               case 'p':
                 return (
-                  <p key={index} className="text-gray-800 leading-relaxed mb-3 sm:mb-4 text-sm sm:text-base">
+                  <p key={index} className="text-gray-700 leading-relaxed mb-4 text-base">
                     {children}
                   </p>
                 );
               case 'strong':
               case 'b':
-                return <strong className="font-bold">{children}</strong>;
+                return <strong className="font-semibold text-gray-900">{children}</strong>;
               case 'em':
               case 'i':
                 return <em className="italic">{children}</em>;
@@ -133,15 +131,12 @@ const BlogDetail = () => {
 
       if (item.type === 'image') {
         return (
-          <figure key={index} className="my-4 sm:my-6">
+          <figure key={index} className="my-6">
             <img
               src={item.data}
               alt={`Content Image ${index}`}
-              className="w-full max-h-60 sm:max-h-80 object-contain rounded-lg shadow-md mx-auto"
+              className="w-full max-h-80 object-cover rounded-lg shadow-sm"
             />
-            <figcaption className="text-center text-xs sm:text-sm text-gray-500 mt-1 sm:mt-2">
-              Image {index}
-            </figcaption>
           </figure>
         );
       }
@@ -152,9 +147,9 @@ const BlogDetail = () => {
 
   if (!blog) {
     return (
-      <div className="flex flex-col min-h-screen">
+      <div className="min-h-screen bg-gray-50">
         <Navbar />
-        <div className="flex-grow flex justify-center items-center bg-gray-50">
+        <div className="flex justify-center items-center h-96">
           <div className="animate-pulse text-xl text-gray-600">Loading...</div>
         </div>
         <Footer />
@@ -163,201 +158,171 @@ const BlogDetail = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
 
-      <main className="flex-grow bg-gradient-to-b from-gray-50 to-gray-100">
-        <div className="container mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8 relative font-Poppins">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
-            <div className="hidden lg:block col-span-1 relative">
-              <div className="sticky top-24 h-full">
-                <div className="w-px h-full bg-gradient-to-b from-gray-200 to-transparent mx-auto"></div>
-              </div>
-            </div>
+      {/* Hero Section */}
+      <div className="relative h-[28rem] overflow-hidden">
+        {heroImage ? (
+          <div className="absolute inset-0">
+            <img
+              src={heroImage}
+              alt="Hero Image"
+              className="w-full h-full object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+          </div>
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-purple-700"></div>
+        )}
 
-            <div className="col-span-12 lg:col-span-10">
-              <header className="text-center mb-4 sm:mb-6 md:mb-8 mt-28">
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 leading-tight mt-4 sm:mt-6">
-                  {blog.title}
-                </h1>
-                <div className="flex flex-col sm:flex-row justify-center items-center space-y-1 sm:space-y-0 sm:space-x-2 text-gray-500 mt-2 sm:mt-3 text-xs sm:text-sm">
-                  <time dateTime={blog.formattedDate} className="italic">
-                    {blog.formattedDate}
-                  </time>
-                  <span className="hidden sm:inline">•</span>
-                  <p className="font-medium text-gray-900">
-                    By {blog.author.name}
-                  </p>
-                </div>
-              </header>
+        <div className="relative z-10 h-full flex flex-col justify-center items-center text-center max-w-6xl mx-auto px-4 -ml-20">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 max-w-4xl leading-tight">
+            {blog.title}
+          </h1>
+          <div className="text-white/90 text-lg -ml-80">
+            <time dateTime={blog.formattedDate} className="mr-4">
+              {blog.formattedDate}
+            </time>
+            <span className="mr-4">•</span>
+            <span>by {blog.author.name}</span>
+          </div>
+        </div>
+      </div>
 
-              <article className="prose prose-sm sm:prose-lg max-w-none bg-white rounded-lg sm:rounded-xl shadow-sm p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 md:mb-8">
-                {renderBlogContent(blog.content)}
-              </article>
+      {/* Main Content */}
+      <div className="max-w-6xl mx-auto px-4 py-12">
+        {/* Blog Content */}
+        <article className="bg-[#f5f5f5f] rounded-lg shadow-sm p-8 mb-12">
+          <div className="prose prose-lg max-w-none">
+            {renderBlogContent(blog.content)}
+          </div>
+        </article>
 
-              <section className="bg-white rounded-lg sm:rounded-xl shadow-sm p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 md:mb-8">
-                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-                  Comments
-                </h2>
+        {/* Comments Section */}
+        <div className="bg-white rounded-lg shadow-sm p-8 mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            All Comments
+          </h2>
 
-                {comments.length === 0 ? (
-                  <p className="text-gray-500 italic text-xs sm:text-sm">
-                    Be the first to comment on this article!
-                  </p>
-                ) : (
-                  <div className="space-y-3 sm:space-y-4">
-                    {!showAllComments ? (
-                      <>
-                        <div className="bg-gray-50 p-2 sm:p-3 rounded-md">
-                          <p className="text-gray-700 text-xs sm:text-sm">
-                            {comments[0].text}
-                          </p>
-                          <p className="mt-1 text-xs text-gray-500">
-                            By{' '}
-                            <span className="font-medium">
-                              {comments[0].author}
-                            </span>{' '}
-                            •{' '}
-                            {new Date(comments[0].date).toLocaleDateString(
-                              'en-US',
-                              {
+          {comments.length === 0 ? (
+            <p className="text-gray-500 italic text-center py-8">
+              No comments yet. Be the first to share your thoughts!
+            </p>
+          ) : (
+            <div className="space-y-6 mb-8">
+              {!showAllComments ? (
+                <>
+                  <div className="flex items-start space-x-4">
+                    <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
+                      {comments[0].author.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="flex-1">
+                      <div className="bg-gray-50 rounded-lg p-4">
+                        <p className="text-gray-800 mb-2">{comments[0].text}</p>
+                        <p className="text-sm text-gray-500">
+                          <span className="font-medium">{comments[0].author}</span>
+                          <span className="mx-2">•</span>
+                          {new Date(comments[0].date).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {comments.length > 1 && (
+                    <button
+                      onClick={() => setShowAllComments(true)}
+                      className="text-blue-600 hover:text-blue-800 font-medium transition-colors"
+                    >
+                      View all {comments.length} comments
+                    </button>
+                  )}
+                </>
+              ) : (
+                <>
+                  <div className="space-y-6">
+                    {comments.map((comment) => (
+                      <div key={comment._id} className="flex items-start space-x-4">
+                        <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
+                          {comment.author.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="flex-1">
+                          <div className="bg-gray-50 rounded-lg p-4">
+                            <p className="text-gray-800 mb-2">{comment.text}</p>
+                            <p className="text-sm text-gray-500">
+                              <span className="font-medium">{comment.author}</span>
+                              <span className="mx-2">•</span>
+                              {new Date(comment.date).toLocaleDateString('en-US', {
                                 year: 'numeric',
                                 month: 'short',
                                 day: 'numeric'
-                              }
-                            )}
-                          </p>
+                              })}
+                            </p>
+                          </div>
                         </div>
-
-                        {comments.length > 1 && (
-                          <button
-                            onClick={() => setShowAllComments(true)}
-                            className="text-blue-600 font-medium hover:text-blue-800 transition-colors flex items-center text-xs sm:text-sm"
-                          >
-                            <span>View All {comments.length} Comments</span>
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-3 w-3 sm:h-4 sm:w-4 ml-1"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M19 9l-7 7-7-7"
-                              />
-                            </svg>
-                          </button>
-                        )}
-                      </>
-                    ) : (
-                      <>
-                        <div className="space-y-3 sm:space-y-4 divide-y divide-gray-200">
-                          {comments.map((comment) => (
-                            <div key={comment._id} className="pt-3 first:pt-0">
-                              <p className="text-gray-700 text-xs sm:text-sm">
-                                {comment.text}
-                              </p>
-                              <p className="text-xs text-gray-500 mt-1">
-                                By{' '}
-                                <span className="font-medium">
-                                  {comment.author}
-                                </span>{' '}
-                                •{' '}
-                                {new Date(comment.date).toLocaleDateString(
-                                  'en-US',
-                                  {
-                                    year: 'numeric',
-                                    month: 'short',
-                                    day: 'numeric'
-                                  }
-                                )}
-                              </p>
-                            </div>
-                          ))}
-                        </div>
-
-                        <button
-                          onClick={() => setShowAllComments(false)}
-                          className="text-blue-600 font-medium hover:text-blue-800 transition-colors flex items-center text-xs sm:text-sm"
-                        >
-                          <span>Show Less</span>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-3 w-3 sm:h-4 sm:w-4 ml-1"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M5 15l7-7 7 7"
-                            />
-                          </svg>
-                        </button>
-                      </>
-                    )}
-                  </div>
-                )}
-              </section>
-
-              <section className="bg-white rounded-lg sm:rounded-xl shadow-sm p-3 sm:p-4 md:p-6">
-                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
-                  Leave a Comment
-                </h2>
-                <form
-                  onSubmit={handleCommentSubmit}
-                  className="space-y-2 sm:space-y-3"
-                >
-                  <div>
-                    <label
-                      htmlFor="name"
-                      className="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Your Name
-                    </label>
-                    <input
-                      id="name"
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="w-full p-2 border border-gray-300 rounded-md sm:rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-xs sm:text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="comment"
-                      className="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Your Comment
-                    </label>
-                    <textarea
-                      id="comment"
-                      value={newComment}
-                      onChange={(e) => setNewComment(e.target.value)}
-                      className="w-full p-2 border border-gray-300 rounded-md sm:rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-xs sm:text-sm"
-                      rows={3}
-                      required
-                    />
+                      </div>
+                    ))}
                   </div>
 
                   <button
-                    type="submit"
-                    className="bg-primary hover:bg-alternate text-white px-3 sm:px-4 py-1 sm:py-2 rounded-md sm:rounded-lg transition-colors font-medium text-xs sm:text-sm shadow-sm"
+                    onClick={() => setShowAllComments(false)}
+                    className="text-blue-600 hover:text-blue-800 font-medium transition-colors"
                   >
-                    Submit Comment
+                    Show less
                   </button>
-                </form>
-              </section>
+                </>
+              )}
             </div>
-          </div>
+          )}
         </div>
-      </main>
+
+        {/* Comment Form */}
+        <div className="bg-white rounded-lg shadow-sm p-8">
+          <h3 className="text-xl font-bold text-gray-900 mb-6">Comment</h3>
+
+          <form onSubmit={handleCommentSubmit} className="space-y-4">
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                Name
+              </label>
+              <input
+                id="name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                placeholder="Enter your name"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="comment" className="block text-sm font-medium text-gray-700 mb-2">
+                Write a comment
+              </label>
+              <textarea
+                id="comment"
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                rows={4}
+                placeholder="Share your thoughts..."
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg transition-colors font-medium"
+            >
+              Post Comment
+            </button>
+          </form>
+        </div>
+      </div>
 
       <Footer />
     </div>

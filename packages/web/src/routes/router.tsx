@@ -30,6 +30,7 @@ import SolutionCategoryForm from 'components/SolutionCategoryForm/SolutionCatego
 import SolutionDetail from 'components/Solutions/SolutionsDetails'
 import SolutionsDetails from 'components/SolutionsDetails/SolutionsDetails'
 import FAQComponent from 'components/FAQComponent'
+import Privacy from 'components/Privacy/Privacy'
 
 const AppRouter: React.FC = () => {
   return (
@@ -58,6 +59,7 @@ const AppRouter: React.FC = () => {
           <Route path="/solns" element={<Soltns />} />
           <Route path="/solutions/:categoryId" element={<FAQComponent />} />
           <Route path="/patners" element={<Partners />} />
+          <Route path ="/privacy-policy" element={<Privacy />} />
           <Route path="/solutionsdetails" element={<SolutionsDetails />} />
           <Route
             path="/solns/:categoryId/:solutionId"
