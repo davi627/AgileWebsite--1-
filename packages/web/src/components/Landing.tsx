@@ -14,6 +14,7 @@ import Testimonials from './Landing/Testimonials.Component'
 import AgileBrief from './OurSolns/AgileBrief.Component'
 
 import VoiceflowWidget from './Shared/VoiceflowWidget.Component'
+import TalkPage from './TalkPage/TalkPage'
 
 export default function Landing() {
   return (
@@ -25,6 +26,7 @@ export default function Landing() {
       <Stats />
       <ProductsSection />
       <Testimonials />
+      <TalkPage />
       {/* <Testimonials /> */}
       <Blog />
       <Footer />

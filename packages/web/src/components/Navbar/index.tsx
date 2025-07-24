@@ -1,43 +1,62 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog } from '@headlessui/react';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon, XMarkIcon, ChevronDownIcon, ChevronUpIcon, PhoneIcon } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import SidePadding from 'components/Shared/SidePadding.Component';
 import Logo from 'assets/Agile Logo.png';
 
-const navigation = [
-  { name: 'Home', href: '/' },
-  { name: 'Solutions', href: '#erp-solutions' },
-  { name: 'About Us', href: '/about-us' },
-  { name: 'Contact Us', href: '/contact-us' },
-  { name: 'Blogs', href: '/blogs' },
-  { name: 'Careers', href: 'https://careers.agilebiz.co.ke', external: true },
-];
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
+interface ISolutionCategory {
+  _id: string;
+  title: string;
+  imageUrl: string;
+  description: string;
+  solutions: { id: number; name: string; shortDesc: string; fullDesc: string; features: { text: string }[]; implementation: string }[];
+}
 
 export default function Navbar() {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [categories, setCategories] = useState<ISolutionCategory[]>([]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-const handleNavigation = (item: { href: string; external?: boolean }) => {
-  if (item.external) {
-    window.location.href = item.href;
-    return;
-  }
-  const [path, hash] = item.href.split('#');
-  if (path) {
-    navigate(path, { replace: false });
-  }
-  if (hash) {
-    navigate('/', { replace: false });
-    const intervalId = setInterval(() => {
-      const element = document.getElementById(hash);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-        clearInterval(intervalId);
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/solution-categories`);
+        setCategories(response.data);
+      } catch (error) {
+        console.error('Failed to fetch solution categories:', error);
       }
-    }, 200);
-  }
-};
+    };
+    fetchCategories();
+  }, []);
+
+  const handleNavigation = (item: { href: string; external?: boolean; categoryId?: string }) => {
+    if (item.external) {
+      window.location.href = item.href;
+      return;
+    }
+    const [path, hash] = item.href.split('#');
+    if (item.categoryId) {
+      navigate(`/solutions/${item.categoryId}`);
+    } else if (path) {
+      navigate(path, { replace: false });
+    }
+    if (hash) {
+      navigate('/', { replace: false });
+      const intervalId = setInterval(() => {
+        const element = document.getElementById(hash);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+          clearInterval(intervalId);
+        }
+      }, 200);
+    }
+    setIsDropdownOpen(false);
+  };
 
   return (
     <header className="absolute inset-x-0 top-0 z-50 bg-white font-Poppins">
@@ -57,28 +76,66 @@ const handleNavigation = (item: { href: string; external?: boolean }) => {
               <Bars3Icon className="size-6" aria-hidden="true" />
             </button>
           </div>
-          <div className="hidden lg:flex lg:gap-x-12 font-medium">
-            {navigation.map((item) =>
-              item.external ? (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-primary leading-6"
-                >
-                  {item.name}
-                </a>
-              ) : (
-                <button
-                  key={item.name}
-                  onClick={() => handleNavigation(item)}
-                  className="hover:text-primary leading-6"
-                >
-                  {item.name}
-                </button>
-              )
-            )}
+          <div className="hidden lg:flex lg:items-center lg:gap-x-8 font-medium">
+            <button
+              onClick={() => handleNavigation({ href: '/' })}
+              className="hover:text-primary leading-6 px-3 py-2"
+            >
+              Home
+            </button>
+            <div className="relative">
+              <button
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="hover:text-primary leading-6 flex items-center px-3 py-2"
+              >
+                Solutions
+                {isDropdownOpen ? (
+                  <ChevronUpIcon className="ml-1 h-5 w-5 transition-transform duration-200" />
+                ) : (
+                  <ChevronDownIcon className="ml-1 h-5 w-5 transition-transform duration-200" />
+                )}
+              </button>
+              {isDropdownOpen && (
+                <div className="absolute left-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10">
+                  {categories.map((category) => (
+                    <button
+                      key={category._id}
+                      onClick={() => handleNavigation({ href: `/solutions/${category._id}`, categoryId: category._id })}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      {category.title}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <button
+              onClick={() => handleNavigation({ href: '/about-us' })}
+              className="hover:text-primary leading-6 px-3 py-2"
+            >
+              About Us
+            </button>
+            <button
+              onClick={() => handleNavigation({ href: '/blogs' })}
+              className="hover:text-primary leading-6 px-3 py-2"
+            >
+              Blogs
+            </button>
+            <a
+              href="https://careers.agilebiz.co.ke"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-primary leading-6 px-3 py-2"
+            >
+              Careers
+            </a>
+            <button
+              onClick={() => handleNavigation({ href: '/contact-us' })}
+              className="bg-alternate hover:bg-alternate-dark focus-visible:outline-alternate rounded-3xl px-6 py-2.5 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 flex items-center"
+            >
+              <span>Contact Us</span>
+              <PhoneIcon className="ml-2 h-5 w-5" aria-hidden="true" />
+            </button>
           </div>
         </nav>
       </SidePadding>
@@ -107,18 +164,81 @@ const handleNavigation = (item: { href: string; external?: boolean }) => {
           <div className="mt-6 flow-root">
             <div className="-my-6 divide-y divide-gray-500/10">
               <div className="space-y-2 py-6">
-                {navigation.map((item) => (
+                <button
+                  onClick={() => {
+                    handleNavigation({ href: '/' });
+                    setMobileMenuOpen(false);
+                  }}
+                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                >
+                  Home
+                </button>
+                <div className="relative">
                   <button
-                    key={item.name}
-                    onClick={() => {
-                      handleNavigation(item);
-                      setMobileMenuOpen(false);
-                    }}
-                    className="-mx-3 block rounded-lg PX-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50 flex items-center"
                   >
-                    {item.name}
+                    Solutions
+                    {isDropdownOpen ? (
+                      <ChevronUpIcon className="ml-1 h-5 w-5 transition-transform duration-200" />
+                    ) : (
+                      <ChevronDownIcon className="ml-1 h-5 w-5 transition-transform duration-200" />
+                    )}
                   </button>
-                ))}
+                  {isDropdownOpen && (
+                    <div className="mt-2 w-full bg-white border border-gray-200 rounded-md shadow-lg">
+                      {categories.map((category) => (
+                        <button
+                          key={category._id}
+                          onClick={() => {
+                            handleNavigation({ href: `/solutions/${category._id}`, categoryId: category._id });
+                            setMobileMenuOpen(false);
+                          }}
+                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          {category.title}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <button
+                  onClick={() => {
+                    handleNavigation({ href: '/about-us' });
+                    setMobileMenuOpen(false);
+                  }}
+                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                >
+                  About Us
+                </button>
+                <button
+                  onClick={() => {
+                    handleNavigation({ href: '/blogs' });
+                    setMobileMenuOpen(false);
+                  }}
+                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                >
+                  Blogs
+                </button>
+                <a
+                  href="https://careers.agilebiz.co.ke"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Careers
+                </a>
+                <button
+                  onClick={() => {
+                    handleNavigation({ href: '/contact-us' });
+                    setMobileMenuOpen(false);
+                  }}
+                  className="bg-primary hover:bg-primary-dark focus-visible:outline-primary w-full rounded-md px-6 py-2.5 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 flex items-center"
+                >
+                  <span>Contact Us</span>
+                  <PhoneIcon className="ml-2 h-5 w-5" aria-hidden="true" />
+                </button>
               </div>
               <div className="py-6">
                 <button className="bg-primary hover:bg-primary-dark focus-visible:outline-primary w-full rounded-md px-6 py-2.5 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">

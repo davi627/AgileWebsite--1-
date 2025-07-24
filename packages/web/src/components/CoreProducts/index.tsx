@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import SidePadding from 'components/Shared/SidePadding.Component';
 
 type Solution = {
   line1: string;
@@ -17,7 +18,6 @@ const ProductsSection = () => {
   const [error, setError] = useState<null | string>(null);
 
   useEffect(() => {
-    // Simulate static content instead of fetching
     const staticContent = [
       {
         line1: 'Experience The Convenience Of',
@@ -41,27 +41,29 @@ const ProductsSection = () => {
   }
 
   return (
-    <div style={{ backgroundColor: '#e6f0fa', padding: '20px', textAlign: 'center', border: '1px solid #167AA1' }}>
-      {solutions.map((solution, index) => (
-        <div key={index}>
-          <div style={{ color: '#167AA1', textAlign: 'center', fontFamily: 'Poppins', fontSize: '48px', fontStyle: 'normal', fontWeight: 600, lineHeight: '58px', textTransform: 'capitalize' }}>
-            {solution.line1}<br />
-            {solution.line2}<br />
-            {solution.line3}
+    <SidePadding>
+      <div className="py-20 bg-[#e6f0fa] text-center border border-[#167AA1] rounded-xl">
+        {solutions.map((solution, index) => (
+          <div key={index} className="font-poppins">
+            <div className="text-[#167AA1] text-4xl md:text-5xl font-semibold leading-tight capitalize">
+              {solution.line1}<br />
+              {solution.line2}<br />
+              {solution.line3}
+            </div>
+            <p className="text-black text-lg md:text-xl font-normal leading-6 mt-4">
+              {solution.subtext1}<br />
+              {solution.subtext2}
+            </p>
+            <button
+              onClick={() => navigate('/contact-us', { replace: false })}
+              className="mt-6 bg-[#e6f0fa] text-[#167AA1] border border-[#167AA1] px-6 py-2 rounded-2xl cursor-pointer hover:bg-gray-100 transition-colors"
+            >
+              {solution.buttonText} <span className="ml-2">→</span>
+            </button>
           </div>
-          <p style={{ color: '#000', textAlign: 'center', fontFamily: 'Poppins', fontSize: '20px', fontStyle: 'normal', fontWeight: 400, lineHeight: '24px' }}>
-            {solution.subtext1}<br />
-            {solution.subtext2}
-          </p>
-          <button
-            onClick={() => navigate('/contact-us', { replace: false })}
-            style={{ backgroundColor: '#e6f0fa', color: '#167AA1', border: '1px solid #167AA1', padding: '10px 20px', borderRadius: '20px', cursor: 'pointer' }}
-          >
-            {solution.buttonText} <span style={{ marginLeft: '5px' }}>→</span>
-          </button>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+    </SidePadding>
   );
 };
 

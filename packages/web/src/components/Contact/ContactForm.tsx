@@ -1,24 +1,34 @@
-import React, { useState } from 'react'
-import { sendMail } from '../../services/MailService'
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { sendMail } from '../../services/MailService';
 
 const ContactForm: React.FC = () => {
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' })
-  const [isLoading, setIsLoading] = useState(false)
-  const [isSent, setIsSent] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSent, setIsSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const location = useLocation();
+  const { selectedServices } = location.state || { selectedServices: [] };
+
+  useEffect(() => {
+    if (selectedServices.length > 0) {
+      const serviceText = `I am interested in the following services: ${selectedServices.join(', ')}. `;
+      setFormData(prev => ({ ...prev, message: serviceText }));
+    }
+  }, [selectedServices]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const { name, value } = e.target
-    setFormData({ ...formData, [name]: value })
-  }
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError(null)
-    setIsSent(false)
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    setIsSent(false);
 
     try {
       await sendMail({
@@ -26,15 +36,15 @@ const ContactForm: React.FC = () => {
         subject: `New message from ${formData.name}`,
         text: formData.message,
         html: `<p>${formData.message}</p><p>From: ${formData.name} (${formData.email})</p>`
-      })
-      setIsSent(true)
-      setFormData({ name: '', email: '', message: '' })
+      });
+      setIsSent(true);
+      setFormData({ name: '', email: '', message: '' });
     } catch (err) {
-      if (err instanceof Error) setError(err.message)
+      if (err instanceof Error) setError(err.message);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-3">
@@ -43,8 +53,8 @@ const ContactForm: React.FC = () => {
           Send us a message
         </h2>
         <p className="mt-4 leading-7 text-gray-600">
-          We&apos;d love to hear from you. Please fill out the form below and
-          we&apos;ll get in touch with you shortly.
+          We'd love to hear from you. Please fill out the form below and
+          we'll get in touch with you shortly.
         </p>
       </div>
       <div className="lg:col-span-2">
@@ -119,7 +129,7 @@ const ContactForm: React.FC = () => {
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ContactForm
+export default ContactForm;

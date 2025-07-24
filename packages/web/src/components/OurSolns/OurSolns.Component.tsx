@@ -115,7 +115,7 @@ function OurSolns() {
                         alignItems: 'center',
                         justifyContent: 'center',
                         overflow: 'hidden',
-                        backgroundColor: '#e6f0fa', // Background color for empty space
+                        backgroundColor: '#e6f0fa',
                       }}
                     >
                       {category.imageUrl && !imageErrors.has(category._id) ? (
