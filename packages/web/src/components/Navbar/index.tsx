@@ -1,10 +1,12 @@
+
 import { useState, useEffect } from 'react';
 import { Dialog } from '@headlessui/react';
-import { Bars3Icon, XMarkIcon, ChevronDownIcon, ChevronUpIcon, PhoneIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon, XMarkIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SidePadding from 'components/Shared/SidePadding.Component';
 import Logo from 'assets/Agile Logo.png';
+import call from '../../assets/call.png'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
@@ -134,7 +136,7 @@ export default function Navbar() {
               className="bg-alternate hover:bg-alternate-dark focus-visible:outline-alternate rounded-3xl px-6 py-2.5 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 flex items-center"
             >
               <span>Contact Us</span>
-              <PhoneIcon className="ml-2 h-5 w-5" aria-hidden="true" />
+              <img src={call} alt="Call icon" className="ml-2 h-5 w-5" aria-hidden="true" />
             </button>
           </div>
         </nav>
@@ -237,12 +239,7 @@ export default function Navbar() {
                   className="bg-primary hover:bg-primary-dark focus-visible:outline-primary w-full rounded-md px-6 py-2.5 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 flex items-center"
                 >
                   <span>Contact Us</span>
-                  <PhoneIcon className="ml-2 h-5 w-5" aria-hidden="true" />
-                </button>
-              </div>
-              <div className="py-6">
-                <button className="bg-primary hover:bg-primary-dark focus-visible:outline-primary w-full rounded-md px-6 py-2.5 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">
-                  Request Quote <span aria-hidden="true">→</span>
+                  <img src={call} alt="Call icon" className="ml-2 h-5 w-5" aria-hidden="true" />
                 </button>
               </div>
             </div>

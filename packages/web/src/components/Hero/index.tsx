@@ -85,7 +85,7 @@ export default function Hero() {
                   currentPhraseIndex === 0 ? 'opacity-100' : 'opacity-0'
                 } z-10`}
                 style={{
-                  right: '5',
+                  right: '15px',
                   top: '-40px',
                   width: '105%',
                   height: '105%',
@@ -105,7 +105,7 @@ export default function Hero() {
                   currentPhraseIndex === 1 ? 'opacity-100' : 'opacity-0'
                 } z-10`}
                 style={{
-                  right: '5',
+                  right: '20px',
                   top: '-40px',
                   width: '105%',
                   height: '105%',
@@ -125,7 +125,7 @@ export default function Hero() {
                   currentPhraseIndex === 2 ? 'opacity-100' : 'opacity-0'
                 } z-10`}
                 style={{
-                  right: '5',
+                  right: '30px',
                   top: '-40px',
                   width: '105%',
                   height: '105%',

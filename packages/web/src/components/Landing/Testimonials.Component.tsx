@@ -143,7 +143,7 @@ function Testimonials() {
                     <img
                       src={comments[0].logo}
                       alt="logo"
-                      className="h-10 w-auto"
+                      className="h-[50px] w-auto"
                       onError={(e) => console.error(`Image load error for ${comments[0].author} logo:`, e)}
                     />
                     <div>
@@ -190,7 +190,7 @@ function Testimonials() {
                         <img
                           src={comment.logo}
                           alt="logo"
-                          className="h-10 w-auto"
+                          className="h-[50px] w-auto"
                           onError={(e) => console.error(`Image load error for ${comment.author} logo:`, e)}
                         />
                         <div>
@@ -217,9 +217,7 @@ function Testimonials() {
                           <img
                             src={comment.image}
                             alt="testimonial"
-                            className="h-full w-full object церезовер object-center"
-                            onError={(e) => console.error(`Image load error for ${comment.author} image:`, e)}
-                          />
+                            className="h-full w-full object-cover object-center" />
                         </div>
                       </div>
                     </div>

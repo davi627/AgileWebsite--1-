@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -63,17 +64,17 @@ export default function TopBlogs() {
 
   return (
     <div className="mt-10 bg-gray-100 py-10 Poppins">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h2 className="text-2xl font-bold text-center text-[#167AA1]">
+      <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+        <h2 className="text-xl sm:text-2xl font-bold text-center text-[#167AA1]">
           Top Most Viewed Blogs
         </h2>
-        <div className="mt-6 grid grid-cols-3 gap-6">
+        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {blogs.map((blog) => (
             <div
               key={blog._id}
               className="flex flex-col"
             >
-              <div className="h-48 w-full overflow-hidden rounded-lg bg-gray-200 border border-gray-300">
+              <div className="h-32 sm:h-40 md:h-48 w-full overflow-hidden rounded-lg bg-gray-200 border border-gray-300">
                 <img
                   src={blog.imageUrl}
                   alt={blog.title}
@@ -81,8 +82,8 @@ export default function TopBlogs() {
                   onError={(e) => console.error(`Image load error for ${blog.title}:`, e)}
                 />
               </div>
-              <div className="p-4 pt-0 pl-0">
-                <h3 className="text-md font-semibold text-gray-900 mb-2">
+              <div className="p-4 sm:p-4">
+                <h3 className="text-sm sm:text-md font-semibold text-gray-900 mb-2">
                   {blog.title}
                 </h3>
                 <p className="text-sm text-gray-600 mb-4 line-clamp-3">

@@ -1,8 +1,8 @@
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
 
 const featureSchema = new mongoose.Schema({
-  text: String
-})
+  text: String,
+});
 
 const solutionSchema = new mongoose.Schema({
   id: Number,
@@ -10,14 +10,16 @@ const solutionSchema = new mongoose.Schema({
   shortDesc: String,
   fullDesc: String,
   features: [featureSchema],
-  implementation: String
-})
+  implementation: String,
+  imageUrl: String, 
+});
 
 const solutionCategorySchema = new mongoose.Schema({
   title: String,
-  imageUrl: String,
-  description: String, 
-  solutions: [solutionSchema]
-})
+  imageUrl: String, 
+  sectionImageUrl: String, 
+  description: String,
+  solutions: [solutionSchema],
+});
 
-export default mongoose.model('SolutionCategory', solutionCategorySchema)
+export default mongoose.model('SolutionCategory', solutionCategorySchema);

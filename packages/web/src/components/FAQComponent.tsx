@@ -7,7 +7,7 @@ import SidePadding from 'components/Shared/SidePadding.Component';
 import { FaArrowLeft } from 'react-icons/fa';
 import { BsArrowRight } from 'react-icons/bs';
 import HeroImage from '../assets/Hero.png';
-import SectionImage from '../assets/section.png';
+import SectionImage from '../assets/section2.png';
 import Footer from 'components/Footer';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
@@ -19,6 +19,7 @@ interface ISolution {
   fullDesc: string;
   features: { text: string }[];
   implementation: string;
+  imageUrl?: string;
 }
 
 interface ISolutionCategory {
@@ -36,18 +37,9 @@ interface ISolutionFAQ {
   imageUrl?: string;
 }
 
-// Dummy images for Q&A sections
-const dummyImages = [
-  'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=500&h=500&fit=crop',
-  'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&h=500&fit=crop',
-  'https://images.unsplash.com/photo-1551434678-e076c223a692?w=500&h=500&fit=crop',
-  'https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=500&h=500&fit=crop',
-  'https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&h=500&fit=crop',
-  'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=500&h=500&fit=crop'
-];
-
 const getImageUrl = (imageUrl: string): string => {
   if (!imageUrl) return '';
+  if (imageUrl.startsWith('data:')) return imageUrl;
   if (imageUrl.startsWith('http')) return imageUrl;
   return `${API_BASE_URL}/${imageUrl.startsWith('/') ? imageUrl.slice(1) : imageUrl}`;
 };
@@ -85,7 +77,6 @@ const FAQComponent: React.FC = () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/solution-categories`);
         const allCategories = response.data;
-        // Select 2 random categories, excluding the current category
         const filteredCategories = allCategories.filter((cat: ISolutionCategory) => cat._id !== categoryId);
         const shuffled = filteredCategories.sort(() => 0.5 - Math.random());
         setRandomCategories(shuffled.slice(0, 2));
@@ -99,11 +90,11 @@ const FAQComponent: React.FC = () => {
   useEffect(() => {
     if (category && category.solutions) {
       setTheFAQs(
-        category.solutions.map((solution: ISolution, index: number) => ({
+        category.solutions.map((solution: ISolution) => ({
           q: solution.name,
           a: solution.fullDesc,
           solutionId: solution.id,
-          imageUrl: dummyImages[index % dummyImages.length],
+          imageUrl: solution.imageUrl ? getImageUrl(solution.imageUrl) : 'https://via.placeholder.com/500',
         }))
       );
     }
@@ -151,24 +142,27 @@ const FAQComponent: React.FC = () => {
   return (
     <>
       <Navbar />
-      <div className="bg-white min-h-screen">
+      <div className="bg-[#FAFAFA] min-h-screen">
         {/* Hero Section */}
         <div
-          className="relative w-[1440px] max-w-full h-[538px] flex-shrink-0 mx-auto"
+          className="relative w-full h-[300px] sm:h-[350px] md:h-[400px] lg:h-[500px] xl:h-[538px] flex-shrink-0"
           style={{
-            background: `linear-gradient(90deg, rgba(0, 0, 0, 0.00) 40.23%, rgba(0, 0, 0, 0.70) 96.58%), linear-gradient(0deg, rgba(0, 0, 0, 0.20) 0%, rgba(0, 0, 0, 0.20) 100%), url(${HeroImage}) lightgray 50% / cover no-repeat`,
-            fontFamily: 'Poppins, sans-serif'
+            background: `linear-gradient(90deg, rgba(0, 0, 0, 0.30) 0%, rgba(0, 0, 0, 0.60) 100%), url(${HeroImage}) lightgray 50% / cover no-repeat`,
+            fontFamily: 'Poppins, sans-serif',
           }}
         >
           <SidePadding>
-            <div className="relative z-10 h-[538px] flex items-center text-left">
-              <div className="max-w-[798px] w-full">
+            <div className="relative z-10 h-full flex items-center md:items-end pb-6 sm:pb-8 md:pb-8 text-left">
+              <div className="max-w-4xl w-full mx-auto mt-28 sm:mt-24 md:mt-32 lg:mt-40 xl:mt-48">
                 <motion.h1
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6 }}
-                  className="text-[48px] font-semibold leading-[58px] text-white capitalize drop-shadow-lg"
-                  style={{ fontFamily: 'Poppins, sans-serif' }}
+                  className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold leading-tight text-white capitalize"
+                  style={{
+                    fontFamily: 'Poppins, sans-serif',
+                    textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
+                  }}
                 >
                   {category.title.endsWith(':') ? category.title : `${category.title}:`}
                 </motion.h1>
@@ -176,8 +170,11 @@ const FAQComponent: React.FC = () => {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.1 }}
-                  className="text-[48px] font-semibold leading-[58px] text-white capitalize whitespace-nowrap drop-shadow-lg mb-8"
-                  style={{ fontFamily: 'Poppins, sans-serif' }}
+                  className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold leading-tight text-white capitalize mb-2 sm:mb-3 md:mb-4"
+                  style={{
+                    fontFamily: 'Poppins, sans-serif',
+                    textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
+                  }}
                 >
                   Powering Your Tech Company's Growth
                 </motion.h2>
@@ -185,8 +182,11 @@ const FAQComponent: React.FC = () => {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.2 }}
-                  className="text-[14px] font-normal leading-[24px] text-white drop-shadow-md"
-                  style={{ fontFamily: 'Poppins, sans-serif' }}
+                  className="text-xs sm:text-sm md:text-base font-normal leading-relaxed text-white max-w-xl"
+                  style={{
+                    fontFamily: 'Poppins, sans-serif',
+                    textShadow: '1px 1px 2px rgba(0,0,0,0.8)'
+                  }}
                 >
                   {category.description || 'Comprehensive solutions designed to accelerate your business growth and digital transformation'}
                 </motion.p>
@@ -195,9 +195,9 @@ const FAQComponent: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.3 }}
                   onClick={handleBackToCategories}
-                  className="mt-6 flex items-center justify-center p-2 rounded-full bg-gray-100 hover:bg-[#167AA1]/10 transition-colors group"
+                  className="mt-3 sm:mt-4 flex items-center justify-center p-2 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all duration-300 group border border-white/30"
                 >
-                  <FaArrowLeft size={16} className="text-gray-700 group-hover:text-[#167AA1] transition-colors" />
+                  <FaArrowLeft size={14} className="text-white group-hover:text-white transition-colors" />
                 </motion.button>
               </div>
             </div>
@@ -206,9 +206,9 @@ const FAQComponent: React.FC = () => {
 
         {/* Main Content */}
         <SidePadding>
-          <div className="py-16">
+          <div className="py-8 sm:py-10 md:py-12 lg:py-16">
             {/* Solutions List */}
-            <div className="space-y-[120px]">
+            <div className="space-y-8 sm:space-y-10 md:space-y-12 lg:space-y-16 xl:space-y-20 max-w-4xl w-full mx-auto">
               <AnimatePresence>
                 {theFAQs.map((faq, index) => (
                   <motion.div
@@ -216,39 +216,35 @@ const FAQComponent: React.FC = () => {
                     initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: index * 0.1 }}
-                    className={`flex flex-col ${
-                      index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'
-                    } items-center gap-12 lg:gap-16`}
+                    className={`flex ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'} items-center gap-3 sm:gap-4 md:gap-6 lg:gap-8 xl:gap-12`}
                   >
-                    {/* Image Section */}
-                    <div className="w-full lg:w-1/2 flex justify-center">
-                      <div className="relative group aspect-square w-[508px]">
-                        <img
-                          src={faq.imageUrl}
-                          alt={faq.q}
-                          className="w-full h-full object-cover rounded-[20px] shadow-lg group-hover:shadow-xl transition-shadow duration-300"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-[20px] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    {/* Image Section - Responsive sizing */}
+                    <div className="w-2/5 sm:w-2/5 md:w-2/5 lg:w-1/2 flex justify-center flex-shrink-0">
+                      <div className="relative group w-full max-w-[120px] sm:max-w-[150px] md:max-w-[200px] lg:max-w-xs xl:max-w-sm">
+                        <div className="aspect-square w-full overflow-hidden rounded-[12px] sm:rounded-[16px] md:rounded-[20px] shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                          <img
+                            src={faq.imageUrl}
+                            alt={faq.q}
+                            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                            onError={(e) => (e.currentTarget.src = 'https://via.placeholder.com/500')}
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        </div>
                       </div>
                     </div>
 
-                    {/* Content Section */}
-                    <div className="w-full lg:w-[508px] flex flex-col justify-center items-start gap-8">
+                    {/* Content Section - Takes remaining space */}
+                    <div className="w-3/5 sm:w-3/5 md:w-3/5 lg:w-1/2 flex flex-col justify-center items-start gap-2 sm:gap-3 md:gap-4 lg:gap-6">
                       <div>
-                        <h3 className="text-2xl lg:text-3xl font-bold text-[#167AA1] mb-4">
-                          {faq.q}
-                        </h3>
-                        <p className="text-gray-600 text-lg leading-relaxed">
-                          {faq.a.replace(/<[^>]*>/g, '')}
-                        </p>
+                        <h3 className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-bold text-[#167AA1] mb-2 sm:mb-3 leading-tight">{faq.q}</h3>
+                        <p className="text-gray-600 text-xs sm:text-sm md:text-base leading-relaxed line-clamp-3 sm:line-clamp-4 md:line-clamp-none">{faq.a.replace(/<[^>]*>/g, '')}</p>
                       </div>
-
                       <span
                         onClick={() => handleReadMore(faq.solutionId)}
-                        className="inline-flex items-center gap-3 text-[#167AA1] cursor-pointer hover:underline font-medium text-lg group"
+                        className="inline-flex items-center gap-1 sm:gap-2 text-[#167AA1] cursor-pointer hover:underline font-medium text-xs sm:text-sm md:text-base group mt-1 sm:mt-2"
                       >
                         <span>Learn More</span>
-                        <BsArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                        <BsArrowRight size={12} className="sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
                       </span>
                     </div>
                   </motion.div>
@@ -258,39 +254,43 @@ const FAQComponent: React.FC = () => {
 
             {/* Empty State */}
             {theFAQs.length === 0 && (
-              <div className="text-center py-20">
+              <div className="text-center py-16 sm:py-20 max-w-4xl w-full mx-auto">
                 <div className="max-w-md mx-auto">
-                  <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <span className="text-3xl text-gray-400">📋</span>
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                    <span className="text-2xl sm:text-3xl text-gray-400">📋</span>
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">No Solutions Available</h3>
-                  <p className="text-gray-600">No solutions are currently available for this category.</p>
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No Solutions Available</h3>
+                  <p className="text-sm sm:text-base text-gray-600">No solutions are currently available for this category.</p>
                 </div>
               </div>
             )}
           </div>
         </SidePadding>
 
-        {/* New Section with Curved PNG Image */}
-<div className="relative w-full h-[504px] bg-[#167AA1] overflow-hidden">
-  {/* White curved section with image */}
-  <div
-    className="absolute inset-0 bg-cover bg-center bg-white"
-    style={{
-      backgroundImage: `url(${SectionImage})`,
-
-    }}
-  ></div>
+        {/* Straight Section */}
+        <div className="relative w-full min-h-[300px] sm:min-h-[350px] md:min-h-[400px] lg:min-h-[500px] bg-[#167AA1] overflow-hidden">
+          {/* Background */}
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{
+              backgroundImage: `url(${SectionImage})`,
+            }}
+          ></div>
 
           {/* Content Overlay */}
-          <div className="relative z-10 h-full flex items-center">
+          <div className="relative z-10 min-h-[300px] sm:min-h-[350px] md:min-h-[400px] lg:min-h-[500px] flex items-center">
             <SidePadding>
-              <div className="max-w-[798px] w-full">
+              <div className="max-w-4xl w-full mx-auto">
                 <motion.h1
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6 }}
-                  className="text-[48px] font-semibold leading-[58px] text-white capitalize drop-shadow-lg"
+                  className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-semibold leading-tight text-white capitalize"
+                  style={{
+                    fontFamily: 'Poppins, sans-serif',
+                    textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+                    marginLeft: '20px',
+                  }}
                 >
                   {category.title.endsWith(':') ? category.title : `${category.title}:`}
                 </motion.h1>
@@ -298,7 +298,12 @@ const FAQComponent: React.FC = () => {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.1 }}
-                  className="text-[48px] font-semibold leading-[58px] text-white capitalize whitespace-nowrap drop-shadow-lg mb-8"
+                  className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-semibold leading-tight text-white capitalize mb-3 sm:mb-4 md:mb-6"
+                  style={{
+                    fontFamily: 'Poppins, sans-serif',
+                    textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+                    marginLeft: '20px',
+                  }}
                 >
                   Powering Your Tech Company's Growth
                 </motion.h2>
@@ -306,7 +311,12 @@ const FAQComponent: React.FC = () => {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.2 }}
-                  className="text-[14px] font-normal leading-[24px] text-white drop-shadow-md"
+                  className="text-xs sm:text-sm md:text-base font-normal leading-relaxed text-white max-w-2xl"
+                  style={{
+                    fontFamily: 'Poppins, sans-serif',
+                    textShadow: '1px 1px 2px rgba(0,0,0,0.5)',
+                    marginLeft: '20px',
+                  }}
                 >
                   {category.description || 'Comprehensive solutions designed to accelerate your business growth and digital transformation'}
                 </motion.p>
@@ -315,80 +325,69 @@ const FAQComponent: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.3 }}
                   onClick={() => navigate('/solutions')}
-                  className="mt-6 flex h-12 px-5 justify-center items-center gap-[18px] rounded-[100px] bg-[#FCB040] hover:bg-[#E0A738] text-white font-medium text-lg transition-colors group"
+                  className="mt-4 sm:mt-6 flex h-10 sm:h-12 px-4 sm:px-6 justify-center items-center gap-2 sm:gap-3 rounded-full bg-[#FCB040] hover:bg-[#E0A738] text-white font-medium text-xs sm:text-sm md:text-base transition-all duration-300 group shadow-lg hover:shadow-xl"
+                  style={{
+                    marginLeft: '20px',
+                  }}
                 >
                   <span>Contact Sales</span>
-                  <BsArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                  <BsArrowRight size={16} className="sm:w-[18px] sm:h-[18px] group-hover:translate-x-1 transition-transform" />
                 </motion.button>
               </div>
             </SidePadding>
           </div>
         </div>
 
-        {/* Random Categories Section */}
         <SidePadding>
-          <div className="py-10 font-Poppins">
-            <div className="text-left mb-8 max-w-5xl mx-auto">
-              <h2 className="text-3xl font-semibold text-primary mb-2 ">Do More With Agile</h2>
-              <p className="text-gray-600 text-base leading-relaxed">
-                Learn More About Our Other Solutions
-              </p>
+          <div className="py-8 sm:py-10 md:py-12 font-Poppins bg-[FFFFFF]">
+            <div className="text-left mb-6 sm:mb-8 max-w-4xl w-full mx-auto">
+              <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-primary mb-2">Do More With Agile</h2>
+              <p className="text-gray-600 text-xs sm:text-sm md:text-base leading-relaxed">Learn More About Our Other Solutions</p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 sm:gap-x-8 md:gap-x-12 gap-y-4 sm:gap-y-6 max-w-4xl w-full mx-auto">
               <AnimatePresence>
                 {randomCategories.map((category) => (
                   <motion.div
                     key={category._id}
-                    className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group border border-gray-100 overflow-hidden flex flex-col"
+                    className="bg-white rounded-xl sm:rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group border border-gray-100 overflow-hidden flex flex-col"
                     onClick={() => handleCategoryClick(category._id)}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     whileHover={{ y: -4 }}
                   >
-                    {/* Image Section */}
-                    <div className="h-32 sm:h-36 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center overflow-hidden">
+                    {/* Image container with responsive height */}
+                    <div className="w-full h-24 sm:h-32 md:h-36 lg:h-48 bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
                       {category.imageUrl && !imageErrors.has(category._id) ? (
                         <img
                           src={getImageUrl(category.imageUrl)}
                           alt={`${category.title} illustration`}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
                           onError={() => handleImageError(category._id)}
                         />
                       ) : (
-                        <div className="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center">
-                          <span className="text-blue-600 text-xl font-bold">
-                            {category.title.charAt(0).toUpperCase()}
-                          </span>
+                        <div className="w-full h-full flex items-center justify-center">
+                          <div className="w-8 h-8 sm:w-12 sm:h-12 md:w-16 md:h-16 bg-blue-100 rounded-xl sm:rounded-2xl flex items-center justify-center">
+                            <span className="text-blue-600 text-sm sm:text-lg md:text-xl font-bold">{category.title.charAt(0).toUpperCase()}</span>
+                          </div>
                         </div>
                       )}
                     </div>
-
-                    {/* Content Section */}
-                    <div className="p-5 flex flex-col flex-1">
-                      <h3 className="text-lg font-semibold text-primary mb-2 group-hover:text-primary transition-colors">
-                        {category.title}
-                      </h3>
-
-                      <p className="text-gray-600 text-sm leading-relaxed mb-4 flex-1">
-                        {category.description ||
-                          'Comprehensive business consulting and strategic solutions to drive growth and efficiency across your organization.'}
+                    <div className="p-3 sm:p-4 md:p-5 flex flex-col flex-1">
+                      <h3 className="text-sm sm:text-base font-semibold text-primary mb-2 sm:mb-3 group-hover:text-primary transition-colors">{category.title}</h3>
+                      <p className="text-gray-600 text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4 flex-1 line-clamp-2 sm:line-clamp-3">
+                        {category.description || 'Comprehensive business consulting and strategic solutions to drive growth and efficiency across your organization.'}
                       </p>
-
-                      {/* Learn More Button */}
                       <div className="mt-auto">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             handleCategoryClick(category._id);
                           }}
-                          className="inline-flex items-center justify-center px-4 py-2 bg-white border border-alternate text-alternate font-small text-sm rounded-lg  transition-colors group/button"
+                          className="inline-flex items-center justify-center px-3 sm:px-4 py-1.5 sm:py-2 bg-white border border-alternate text-alternate font-medium text-xs sm:text-sm rounded-md sm:rounded-lg hover:bg-alternate hover:text-white transition-colors group/button"
                         >
                           <span>Learn More</span>
-                          <BsArrowRight
-                            size={14}
-                            className="ml-2 group-hover/button:translate-x-1 transition-transform duration-200"
-                          />
+                          <BsArrowRight size={12} className="sm:w-[14px] sm:h-[14px] ml-1 sm:ml-2 group-hover/button:translate-x-1 transition-transform duration-200" />
                         </button>
                       </div>
                     </div>
@@ -397,13 +396,13 @@ const FAQComponent: React.FC = () => {
               </AnimatePresence>
             </div>
             {randomCategories.length === 0 && (
-              <div className="text-center py-10">
+              <div className="text-center py-8 sm:py-10 max-w-4xl w-full mx-auto">
                 <div className="max-w-md mx-auto">
-                  <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <span className="text-3xl text-gray-400">📋</span>
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                    <span className="text-2xl sm:text-3xl text-gray-400">📋</span>
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">No Other Solutions Available</h3>
-                  <p className="text-gray-600">No additional solutions are currently available.</p>
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No Other Solutions Available</h3>
+                  <p className="text-sm sm:text-base text-gray-600">No additional solutions are currently available.</p>
                 </div>
               </div>
             )}

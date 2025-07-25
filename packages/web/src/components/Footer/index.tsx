@@ -12,7 +12,7 @@ const navigation = {
     { name: 'Blog', href: '/blogs' },
     { name: 'Careers', href: 'https://careers.agilebiz.co.ke' },
     { name: 'Partners', href: '#partners' },
-    {name:'Privacy Policy', href: '/privacy-policy'}
+    { name: 'Privacy Policy', href: '/privacy-policy' }
   ],
   social: [
     {
@@ -43,8 +43,8 @@ export default function Footer() {
 
   return (
     <footer className="bg-[#f0f0f0] text-[#000]">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-12">
-        <div className="flex flex-col md:flex-row gap-8 justify-between" style={{ fontFamily: 'Poppins', fontSize: '14px', lineHeight: '30px', fontWeight: 400 }}>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8 sm:py-12">
+        <div className="flex flex-col md:flex-row gap-4 sm:gap-8 justify-between" style={{ fontFamily: 'Poppins', fontSize: '14px', lineHeight: '30px', fontWeight: 400 }}>
           {/* First Column (About Us) - Aligned Left */}
           <div className="w-full md:w-1/3">
             <img src={Logo} alt="Agile Business Solutions" className="h-10 mb-4" />
@@ -54,7 +54,7 @@ export default function Footer() {
           </div>
 
           {/* Container for Quick Links and Contact Us */}
-          <div className="flex flex-col md:flex-row gap-2 w-full md:w-2/3">
+          <div className="flex flex-col md:flex-row gap-4 sm:gap-8 w-full md:w-2/3">
             {/* Second Column (Quick Links) */}
             <div className="w-full md:w-1/2">
               <h3 className="text-sm font-semibold uppercase tracking-wider">Quick Links</h3>
@@ -89,8 +89,8 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Social Icons - Aligned Right Below Quick Links and Contact Us */}
-        <div className="flex justify-end space-x-4 mt-4 md:mr-[calc(33.333%+0.5rem)]">
+        {/* Social Icons - Aligned Left on Mobile, Right on md */}
+        <div className="flex justify-start md:justify-end space-x-4 mt-2 sm:mt-4 md:mr-[calc(33.333%+0.5rem)]">
           {navigation.social.map((item) => (
             <a
               key={item.name}
@@ -106,7 +106,7 @@ export default function Footer() {
         </div>
 
         {/* Copyright */}
-        <div className="mt-8 border-t border-gray-300 pt-8 text-center text-sm text-gray-600">
+        <div className="mt-6 sm:mt-8 border-t border-gray-300 pt-8 text-center text-sm text-gray-600">
           © {currentYear} Agile Business Solutions Ltd. All rights reserved.
         </div>
       </div>
