@@ -20,9 +20,9 @@ const ProductsSection = () => {
   useEffect(() => {
     const staticContent = [
       {
-        line1: 'Experience The Convenience Of',
-        line2: 'Our Management Information Systems',
-        line3: 'Solutions Clients.',
+        line1: 'Experience The Convenience Of Our Management Information',
+        line2: 'Systems Solutions For',
+        line3: 'Clients.',
         subtext1: 'Connect finance, sales, service, and operations with a solution',
         subtext2: 'trusted by over 500 small, midsize and large businesses.',
         buttonText: 'Get in Touch'
@@ -42,7 +42,7 @@ const ProductsSection = () => {
 
   return (
     <SidePadding>
-      <div className="py-20 bg-[#e6f0fa] text-center border border-[#167AA1] rounded-xl">
+      <div className="py-20 bg-[#e6f0fa] text-center  rounded-xl">
         {solutions.map((solution, index) => (
           <div key={index} className="font-poppins">
             <div className="text-[#167AA1] text-4xl md:text-5xl font-semibold leading-tight capitalize">

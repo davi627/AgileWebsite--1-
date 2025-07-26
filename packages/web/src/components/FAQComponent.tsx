@@ -324,7 +324,7 @@ const FAQComponent: React.FC = () => {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.3 }}
-                  onClick={() => navigate('/solutions')}
+                  onClick={() => navigate('/contact-us')}
                   className="mt-4 sm:mt-6 flex h-10 sm:h-12 px-4 sm:px-6 justify-center items-center gap-2 sm:gap-3 rounded-full bg-[#FCB040] hover:bg-[#E0A738] text-white font-medium text-xs sm:text-sm md:text-base transition-all duration-300 group shadow-lg hover:shadow-xl"
                   style={{
                     marginLeft: '20px',

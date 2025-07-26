@@ -36,7 +36,7 @@ const TalkPage: React.FC<TalkPageProps> = () => {
       <div className="py-8 sm:py-16 flex items-center justify-center">
         <div className="w-full bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col sm:flex-row min-h-[340px]">
           {/* Left Panel */}
-          <div className="bg-cyan-600 text-white p-6 sm:p-12 flex-1 flex items-center justify-center">
+          <div className="bg-primary text-white p-6 sm:p-12 flex-1 flex items-center justify-center">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-center">
               Hello<br />
               Let's Talk
