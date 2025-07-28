@@ -31,6 +31,7 @@ import SolutionDetail from 'components/Solutions/SolutionsDetails'
 import SolutionsDetails from 'components/SolutionsDetails/SolutionsDetails'
 import FAQComponent from 'components/FAQComponent'
 import Privacy from 'components/Privacy/Privacy'
+import OurSolns from 'components/OurSolns/OurSolns.Component'
 
 const AppRouter: React.FC = () => {
   return (
@@ -56,10 +57,10 @@ const AppRouter: React.FC = () => {
           <Route path="/blog/:id" element={<BlogDetail />} />
           <Route path="/reset" element={<Reset />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/solns" element={<Soltns />} />
+          <Route path="/solns" element={<OurSolns />} />
           <Route path="/solutions/:categoryId" element={<FAQComponent />} />
           <Route path="/patners" element={<Partners />} />
-          <Route path ="/privacy-policy" element={<Privacy />} />
+          <Route path ="/privacy-policy-2" element={<Privacy />} />
           <Route path="/solutionsdetails" element={<SolutionsDetails />} />
           <Route
             path="/solns/:categoryId/:solutionId"

@@ -12,7 +12,7 @@ const navigation = {
     { name: 'Blog', href: '/blogs' },
     { name: 'Careers', href: 'https://careers.agilebiz.co.ke' },
     { name: 'Partners', href: '#partners' },
-    { name: 'Privacy Policy', href: '/privacy-policy' }
+    { name: 'Privacy Policy', href: '/privacy-policy-2' }
   ],
   social: [
     {
@@ -42,8 +42,8 @@ export default function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="bg-[#f0f0f0] text-[#000]">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8 sm:py-12">
+    <footer className="bg-[#f0f0f0] text-[#000] ">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8 sm:py-12 4xl:ml-[140px] lg:ml-24">
         {/* Main Content Grid */}
         <div className="grid grid-cols-12 gap-8" style={{ fontFamily: 'Poppins', fontSize: '14px', lineHeight: '30px', fontWeight: 400 }}>
           {/* First Column - Company Info (Takes up 5 columns) */}

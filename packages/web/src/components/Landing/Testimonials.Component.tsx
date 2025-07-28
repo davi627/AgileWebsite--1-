@@ -5,7 +5,7 @@ import 'slick-carousel/slick/slick-theme.css'
 import SidePadding from 'components/Shared/SidePadding.Component'
 import { useNavigate } from 'react-router-dom'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000'
 
 interface Comment {
   _id: string
@@ -125,7 +125,7 @@ function Testimonials() {
 
   return (
     <SidePadding>
-      <div className="py-20 font-Poppins">
+      <div className="py-20 font-Poppins 4xl:ml-[40px] lg:ml-24">
         <p className="text-3xl font-medium leading-9 md:text-4xl text-[#167AA1] text-center">
           See how organizations grow with <br />
           Our solutions

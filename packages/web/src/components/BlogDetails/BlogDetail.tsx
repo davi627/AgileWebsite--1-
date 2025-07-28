@@ -1,11 +1,10 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from 'components/Navbar';
 import Footer from 'components/Footer';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000';
 
 interface BlogPost {
   _id: string;
@@ -170,17 +169,17 @@ const BlogDetail = () => {
               alt="Hero Image"
               className="w-full h-full object-cover object-center"
             />
-            <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+            <div className="absolute inset-0 bg-black bg-opacity-40"></div>
           </div>
         ) : (
-          <div className="absolute inset-0 bg-gray-400"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-gray-600 to-gray-800"></div>
         )}
 
         <div className="relative z-10 h-full flex flex-col justify-center items-center text-center max-w-6xl mx-auto px-4 sm:px-6">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-700 mb-4 max-w-4xl leading-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 max-w-4xl leading-tight drop-shadow-lg">
             {blog.title}
           </h1>
-          <div className="text-gray-700 text-sm">
+          <div className="text-white text-sm drop-shadow-md">
             <time dateTime={blog.formattedDate} className="mr-2">
               {blog.formattedDate}
             </time>

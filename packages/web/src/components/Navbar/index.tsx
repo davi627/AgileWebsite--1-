@@ -8,7 +8,7 @@ import SidePadding from 'components/Shared/SidePadding.Component';
 import Logo from 'assets/Agile Logo.png';
 import call from '../../assets/call.png'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000';
 
 interface ISolutionCategory {
   _id: string;
@@ -63,7 +63,7 @@ export default function Navbar() {
   return (
     <header className="absolute inset-x-0 top-0 z-50 bg-white font-Poppins">
       <SidePadding>
-        <nav className="flex items-center justify-between py-8" aria-label="Global">
+        <nav className="flex items-center  justify-between py-8 max-w-[1400px] 3xl:max-w-[1600px] 4xl:max-w-[1700px] mx-auto 4xl:ml-[24px]" aria-label="Global">
           <a href="/" className="-m-1.5 p-1.5">
             <span className="sr-only">Agile Business Solutions</span>
             <img className="h-9 w-auto" src={Logo} alt="Agile Business Solutions logo" />
@@ -78,7 +78,7 @@ export default function Navbar() {
               <Bars3Icon className="size-6" aria-hidden="true" />
             </button>
           </div>
-          <div className="hidden lg:flex lg:items-center lg:gap-x-8 font-medium">
+          <div className="hidden lg:flex lg:items-center lg:gap-x-8 font-regular ">
             <button
               onClick={() => handleNavigation({ href: '/' })}
               className="hover:text-primary leading-6 px-3 py-2"
@@ -133,7 +133,7 @@ export default function Navbar() {
             </a>
             <button
               onClick={() => handleNavigation({ href: '/contact-us' })}
-              className="bg-alternate hover:bg-alternate-dark focus-visible:outline-alternate rounded-3xl px-6 py-2.5 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 flex items-center"
+              className="bg-alternate hover:bg-alternate-dark focus-visible:outline-alternate rounded-3xl px-6 py-2.5 text-sm font-regular text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 flex items-center"
             >
               <span>Contact Us</span>
               <img src={call} alt="Call icon" className="ml-2 h-5 w-5" aria-hidden="true" />

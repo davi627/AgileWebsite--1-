@@ -68,12 +68,12 @@ export default function Partners() {
   }, [logos])
 
   return (
-    <div id="partners" className="bg-[#F3F8FA] py-[2.0rem] overflow-hidden">
-      <h2 className="text-center text-lg font-medium tracking-wide text-[#1E1E1E] md:tracking-wider font-Poppins">
+    <div id="partners" className="py-[1.2rem] overflow-hidden">
+      <h2 className="bg-[#FFFFFF] text-center text-lg font-medium tracking-wide text-[#1E1E1E] md:tracking-wider font-Poppins">
         We have Partnered with the best
       </h2>
 
-      <div className="relative mt-10 flex items-center justify-center">
+      <div className="relative mt-10 flex items-center justify-center bg-[#F0F0F0]">
         <div
           ref={scrollRef}
           className="mx-4 flex gap-10 md:gap-16 overflow-x-hidden whitespace-nowrap"
@@ -87,7 +87,7 @@ export default function Partners() {
             [...logos, ...logos].map((logo, index) => (
               <div
                 key={`${logo._id}-${index}`}
-                className="group relative flex items-center justify-center h-20 w-32 shrink-0 bg-white rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300"
+                className="group relative flex items-center justify-center h-20 w-32 shrink-0"
               >
                 <img
                   data-logo

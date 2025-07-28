@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000'
 
 interface BlogPost {
   _id: string
@@ -12,6 +11,13 @@ interface BlogPost {
   formattedDate: string
   author: { name: string }
   views: number
+}
+
+// Helper function to strip HTML tags
+const stripHtmlTags = (html: string): string => {
+  const tempDiv = document.createElement('div')
+  tempDiv.innerHTML = html
+  return tempDiv.textContent || tempDiv.innerText || ''
 }
 
 export default function TopBlogs() {
@@ -45,8 +51,9 @@ export default function TopBlogs() {
   const getContentPreview = (content: { type: string; data: string }[]): string => {
     const textContent = content
       .filter(item => item.type === 'text')
-      .map(item => item.data)
+      .map(item => stripHtmlTags(item.data)) // Strip HTML tags here
       .join(' ')
+
     const sentences = textContent.split(/[.!?]+/).filter(sentence => sentence.trim().length > 0)
     if (sentences.length >= 3) {
       return sentences.slice(0, 3).join('. ').trim() + '.'
@@ -63,7 +70,7 @@ export default function TopBlogs() {
   if (error) return <div className="text-center py-10 text-red-500">{error}</div>
 
   return (
-    <div className="mt-10 bg-gray-100 py-10 Poppins">
+    <div className="mt-10 bg-gray-100 py-10 Poppins 4xl:ml-[40px] lg:ml-24">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <h2 className="text-xl sm:text-2xl font-bold text-center text-[#167AA1]">
           Top Most Viewed Blogs
@@ -78,7 +85,7 @@ export default function TopBlogs() {
                 <img
                   src={blog.imageUrl}
                   alt={blog.title}
-                  className="w-full h-full object-contain object-center"
+                  className="w-full h-full object-cover object-center"
                   onError={(e) => console.error(`Image load error for ${blog.title}:`, e)}
                 />
               </div>

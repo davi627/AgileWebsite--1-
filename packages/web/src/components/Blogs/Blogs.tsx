@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import Navbar from 'components/Navbar'
 import Footer from 'components/Footer'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000'
 
 interface BlogPost {
   _id: string
@@ -13,6 +13,13 @@ interface BlogPost {
   formattedDate: string
   author: { name: string }
   views: number
+}
+
+// Helper function to strip HTML tags
+const stripHtmlTags = (html: string): string => {
+  const tempDiv = document.createElement('div')
+  tempDiv.innerHTML = html
+  return tempDiv.textContent || tempDiv.innerText || ''
 }
 
 export default function Blog() {
@@ -62,8 +69,9 @@ export default function Blog() {
   const getContentPreview = (content: { type: string; data: string }[]): string => {
     const textContent = content
       .filter(item => item.type === 'text')
-      .map(item => item.data)
+      .map(item => stripHtmlTags(item.data)) // Strip HTML tags here
       .join(' ')
+
     const sentences = textContent.split(/[.!?]+/).filter(sentence => sentence.trim().length > 0)
     if (sentences.length >= 3) {
       return sentences.slice(0, 3).join('. ').trim() + '.'
@@ -120,7 +128,7 @@ export default function Blog() {
                   <img
                     src={blog.imageUrl}
                     alt={blog.title}
-                    className="w-full h-full object-contain object-center"
+                    className="w-full h-full object-cover object-center"
                     onError={(e) => console.error(`Image load error for ${blog.title}:`, e)}
                   />
                 </div>

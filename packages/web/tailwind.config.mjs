@@ -1,3 +1,4 @@
+
 /** @type {import('tailwindcss').Config} */
 
 export default {
@@ -32,20 +33,22 @@ export default {
         '2xl': '1.5rem',
         '3xl': '1.875rem'
       },
-
       fontFamily: {
         century: ['"Century Gothic"', 'sans-serif'],
         poppins: ['Poppins', 'sans-serif']
       },
-
       boxShadow: {
         'top-bottom':
           '0 -2px 10px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.1)'
+      },
+      screens: {
+        '4xl': '1920px'
       }
     }
   },
   plugins: [
     require('@tailwindcss/typography'),
-    require('@tailwindcss/forms', require('@tailwindcss/line-clamp'))
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/line-clamp')
   ]
 }

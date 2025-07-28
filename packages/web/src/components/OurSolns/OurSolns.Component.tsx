@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import SidePadding from 'components/Shared/SidePadding.Component';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { BsArrowRight } from 'react-icons/bs';
+import Mesh from '../../assets/Mesh Background.png';
 import './faq.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
@@ -13,6 +14,14 @@ const getImageUrl = (imageUrl: string): string => {
   if (!imageUrl) return '';
   if (imageUrl.startsWith('http')) return imageUrl;
   return `${API_BASE_URL}/${imageUrl.startsWith('/') ? imageUrl.slice(1) : imageUrl}`;
+};
+
+// Function to decode HTML entities
+const decodeHtmlEntities = (text: string): string => {
+  if (!text) return '';
+  const textarea = document.createElement('textarea');
+  textarea.innerHTML = text;
+  return textarea.value;
 };
 
 interface ISolutionCategory {
@@ -40,7 +49,24 @@ function OurSolns() {
     const fetchCategories = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/solution-categories`);
-        setCategories(response.data);
+        // Decode HTML entities in the fetched data
+        const decodedCategories = response.data.map((category: ISolutionCategory) => ({
+          ...category,
+          title: decodeHtmlEntities(category.title),
+          description: decodeHtmlEntities(category.description),
+          solutions: category.solutions?.map(solution => ({
+            ...solution,
+            name: decodeHtmlEntities(solution.name),
+            shortDesc: decodeHtmlEntities(solution.shortDesc),
+            fullDesc: decodeHtmlEntities(solution.fullDesc),
+            implementation: decodeHtmlEntities(solution.implementation),
+            features: solution.features?.map(feature => ({
+              ...feature,
+              text: decodeHtmlEntities(feature.text)
+            }))
+          }))
+        }));
+        setCategories(decodedCategories);
       } catch (error) {
         console.error('Failed to fetch solution categories:', error);
       }
@@ -78,7 +104,17 @@ function OurSolns() {
 
   return (
     <SidePadding>
-      <div id="erp-solutions" className="py-14 font-Poppins">
+      <div
+        id="erp-solutions"
+        className="py-14 font-Poppins"
+        style={{
+          backgroundImage: `url(${Mesh})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          minHeight: '100vh',
+        }}
+      >
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-semibold text-gray-900 mb-4">Solutions</h1>
           <p className="text-gray-600 text-lg max-w-3xl mx-auto leading-relaxed">
@@ -86,7 +122,7 @@ function OurSolns() {
           </p>
         </div>
 
-        <div className="relative">
+        <div className="relative 4xl:ml-[40px] lg:ml-24">
           <div className="flex-1 overflow-y-auto sm:overflow-x-auto">
             <div
               ref={scrollContainerRef}
@@ -98,7 +134,7 @@ function OurSolns() {
                   <motion.div
                     key={category._id}
                     id={`category-${category._id}`}
-                    className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group border border-gray-100 overflow-hidden flex flex-col"
+                    className="bg-white bg-opacity-80 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group border border-gray-100 overflow-hidden flex flex-col"
                     onClick={() => handleCategoryClick(category._id)}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -107,8 +143,8 @@ function OurSolns() {
                   >
                     {/* Image Section */}
                     <div
+                      className="image-section"
                       style={{
-                        height: '172px',
                         alignSelf: 'stretch',
                         borderRadius: '10px',
                         display: 'flex',
@@ -122,13 +158,13 @@ function OurSolns() {
                         <img
                           src={getImageUrl(category.imageUrl)}
                           alt={`${category.title} illustration`}
-                          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           onError={() => handleImageError(category._id)}
                         />
                       ) : (
                         <div
+                          className="image-section"
                           style={{
-                            height: '172px',
                             alignSelf: 'stretch',
                             borderRadius: '10px',
                             backgroundColor: '#e6f0fa',
