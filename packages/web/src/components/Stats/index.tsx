@@ -6,7 +6,7 @@ import FaintLogo from '../../assets/faint-agile-logo.svg';
 import pointer from '../../assets/pointer.png';
 import Mesh from '../../assets/Mesh Background.png'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000/stats';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/stats';
 
 interface Stat {
   id: number;
@@ -177,7 +177,7 @@ export default function Stats() {
       className="bg-gray-50 py-20 sm:py-32 font-Poppins relative"
     >
       <SidePadding>
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-star 4xl:ml-[40px] lg:ml-24">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-star 4xl:ml-[40px]">
           {/* Left side - Stats */}
           <div className="relative">
             {/* Decorative dashed lines */}

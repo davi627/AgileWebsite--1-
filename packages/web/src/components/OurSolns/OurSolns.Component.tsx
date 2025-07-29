@@ -122,7 +122,7 @@ function OurSolns() {
           </p>
         </div>
 
-        <div className="relative 4xl:ml-[40px] lg:ml-24">
+        <div className="relative 4xl:ml-[40px] ">
           <div className="flex-1 overflow-y-auto sm:overflow-x-auto">
             <div
               ref={scrollContainerRef}

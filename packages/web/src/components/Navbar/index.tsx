@@ -8,7 +8,7 @@ import SidePadding from 'components/Shared/SidePadding.Component';
 import Logo from 'assets/Agile Logo.png';
 import call from '../../assets/call.png'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost5000';
 
 interface ISolutionCategory {
   _id: string;

@@ -33,7 +33,7 @@ const TalkPage: React.FC<TalkPageProps> = () => {
 
   return (
     <SidePadding>
-      <div className="py-8 sm:py-16 flex items-center justify-center 4xl:ml-[40px] lg:ml-24">
+      <div className="py-8 sm:py-16 flex items-center justify-center 4xl:ml-[40px] ">
         <div className="w-full bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col sm:flex-row min-h-[340px]">
           {/* Left Panel */}
           <div className="bg-primary text-white p-6 sm:p-12 flex-1 flex items-center justify-center">

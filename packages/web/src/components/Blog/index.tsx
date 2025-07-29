@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
 
 interface BlogPost {
   _id: string
@@ -70,16 +70,16 @@ export default function TopBlogs() {
   if (error) return <div className="text-center py-10 text-red-500">{error}</div>
 
   return (
-    <div className="mt-10 bg-gray-100 py-10 Poppins 4xl:ml-[40px] lg:ml-24">
-      <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+    <div className="mt-10 bg-[f0f0f0] py-10 Poppins 4xl:ml-[40px] ">
+      <div className="mx-auto max-w-[1080px] px-2 sm:px-6 lg:px-8">
         <h2 className="text-xl sm:text-2xl font-bold text-center text-[#167AA1]">
           Top Most Viewed Blogs
         </h2>
-        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:justify-items-center">
           {blogs.map((blog) => (
             <div
               key={blog._id}
-              className="flex flex-col"
+              className="flex flex-col md:max-w-xs w-full"
             >
               <div className="h-32 sm:h-40 md:h-48 w-full overflow-hidden rounded-lg bg-gray-200 border border-gray-300">
                 <img
@@ -89,7 +89,7 @@ export default function TopBlogs() {
                   onError={(e) => console.error(`Image load error for ${blog.title}:`, e)}
                 />
               </div>
-              <div className="p-4 sm:p-4">
+              <div className="pr-4 pb-4 sm:pr-4 sm:pb-4">
                 <h3 className="text-sm sm:text-md font-semibold text-gray-900 mb-2">
                   {blog.title}
                 </h3>

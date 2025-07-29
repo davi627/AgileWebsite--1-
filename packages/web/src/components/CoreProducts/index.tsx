@@ -42,7 +42,7 @@ const ProductsSection = () => {
 
   return (
     <SidePadding>
-      <div className="py-20 bg-[#e6f0fa] text-center  rounded-xl 4xl:ml-[40px] lg:ml-24">
+      <div className="py-20 bg-[#e6f0fa] text-center  rounded-xl 4xl:ml-[40px] ">
         {solutions.map((solution, index) => (
           <div key={index} className="font-poppins">
             <div className="text-[#167AA1] text-4xl md:text-5xl font-semibold leading-tight capitalize">
