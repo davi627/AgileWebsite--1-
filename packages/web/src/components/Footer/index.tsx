@@ -45,7 +45,7 @@ export default function Footer() {
     <footer className="bg-[#f0f0f0] text-[#000] ">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8 sm:py-12 4xl:ml-[140px] lg:ml-24">
         {/* Main Content Grid */}
-        <div className="grid grid-cols-12 gap-8" style={{ fontFamily: 'Poppins', fontSize: '14px', lineHeight: '30px', fontWeight: 400 }}>
+        <div className="grid grid-cols-12 gap-6 sm:gap-8" style={{ fontFamily: 'Poppins', fontSize: '14px', lineHeight: '30px', fontWeight: 400 }}>
           {/* First Column - Company Info (Takes up 5 columns) */}
           <div className="col-span-12 lg:col-span-5">
             <img src={Logo} alt="Agile Business Solutions" className="h-10 mb-4" />
@@ -57,7 +57,7 @@ export default function Footer() {
           </div>
 
           {/* Second and Third Columns Container (Takes up 7 columns, closer together) */}
-          <div className="col-span-12 lg:col-span-7 grid grid-cols-2 gap-6">
+          <div className="col-span-12 lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6">
             {/* Second Column - Quick Links */}
             <div>
               <h3 className="text-sm font-semibold uppercase tracking-wider">Quick Links</h3>

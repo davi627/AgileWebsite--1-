@@ -42,21 +42,21 @@ const ProductsSection = () => {
 
   return (
     <SidePadding>
-      <div className="py-20 bg-[#e6f0fa] text-center  rounded-xl 4xl:ml-[40px] ">
+      <div className="py-16 sm:py-20 bg-[#e6f0fa] text-center rounded-xl 4xl:ml-[40px] px-4 sm:px-0">
         {solutions.map((solution, index) => (
           <div key={index} className="font-poppins">
-            <div className="text-[#167AA1] text-4xl md:text-5xl font-semibold leading-tight capitalize">
+            <div className="text-[#167AA1] text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight capitalize">
               {solution.line1}<br />
               {solution.line2}<br />
               {solution.line3}
             </div>
-            <p className="text-black text-lg md:text-xl font-normal leading-6 mt-4">
+            <p className="text-black text-base sm:text-lg md:text-xl font-normal leading-6 mt-4 sm:mt-6">
               {solution.subtext1}<br />
               {solution.subtext2}
             </p>
             <button
               onClick={() => navigate('/contact-us', { replace: false })}
-              className="mt-6 bg-[#e6f0fa] text-[#167AA1] border border-[#167AA1] px-6 py-2 rounded-2xl cursor-pointer hover:bg-gray-100 transition-colors"
+              className="mt-6 sm:mt-8 bg-[#e6f0fa] text-[#167AA1] border border-[#167AA1] px-6 py-2 rounded-2xl cursor-pointer hover:bg-gray-100 transition-colors"
             >
               {solution.buttonText} <span className="ml-2">→</span>
             </button>

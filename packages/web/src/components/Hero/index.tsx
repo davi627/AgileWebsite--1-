@@ -63,7 +63,7 @@ export default function Hero() {
           <div className="flex flex-col justify-center w-full lg:w-1/2 max-w-[550px] 3xl:max-w-[650px] 4xl:max-w-[750px] mx-auto lg:mx-0">
             {/* Main Heading */}
             <div className="mt-12 lg:mb-8  3xl:mb-10 4xl:mb-12">
-              <h1 className="text-black font-normal text-2xl md:text-3xl lg:text-4xl 3xl:text-[2.75rem] 4xl:text-[3.25rem] leading-relaxed whitespace-nowrap">
+              <h1 className="text-black font-normal text-2xl sm:text-3xl md:text-4xl lg:text-4xl 3xl:text-[2.75rem] 4xl:text-[3.25rem] leading-relaxed sm:whitespace-nowrap">
                 One-stop shop for all your
               </h1>
               {/* Rotating Bold Text */}
@@ -72,7 +72,7 @@ export default function Hero() {
                 style={{
                   color: '#167AA1',
                   fontFamily: 'Poppins',
-                  fontSize: 'clamp(30px, 4.5vw, 50px)',
+                  fontSize: 'clamp(28px, 4vw, 50px)',
                   fontWeight: '700',
                   lineHeight: '1.3',
                   letterSpacing: '0.05em',
@@ -89,7 +89,7 @@ export default function Hero() {
               </div>
             </div>
             {/* Description */}
-            <p className="text-black font-normal text-lg md:text-xl lg:text-xl 3xl:text-[1.375rem] 4xl:text-[1.75rem] mb-6 3xl:mb-8 4xl:mb-10 leading-relaxed">
+            <p className="text-black font-normal text-base sm:text-lg md:text-xl lg:text-xl 3xl:text-[1.375rem] 4xl:text-[1.75rem] mb-6 3xl:mb-8 4xl:mb-10 leading-relaxed">
               Streamline your workflow with our innovative technologies.
             </p>
             {/* CTA Button */}
@@ -100,7 +100,7 @@ export default function Hero() {
 
           {/* Right Image Section */}
           <div className="flex justify-center w-full lg:w-1/2 max-w-[550px] 3xl:max-w-[650px] 4xl:max-w-[850px]">
-            <div className="relative w-full h-[300px] sm:h-[340px] lg:h-[380px] 3xl:h-[420px] 4xl:h-[520px]">
+            <div className="relative w-full h-[280px] sm:h-[320px] md:h-[360px] lg:h-[380px] 3xl:h-[420px] 4xl:h-[520px]">
               {/* Management Information Systems Image */}
               <div
                 className={`absolute transition-opacity duration-500 ${

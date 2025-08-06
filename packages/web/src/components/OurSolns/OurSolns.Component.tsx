@@ -115,9 +115,9 @@ function OurSolns() {
           minHeight: '100vh',
         }}
       >
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-semibold text-gray-900 mb-4">Solutions</h1>
-          <p className="text-gray-600 text-lg max-w-3xl mx-auto leading-relaxed">
+        <div className="text-center mb-8 sm:mb-12">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-gray-900 mb-4">Solutions</h1>
+          <p className="text-gray-600 text-base sm:text-lg max-w-3xl mx-auto leading-relaxed px-4 sm:px-0">
             Discover our comprehensive range of technology solutions designed to transform your business and drive sustainable growth.
           </p>
         </div>
@@ -126,7 +126,7 @@ function OurSolns() {
           <div className="flex-1 overflow-y-auto sm:overflow-x-auto">
             <div
               ref={scrollContainerRef}
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
               style={{ maxHeight: '900px' }}
             >
               <AnimatePresence mode="wait">

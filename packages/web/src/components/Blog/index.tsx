@@ -70,18 +70,18 @@ export default function TopBlogs() {
   if (error) return <div className="text-center py-10 text-red-500">{error}</div>
 
   return (
-    <div className="mt-10 bg-[f0f0f0] py-10 Poppins 4xl:ml-[40px] ">
+    <div className="mt-8 sm:mt-10 bg-[f0f0f0] py-8 sm:py-10 Poppins 4xl:ml-[40px] px-4 sm:px-0">
       <div className="mx-auto max-w-[1080px] px-2 sm:px-6 lg:px-8">
-        <h2 className="text-xl sm:text-2xl font-bold text-center text-[#167AA1]">
+        <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-center text-[#167AA1]">
           Top Most Viewed Blogs
         </h2>
-        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:justify-items-center">
+        <div className="mt-4 sm:mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:justify-items-center">
           {blogs.map((blog) => (
             <div
               key={blog._id}
               className="flex flex-col md:max-w-xs w-full"
             >
-              <div className="h-32 sm:h-40 md:h-48 w-full overflow-hidden rounded-lg bg-gray-200 border border-gray-300">
+              <div className="h-28 sm:h-32 md:h-40 lg:h-48 w-full overflow-hidden rounded-lg bg-gray-200 border border-gray-300">
                 <img
                   src={blog.imageUrl}
                   alt={blog.title}
@@ -89,11 +89,11 @@ export default function TopBlogs() {
                   onError={(e) => console.error(`Image load error for ${blog.title}:`, e)}
                 />
               </div>
-              <div className="pr-4 pb-4 sm:pr-4 sm:pb-4">
-                <h3 className="text-sm sm:text-md font-semibold text-gray-900 mb-2">
+              <div className="pr-2 sm:pr-4 pb-4">
+                <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-2">
                   {blog.title}
                 </h3>
-                <p className="text-sm text-gray-600 mb-4 line-clamp-3">
+                <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4 line-clamp-3">
                   {getContentPreview(blog.content)}
                 </p>
                 <Link

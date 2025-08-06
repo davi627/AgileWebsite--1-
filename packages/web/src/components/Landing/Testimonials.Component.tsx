@@ -125,37 +125,37 @@ function Testimonials() {
 
   return (
     <SidePadding>
-      <div className="py-20 font-Poppins 4xl:ml-[40px] ">
-        <p className="text-3xl font-medium leading-9 md:text-4xl text-[#167AA1] text-center">
+      <div className="py-16 sm:py-20 font-Poppins 4xl:ml-[40px] ">
+        <p className="text-2xl sm:text-3xl md:text-4xl font-medium leading-9 text-[#167AA1] text-center px-4 sm:px-0">
           See how organizations grow with <br />
           Our solutions
         </p>
 
         {error ? (
-          <p className="mt-14 text-center text-red-500">Error: {error}</p>
+          <p className="mt-10 sm:mt-14 text-center text-red-500">Error: {error}</p>
         ) : comments.length > 0 ? (
-          <div className="relative mt-14">
+          <div className="relative mt-10 sm:mt-14">
             {comments.length === 1 ? (
               // Render single testimonial without slider
-              <div className="shadow-top-bottom rounded-xl p-6 md:p-10">
+              <div className="shadow-top-bottom rounded-xl p-4 sm:p-6 md:p-10">
                 <div className="flex flex-col gap-5 md:flex-row md:justify-between">
-                  <div className="flex w-full flex-col items-start justify-evenly gap-6 md:w-1/2">
+                  <div className="flex w-full flex-col items-start justify-evenly gap-4 sm:gap-6 md:w-1/2">
                     <img
                       src={comments[0].logo}
                       alt="logo"
-                      className="h-[50px] w-auto"
+                      className="h-[40px] sm:h-[50px] w-auto"
                       onError={(e) => console.error(`Image load error for ${comments[0].author} logo:`, e)}
                     />
                     <div>
-                      <p>{comments[0].description}</p>
-                      <p className="mt-4 text-sm italic text-gray-600">
+                      <p className="text-sm sm:text-base">{comments[0].description}</p>
+                      <p className="mt-3 sm:mt-4 text-xs sm:text-sm italic text-gray-600">
                         - {comments[0].author}
                       </p>
                     </div>
 
                     <div>
-                      <p className="font-medium">Products</p>
-                      <div className="mt-2 flex flex-wrap gap-4 text-sm font-light">
+                      <p className="font-medium text-sm sm:text-base">Products</p>
+                      <div className="mt-2 flex flex-wrap gap-2 sm:gap-4 text-xs sm:text-sm font-light">
                         {comments[0].products.map((product, index) => (
                           <div key={index} className="flex items-center gap-2">
                             <p>{product}</p>
@@ -183,26 +183,26 @@ function Testimonials() {
                 {comments.map((comment) => (
                   <div
                     key={comment._id}
-                    className="shadow-top-bottom rounded-xl p-6 md:p-10"
+                    className="shadow-top-bottom rounded-xl p-4 sm:p-6 md:p-10"
                   >
                     <div className="flex flex-col gap-5 md:flex-row md:justify-between">
-                      <div className="flex w-full flex-col items-start justify-evenly gap-6 md:w-1/2">
+                      <div className="flex w-full flex-col items-start justify-evenly gap-4 sm:gap-6 md:w-1/2">
                         <img
                           src={comment.logo}
                           alt="logo"
-                          className="h-[50px] w-auto"
+                          className="h-[40px] sm:h-[50px] w-auto"
                           onError={(e) => console.error(`Image load error for ${comment.author} logo:`, e)}
                         />
                         <div>
-                          <p>{comment.description}</p>
-                          <p className="mt-4 text-sm italic text-gray-600">
+                          <p className="text-sm sm:text-base">{comment.description}</p>
+                          <p className="mt-3 sm:mt-4 text-xs sm:text-sm italic text-gray-600">
                             - {comment.author}
                           </p>
                         </div>
 
                         <div>
-                          <p className="font-medium">Products</p>
-                          <div className="mt-2 flex flex-wrap gap-4 text-sm font-light">
+                          <p className="font-medium text-sm sm:text-base">Products</p>
+                          <div className="mt-2 flex flex-wrap gap-2 sm:gap-4 text-xs sm:text-sm font-light">
                             {comment.products.map((product, index) => (
                               <div key={index} className="flex items-center gap-2">
                                 <p>{product}</p>

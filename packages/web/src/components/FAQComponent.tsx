@@ -146,8 +146,8 @@ const FAQComponent: React.FC = () => {
   }, [category]);
 
   const handleBackToCategories = () => {
-    navigate('/solns', {
-      state: { scrollToCategory: categoryId },
+    navigate('/', {
+      state: { scrollToSection: 'erp-solutions' },
     });
   };
 
@@ -265,7 +265,7 @@ const FAQComponent: React.FC = () => {
                   className={`flex ${index % 2 === 0 ? 'flex-row lg:gap-36' : 'flex-row-reverse lg:gap-36'} items-center gap-3 sm:gap-4 md:gap-6 xl:gap-12 4xl:gap-16`}
                 >
                   {/* Image Section */}
-                  <div className="w-[38%] sm:w-[38%] md:w-[38%] lg:w-[42%] 4xl:w-[38%] flex justify-center flex-shrink-0 self-center">
+                  <div className="w-[45%] sm:w-[42%] md:w-[40%] lg:w-[42%] 4xl:w-[38%] flex justify-center flex-shrink-0 self-center">
                     <div className="relative group w-full h-[120px] sm:h-[150px] md:h-[200px] lg:h-[250px] xl:h-[300px] 4xl:h-[380px]">
                       <div className="w-full h-full overflow-hidden rounded-[12px] sm:rounded-[16px] md:rounded-[20px] shadow-lg group-hover:shadow-xl transition-shadow duration-300">
                         {faq.imageUrl ? (
@@ -289,10 +289,10 @@ const FAQComponent: React.FC = () => {
                   </div>
 
                   {/* Content Section */}
-                  <div className="w-[58%] sm:w-[58%] md:w-[58%] lg:w-[58%] 4xl:w-[58%] flex flex-col justify-center items-start gap-2 sm:gap-3 md:gap-4 lg:gap-6 4xl:gap-8 self-center">
+                  <div className="w-[51%] sm:w-[54%] md:w-[56%] lg:w-[58%] 4xl:w-[58%] flex flex-col justify-center items-start gap-2 sm:gap-3 md:gap-4 lg:gap-6 4xl:gap-8 self-center">
                     <div>
                       <h3 className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl 4xl:text-3xl font-bold text-[#167AA1] mb-2 sm:mb-3 4xl:mb-4 leading-tight">{faq.q}</h3>
-                      <p className="text-gray-600 text-xs sm:text-sm md:text-base lg:text-base lg:line-clamp-6 xl:text-base 4xl:text-lg leading-relaxed sm:line-clamp-4 md:line-clamp-none">{faq.a.replace(/<[^>]*>/g, '')}</p>
+                      <p className="text-gray-600 text-xs sm:text-sm md:text-base lg:text-base xl:text-base 4xl:text-lg leading-relaxed line-clamp-6 sm:line-clamp-6 md:line-clamp-none">{faq.a.replace(/<[^>]*>/g, '')}</p>
                     </div>
                     <span
                       onClick={() => handleReadMore(faq.solutionId)}

@@ -68,7 +68,7 @@ export default function Navbar() {
             <span className="sr-only">Agile Business Solutions</span>
             <img className="h-9 w-auto" src={Logo} alt="Agile Business Solutions logo" />
           </a>
-          <div className="flex lg:hidden">
+          <div className="flex xl:hidden">
             <button
               type="button"
               className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
@@ -78,7 +78,7 @@ export default function Navbar() {
               <Bars3Icon className="size-6" aria-hidden="true" />
             </button>
           </div>
-          <div className="hidden lg:flex lg:items-center lg:gap-x-8 font-regular ">
+          <div className="hidden xl:flex xl:items-center xl:gap-x-8 font-regular ">
             <button
               onClick={() => handleNavigation({ href: '/' })}
               className="hover:text-primary leading-6 px-3 py-2"
@@ -143,7 +143,7 @@ export default function Navbar() {
       </SidePadding>
       <Dialog
         as="div"
-        className="lg:hidden"
+        className="xl:hidden"
         open={mobileMenuOpen}
         onClose={setMobileMenuOpen}
       >
@@ -236,7 +236,7 @@ export default function Navbar() {
                     handleNavigation({ href: '/contact-us' });
                     setMobileMenuOpen(false);
                   }}
-                  className="bg-primary hover:bg-primary-dark focus-visible:outline-primary w-full rounded-md px-6 py-2.5 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 flex items-center"
+                  className="bg-alternate hover:bg-alternate-dark focus-visible:outline-alternate w-auto mx-auto rounded-3xl px-6 py-2.5 text-sm font-regular text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 flex items-center"
                 >
                   <span>Contact Us</span>
                   <img src={call} alt="Call icon" className="ml-2 h-5 w-5" aria-hidden="true" />

@@ -174,19 +174,19 @@ export default function Stats() {
   return (
     <div
       ref={sectionRef}
-      className="bg-gray-50 py-20 sm:py-32 font-Poppins relative"
+      className="bg-gray-50 py-16 sm:py-20 md:py-24 lg:py-32 font-Poppins relative"
     >
       <SidePadding>
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-star 4xl:ml-[40px]">
+        <div className="grid md:grid-cols-2 gap-8 md:gap-12 lg:gap-20 items-start 4xl:ml-[40px]">
           {/* Left side - Stats */}
           <div className="relative">
             {/* Decorative dashed lines */}
             <div className="absolute -top-8 -left-8 w-full h-full border-2 border-dashed border-orange-300 -z-10"></div>
 
             {/* Main Stats Text */}
-            <div className="bg-[#167AA1] text-white p-8 rounded-lg shadow-lg">
-              <h2 className="text-2xl font-semibold mb-4">Our Milestones</h2>
-              <p className="text-sm leading-relaxed mb-8 opacity-90">
+            <div className="bg-[#167AA1] text-white p-6 sm:p-8 rounded-lg shadow-lg">
+              <h2 className="text-xl sm:text-2xl font-semibold mb-4">Our Milestones</h2>
+              <p className="text-sm leading-relaxed mb-6 sm:mb-8 opacity-90">
                 At Agile, we know this success is the direct result of continued
                 investment in our framework technology and a sustained commitment
                 to the core values and best practices. We are the best software
@@ -195,58 +195,58 @@ export default function Stats() {
             </div>
 
             {/* Stats Grid */}
-            <div className="mt-8 grid grid-cols-2 gap-2">
+            <div className="mt-6 sm:mt-8 grid grid-cols-2 gap-2 sm:gap-4">
               <div>
-                <div className="text-2xl font-bold mb-2 text-[#167AA1]">
+                <div className="text-xl sm:text-2xl font-bold mb-2 text-[#167AA1]">
                   {formatDisplayValue(displayStats[0] || { displayValue: '0' })}
                 </div>
-                <div className="text-xs text-[#167AA1]">Happy Clients</div>
+                <div className="text-xs sm:text-sm text-[#167AA1]">Happy Clients</div>
               </div>
               <div>
-                <div className="text-2xl font-bold mb-2 text-[#167AA1]">
+                <div className="text-xl sm:text-2xl font-bold mb-2 text-[#167AA1]">
                   {formatDisplayValue(displayStats[1] || { displayValue: '0' })}
                 </div>
-                <div className="text-xs text-[#167AA1]">Complete Projects</div>
+                <div className="text-xs sm:text-sm text-[#167AA1]">Complete Projects</div>
               </div>
               <div>
-                <div className="text-2xl font-bold mb-2 text-[#167AA1]">
+                <div className="text-xl sm:text-2xl font-bold mb-2 text-[#167AA1]">
                   {formatDisplayValue(displayStats[2] || { displayValue: '$ 0' })}
                 </div>
-                <div className="text-xs text-[#167AA1] opacity-90">Customer Satisfaction</div>
+                <div className="text-xs sm:text-sm text-[#167AA1] opacity-90">Customer Satisfaction</div>
               </div>
               <div>
-                <div className="text-2xl font-bold mb-2 text-[#167AA1]">
+                <div className="text-xl sm:text-2xl font-bold mb-2 text-[#167AA1]">
                   {formatDisplayValue(displayStats[3] || { displayValue: '0' })}
                 </div>
-                <div className="text-xs text-[#167AA1]">Qualified Staff</div>
+                <div className="text-xs sm:text-sm text-[#167AA1]">Qualified Staff</div>
               </div>
             </div>
           </div>
 
           {/* Right side - About Us */}
-          <div className="pt-8 lg:pt-16">
+          <div className="pt-6 sm:pt-8 md:pt-12 lg:pt-16">
             <div className="mb-4">
               <span className="text-sm text-gray-500 uppercase tracking-wider">About Us</span>
             </div>
 
-            <h2 className="text-4xl lg:text-5xl font-bold text-[#167AA1] mb-6 leading-tight ml-3">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-bold text-[#167AA1] mb-4 sm:mb-6 leading-tight ml-3">
               Driving Vision Into <br />
               <span className="text-[#167AA1]">Action.</span>
             </h2>
 
-            <p className="text-gray-600 mb-8 leading-relaxed ml-4">
+            <p className="text-gray-600 mb-6 sm:mb-8 leading-relaxed ml-4">
               With deep roots in our industry, Agile was established to provide
               adequate and efficient IT solutions through customization and that is
               exactly what we have been doing.
             </p>
 
-            <div className="flex items-start gap-4 mb-8">
-              <div className="w-28 h-28 flex items-center justify-center flex-shrink-0 ">
-                <img src={pointer} alt="Pointer icon" className="w-28 h-28 -ml-72 -mt-36" />
+            <div className="flex items-start gap-4 mb-6 sm:mb-8">
+              <div className="w-20 h-20 sm:w-28 sm:h-28 flex items-center justify-center flex-shrink-0 ">
+                <img src={pointer} alt="Pointer icon" className="w-20 h-20 sm:w-28 sm:h-28 -ml-16 sm:-ml-72 -mt-16 sm:-mt-36" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-[#167AA1] mb-2 -ml-24 ">We Are Agile</h3>
-                <p className="text-gray-600 -ml-24">
+                <h3 className="text-lg sm:text-xl font-semibold text-[#167AA1] mb-2 -ml-12 sm:-ml-24 ">We Are Agile</h3>
+                <p className="text-gray-600 -ml-12 sm:-ml-24 text-sm sm:text-base">
                   Agile Business Solutions is proudly a Kenyan technology powerhouse at
                   the forefront of Africa's digital revolution.
                 </p>

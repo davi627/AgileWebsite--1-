@@ -68,15 +68,15 @@ export default function Partners() {
   }, [logos])
 
   return (
-    <div id="partners" className="py-[1.2rem] overflow-hidden">
-      <h2 className="bg-[#FFFFFF] text-center text-lg font-medium tracking-wide text-[#1E1E1E] md:tracking-wider font-Poppins">
+    <div id="partners" className="py-[1rem] sm:py-[1.2rem] overflow-hidden">
+      <h2 className="bg-[#FFFFFF] text-center text-base sm:text-lg font-medium tracking-wide text-[#1E1E1E] md:tracking-wider font-Poppins px-4 sm:px-0">
         We have Partnered with the best
       </h2>
 
-      <div className="relative mt-10 flex items-center justify-center bg-[#F0F0F0]">
+      <div className="relative mt-8 sm:mt-10 flex items-center justify-center bg-[#F0F0F0]">
         <div
           ref={scrollRef}
-          className="mx-4 flex gap-10 md:gap-16 overflow-x-hidden whitespace-nowrap"
+          className="mx-4 flex gap-8 sm:gap-10 md:gap-16 overflow-x-hidden whitespace-nowrap"
           style={{ maxWidth: '80rem' }}
         >
           {error ? (
@@ -87,13 +87,13 @@ export default function Partners() {
             [...logos, ...logos].map((logo, index) => (
               <div
                 key={`${logo._id}-${index}`}
-                className="group relative flex items-center justify-center h-20 w-32 shrink-0"
+                className="group relative flex items-center justify-center h-16 sm:h-20 w-24 sm:w-32 shrink-0"
               >
                 <img
                   data-logo
                   src={logo.bwLogoUrl}
                   alt={`${logo.name} (BW)`}
-                  className="absolute max-w-24 max-h-16 object-contain transition-opacity duration-300 group-hover:opacity-0"
+                  className="absolute max-w-20 sm:max-w-24 max-h-12 sm:max-h-16 object-contain transition-opacity duration-300 group-hover:opacity-0"
                   onError={(e) => console.error(`Image load error for ${logo.name} (BW):`, e)}
                 />
                 <img
