@@ -1,8 +1,7 @@
 import Navbar from '../Navbar'
 import Footer from '../Footer'
 import CareerHero from './CareerHero'
-import CareerContent from './CareerContent'
-import JobOpenings from './JobOpenings'
+import JobListings from './JobListings'
 
 export default function Careers() {
   return (
@@ -11,12 +10,9 @@ export default function Careers() {
       <main className="isolate">
         {/* Hero section */}
         <CareerHero />
-        {/* Timeline section */}
-
-        {/* Content section */}
-        <CareerContent />
+        {/* Job listings section */}
+        <JobListings />
       </main>
-      <JobOpenings />
       {/* Footer */}
       <Footer />
     </div>

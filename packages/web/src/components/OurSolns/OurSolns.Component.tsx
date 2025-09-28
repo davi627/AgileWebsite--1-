@@ -129,104 +129,104 @@ function OurSolns() {
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
               style={{ maxHeight: '900px' }}
             >
-              <AnimatePresence mode="wait">
-                {categories.map((category) => (
-                  <motion.div
-                    key={category._id}
-                    id={`category-${category._id}`}
-                    className="bg-white bg-opacity-80 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group border border-gray-100 overflow-hidden flex flex-col"
-                    onClick={() => handleCategoryClick(category._id)}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    whileHover={{ y: -4 }}
-                  >
-                    {/* Image Section */}
-                    <div
-                      className="image-section"
-                      style={{
-                        alignSelf: 'stretch',
-                        borderRadius: '10px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        overflow: 'hidden',
-                        backgroundColor: '#e6f0fa',
-                      }}
+                <AnimatePresence mode="wait">
+                  {categories.map((category) => (
+                    <motion.div
+                      key={category._id}
+                      id={`category-${category._id}`}
+                      className="bg-white bg-opacity-80 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group border border-gray-100 overflow-hidden flex flex-col"
+                      onClick={() => handleCategoryClick(category._id)}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      whileHover={{ y: -4 }}
                     >
-                      {category.imageUrl && !imageErrors.has(category._id) ? (
-                        <img
-                          src={getImageUrl(category.imageUrl)}
-                          alt={`${category.title} illustration`}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          onError={() => handleImageError(category._id)}
-                        />
-                      ) : (
-                        <div
-                          className="image-section"
-                          style={{
-                            alignSelf: 'stretch',
-                            borderRadius: '10px',
-                            backgroundColor: '#e6f0fa',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
-                          <span className="text-blue-600 text-xl font-bold">
-                            {category.title.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Content Section */}
-                    <div
-                      className="p-5 flex flex-col flex-1 group-hover:bg-[#167aa1] transition-colors duration-300"
-                    >
-                      <h3 className="text-lg font-semibold text-[#000] group-hover:text-[#ffffff] transition-colors mb-2">
-                        {category.title}
-                      </h3>
-                      <p
-                        className="text-gray-600 text-sm leading-relaxed group-hover:text-[#ffffff] transition-colors mb-4 flex-1"
+                      {/* Image Section */}
+                      <div
+                        className="image-section"
                         style={{
-                          display: '-webkit-box',
-                          WebkitLineClamp: 3,
-                          WebkitBoxOrient: 'vertical',
+                          alignSelf: 'stretch',
+                          borderRadius: '10px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
                           overflow: 'hidden',
-                          textOverflow: 'ellipsis',
+                          backgroundColor: '#e6f0fa',
                         }}
                       >
-                        {category.description ||
-                          'Comprehensive business consulting and strategic solutions to drive growth and efficiency across your organization.'}
-                      </p>
-
-                      {/* Learn More Button */}
-                      <div className="mt-auto">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleCategoryClick(category._id);
-                          }}
-                          className="inline-flex items-center justify-center px-4 py-2 bg-white border group-hover:border-[#FBAA31] text-primary group-hover:text-[#FBAA31] font-small text-sm rounded-lg transition-colors group/button"
-                        >
-                          <span>Learn More</span>
-                          <BsArrowRight
-                            size={14}
-                            className="ml-2 group-hover/button:translate-x-1 transition-transform duration-200 group-hover:text-[#FBAA31]"
+                        {category.imageUrl && !imageErrors.has(category._id) ? (
+                          <img
+                            src={getImageUrl(category.imageUrl)}
+                            alt={`${category.title} illustration`}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            onError={() => handleImageError(category._id)}
                           />
-                        </button>
+                        ) : (
+                          <div
+                            className="image-section"
+                            style={{
+                              alignSelf: 'stretch',
+                              borderRadius: '10px',
+                              backgroundColor: '#e6f0fa',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            <span className="text-blue-600 text-xl font-bold">
+                              {category.title.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
+
+                      {/* Content Section */}
+                      <div
+                        className="p-5 flex flex-col flex-1 group-hover:bg-[#167aa1] transition-colors duration-300"
+                      >
+                        <h3 className="text-lg font-semibold text-[#000] group-hover:text-[#ffffff] transition-colors mb-2">
+                          {category.title}
+                        </h3>
+                        <p
+                          className="text-gray-600 text-sm leading-relaxed group-hover:text-[#ffffff] transition-colors mb-4 flex-1"
+                          style={{
+                            display: '-webkit-box',
+                            WebkitLineClamp: 3,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          {category.description ||
+                            'Comprehensive business consulting and strategic solutions to drive growth and efficiency across your organization.'}
+                        </p>
+
+                        {/* Learn More Button */}
+                        <div className="mt-auto">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleCategoryClick(category._id);
+                            }}
+                            className="inline-flex items-center justify-center px-4 py-2 bg-white border group-hover:border-[#FBAA31] text-primary group-hover:text-[#FBAA31] font-small text-sm rounded-lg transition-colors group/button"
+                          >
+                            <span>Learn More</span>
+                            <BsArrowRight
+                              size={14}
+                              className="ml-2 group-hover/button:translate-x-1 transition-transform duration-200 group-hover:text-[#FBAA31]"
+                            />
+                          </button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </SidePadding>
-  );
-}
+      </SidePadding>
+    );
+  }
 
 export default OurSolns;

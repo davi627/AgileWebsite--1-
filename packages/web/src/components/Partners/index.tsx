@@ -74,39 +74,39 @@ export default function Partners() {
       </h2>
 
       <div className="relative mt-8 sm:mt-10 flex items-center justify-center bg-[#F0F0F0]">
-        <div
-          ref={scrollRef}
-          className="mx-4 flex gap-8 sm:gap-10 md:gap-16 overflow-x-hidden whitespace-nowrap"
-          style={{ maxWidth: '80rem' }}
-        >
-          {error ? (
-            <p className="text-red-500">Error: {error}</p>
-          ) : logos.length === 0 ? (
-            <p className="text-gray-500">Loading logos...</p>
-          ) : (
-            [...logos, ...logos].map((logo, index) => (
-              <div
-                key={`${logo._id}-${index}`}
-                className="group relative flex items-center justify-center h-16 sm:h-20 w-24 sm:w-32 shrink-0"
-              >
-                <img
-                  data-logo
-                  src={logo.bwLogoUrl}
-                  alt={`${logo.name} (BW)`}
-                  className="absolute max-w-20 sm:max-w-24 max-h-12 sm:max-h-16 object-contain transition-opacity duration-300 group-hover:opacity-0"
-                  onError={(e) => console.error(`Image load error for ${logo.name} (BW):`, e)}
-                />
-                <img
-                  src={logo.colorLogoUrl}
-                  alt={`${logo.name} (Color)`}
-                  className="absolute max-w-24 max-h-16 object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                  onError={(e) => console.error(`Image load error for ${logo.name} (Color):`, e)}
-                />
-              </div>
-            ))
-          )}
+          <div
+            ref={scrollRef}
+            className="mx-4 flex gap-8 sm:gap-10 md:gap-16 overflow-x-hidden whitespace-nowrap"
+            style={{ maxWidth: '80rem' }}
+          >
+            {error ? (
+              <p className="text-red-500">Error: {error}</p>
+            ) : logos.length === 0 ? (
+              <p className="text-gray-500">Loading logos...</p>
+            ) : (
+              [...logos, ...logos].map((logo, index) => (
+                <div
+                  key={`${logo._id}-${index}`}
+                  className="group relative flex items-center justify-center h-16 sm:h-20 w-24 sm:w-32 shrink-0"
+                >
+                  <img
+                    data-logo
+                    src={logo.bwLogoUrl}
+                    alt={`${logo.name} (BW)`}
+                    className="absolute max-w-20 sm:max-w-24 max-h-12 sm:max-h-16 object-contain transition-opacity duration-300 group-hover:opacity-0"
+                    onError={(e) => console.error(`Image load error for ${logo.name} (BW):`, e)}
+                  />
+                  <img
+                    src={logo.colorLogoUrl}
+                    alt={`${logo.name} (Color)`}
+                    className="absolute max-w-24 max-h-16 object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                    onError={(e) => console.error(`Image load error for ${logo.name} (Color):`, e)}
+                  />
+                </div>
+              ))
+            )}
+          </div>
         </div>
-      </div>
     </div>
   )
 }

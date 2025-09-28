@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import SidePadding from 'components/Shared/SidePadding.Component';
 import RequestDemoBtn from 'components/Shared/RequestDemoBtn.Component';
@@ -55,6 +54,8 @@ export default function Hero() {
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
+        transform: 'scale(1)', // Prevents zoom layout issues
+        transformOrigin: 'top left',
       }}
     >
       <div className="w-full max-w-[1400px] 3xl:max-w-[1600px] 4xl:max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 4xl:ml-[100px] lg:ml-24">
@@ -62,45 +63,45 @@ export default function Hero() {
           {/* Left Content Section */}
           <div className="flex flex-col justify-center w-full lg:w-1/2 max-w-[550px] 3xl:max-w-[650px] 4xl:max-w-[750px] mx-auto lg:mx-0">
             {/* Main Heading */}
-            <div className="mt-12 lg:mb-8  3xl:mb-10 4xl:mb-12">
+            <div className="mt-8 sm:mt-12 lg:mb-6 3xl:mb-8 4xl:mb-10">
               <h1 className="text-black font-normal text-2xl sm:text-3xl md:text-4xl lg:text-4xl 3xl:text-[2.75rem] 4xl:text-[3.25rem] leading-relaxed sm:whitespace-nowrap">
                 One-stop shop for all your
               </h1>
               {/* Rotating Bold Text */}
-              <div
-                className="flex flex-col justify-start mt-3 3xl:mt-4 4xl:mt-5"
-                style={{
-                  color: '#167AA1',
-                  fontFamily: 'Poppins',
-                  fontSize: 'clamp(28px, 4vw, 50px)',
-                  fontWeight: '700',
-                  lineHeight: '1.3',
-                  letterSpacing: '0.05em',
-                  minHeight: 'clamp(100px, 10vw, 120px)',
-                }}
-              >
-                <div
-                  className={`transition-opacity duration-500 ${isFading ? 'opacity-0' : 'opacity-100'}`}
-                >
-                  {phrases[currentPhraseIndex].map((line, index) => (
-                    <div key={index} className="4xl:text-[3.5rem]">{line}</div>
-                  ))}
-                </div>
-              </div>
+                             <div
+                 className="flex flex-col justify-start mt-2 sm:mt-3 3xl:mt-4 4xl:mt-5"
+                 style={{
+                   color: '#167AA1',
+                   fontFamily: 'Poppins',
+                   fontSize: 'clamp(24px, 3.5vw, 50px)',
+                   fontWeight: '700',
+                   lineHeight: '1.2',
+                   letterSpacing: '0.05em',
+                   minHeight: 'clamp(60px, 6vw, 120px)',
+                 }}
+               >
+                 <div
+                   className={`transition-opacity duration-500 ${isFading ? 'opacity-0' : 'opacity-100'}`}
+                 >
+                   {phrases[currentPhraseIndex].map((line, index) => (
+                     <div key={index} className="4xl:text-[3.5rem]">{line}</div>
+                   ))}
+                 </div>
+               </div>
             </div>
             {/* Description */}
-            <p className="text-black font-normal text-base sm:text-lg md:text-xl lg:text-xl 3xl:text-[1.375rem] 4xl:text-[1.75rem] mb-6 3xl:mb-8 4xl:mb-10 leading-relaxed">
+            <p className="text-black font-normal text-base sm:text-lg md:text-xl lg:text-xl 3xl:text-[1.375rem] 4xl:text-[1.75rem] mb-4 sm:mb-6 3xl:mb-8 4xl:mb-10 leading-relaxed">
               Streamline your workflow with our innovative technologies.
             </p>
             {/* CTA Button */}
-            <div className="mt-3 3xl:mt-4 4xl:mt-5">
+            <div className="mt-2 sm:mt-3 3xl:mt-4 4xl:mt-5">
               <RequestDemoBtn />
             </div>
           </div>
 
           {/* Right Image Section */}
           <div className="flex justify-center w-full lg:w-1/2 max-w-[550px] 3xl:max-w-[650px] 4xl:max-w-[850px]">
-            <div className="relative w-full h-[280px] sm:h-[320px] md:h-[360px] lg:h-[380px] 3xl:h-[420px] 4xl:h-[520px]">
+            <div className="relative w-full h-[240px] sm:h-[280px] md:h-[320px] lg:h-[360px] 3xl:h-[400px] 4xl:h-[480px]">
               {/* Management Information Systems Image */}
               <div
                 className={`absolute transition-opacity duration-500 ${
@@ -108,7 +109,7 @@ export default function Hero() {
                 } z-10 4xl:left-48 4xl:top-0 4xl:w-full 4xl:h-full 4xl:mx-auto`}
                 style={{
                   right: '0',
-                  top: '0',
+                  top: '30px',
                   width: '100%',
                   height: '100%',
                 }}

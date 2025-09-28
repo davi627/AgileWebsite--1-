@@ -61,7 +61,13 @@ export default function Navbar() {
   };
 
   return (
-    <header className="absolute inset-x-0 top-0 z-50 bg-white font-Poppins">
+    <header
+      className="absolute inset-x-0 top-0 z-50 bg-white font-Poppins"
+      style={{
+        transform: 'scale(1)', // Prevents zoom layout issues
+        transformOrigin: 'top left',
+      }}
+    >
       <SidePadding>
         <nav className="flex items-center  justify-between py-8 max-w-[1400px] 3xl:max-w-[1600px] 4xl:max-w-[1700px] mx-auto 4xl:ml-[24px]" aria-label="Global">
           <a href="/" className="-m-1.5 p-1.5">
@@ -123,17 +129,15 @@ export default function Navbar() {
             >
               Blogs
             </button>
-            <a
-              href="https://careers.agilebiz.co.ke"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={() => handleNavigation({ href: '/careers' })}
               className="hover:text-primary leading-6 px-3 py-2"
             >
               Careers
-            </a>
+            </button>
             <button
               onClick={() => handleNavigation({ href: '/contact-us' })}
-              className="bg-alternate hover:bg-alternate-dark focus-visible:outline-alternate rounded-3xl px-6 py-2.5 text-sm font-regular text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 flex items-center"
+              className="bg-primary hover:bg-primary/90 focus-visible:outline-primary rounded-3xl px-6 py-2.5 text-sm font-regular text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 flex items-center"
             >
               <span>Contact Us</span>
               <img src={call} alt="Call icon" className="ml-2 h-5 w-5" aria-hidden="true" />
@@ -236,7 +240,7 @@ export default function Navbar() {
                     handleNavigation({ href: '/contact-us' });
                     setMobileMenuOpen(false);
                   }}
-                  className="bg-alternate hover:bg-alternate-dark focus-visible:outline-alternate w-auto mx-auto rounded-3xl px-6 py-2.5 text-sm font-regular text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 flex items-center"
+                  className="bg-primary hover:bg-primary-dark focus-visible:outline-primary w-auto mx-auto rounded-3xl px-6 py-2.5 text-sm font-regular text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 flex items-center"
                 >
                   <span>Contact Us</span>
                   <img src={call} alt="Call icon" className="ml-2 h-5 w-5" aria-hidden="true" />

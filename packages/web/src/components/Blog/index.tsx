@@ -76,37 +76,37 @@ export default function TopBlogs() {
           Top Most Viewed Blogs
         </h2>
         <div className="mt-4 sm:mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:justify-items-center">
-          {blogs.map((blog) => (
-            <div
-              key={blog._id}
-              className="flex flex-col md:max-w-xs w-full"
-            >
-              <div className="h-28 sm:h-32 md:h-40 lg:h-48 w-full overflow-hidden rounded-lg bg-gray-200 border border-gray-300">
-                <img
-                  src={blog.imageUrl}
-                  alt={blog.title}
-                  className="w-full h-full object-cover object-center"
-                  onError={(e) => console.error(`Image load error for ${blog.title}:`, e)}
-                />
+            {blogs.map((blog) => (
+              <div
+                key={blog._id}
+                className="flex flex-col md:max-w-xs w-full"
+              >
+                <div className="h-28 sm:h-32 md:h-40 lg:h-48 w-full overflow-hidden rounded-lg bg-gray-200 border border-gray-300">
+                  <img
+                    src={blog.imageUrl}
+                    alt={blog.title}
+                    className="w-full h-full object-cover object-center"
+                    onError={(e) => console.error(`Image load error for ${blog.title}:`, e)}
+                  />
+                </div>
+                <div className="pr-2 sm:pr-4 pb-4">
+                  <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-2">
+                    {blog.title}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4 line-clamp-3">
+                    {getContentPreview(blog.content)}
+                  </p>
+                  <Link
+                    to={`/blog/${blog._id}`}
+                    className="text-[#167AA1] text-sm font-medium hover:text-blue-800"
+                  >
+                    Read More
+                  </Link>
+                </div>
               </div>
-              <div className="pr-2 sm:pr-4 pb-4">
-                <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-2">
-                  {blog.title}
-                </h3>
-                <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4 line-clamp-3">
-                  {getContentPreview(blog.content)}
-                </p>
-                <Link
-                  to={`/blog/${blog._id}`}
-                  className="text-[#167AA1] text-sm font-medium hover:text-blue-800"
-                >
-                  Read More
-                </Link>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
     </div>
   )
 }
