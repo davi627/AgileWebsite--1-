@@ -5,6 +5,8 @@ import fBIcon from '../../assets/socials/fb.png'
 import twitterIcon from '../../assets/socials/twitter.png'
 import instaIcon from '../../assets/insta logo.png'
 import liIcon from '../../assets/socials/linkedin.png'
+import TiktockIcon from '../../assets/socials/TikTok.png'
+import YoutubeIcon from '../../assets/socials/Youtube.png'
 
 const navigation = {
   company: [
@@ -34,6 +36,16 @@ const navigation = {
       name: 'Instagram',
       href: 'https://www.instagram.com/agilebizsolutions/',
       icon: instaIcon
+    },
+    {
+      name: 'TikTok',
+      href: 'https://www.tiktok.com/@agilebizsolutions?_t=ZM-8yeRpKlHHS4&_r=1',
+      icon: TiktockIcon
+    },
+    {
+      name: 'Youtube',
+      href: 'https://www.youtube.com/channel/UCM1rte4MuBqA8tqS0hjWeiA',
+      icon: YoutubeIcon
     }
   ]
 }

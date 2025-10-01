@@ -129,12 +129,14 @@ export default function Navbar() {
             >
               Blogs
             </button>
-            <button
-              onClick={() => handleNavigation({ href: '/careers' })}
+            <a
+              href="https://careers.agilebiz.co.ke"
+              target="_blank"
+              rel="noopener noreferrer"
               className="hover:text-primary leading-6 px-3 py-2"
             >
               Careers
-            </button>
+            </a>
             <button
               onClick={() => handleNavigation({ href: '/contact-us' })}
               className="bg-primary hover:bg-primary/90 focus-visible:outline-primary rounded-3xl px-6 py-2.5 text-sm font-regular text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 flex items-center"
