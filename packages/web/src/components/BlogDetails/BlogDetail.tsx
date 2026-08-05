@@ -4,10 +4,13 @@ import axios from 'axios';
 import Navbar from 'components/Navbar';
 import Footer from 'components/Footer';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+import { API_BASE_URL, getImageUrl } from 'config/api';
+import { getBlogPath, isMongoObjectId } from 'utils/blogUrl';
+import { trackEvent } from 'config/analytics';
 
 interface BlogPost {
   _id: string;
+  slug?: string;
   title: string;
   content: { type: string; data: string }[];
   formattedDate: string;
@@ -23,9 +26,10 @@ interface Comment {
 }
 
 const BlogDetail = () => {
-  const { id } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const [blog, setBlog] = useState<BlogPost | null>(null);
+  const [blogKey, setBlogKey] = useState<string>('');
   const [comments, setComments] = useState<Comment[]>([]);
   const [name, setName] = useState('');
   const [newComment, setNewComment] = useState('');
@@ -33,11 +37,26 @@ const BlogDetail = () => {
   const [heroImage, setHeroImage] = useState<string>('');
 
   useEffect(() => {
+    if (!slug) return;
+
     const fetchBlog = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/blog/blogs/${id}`);
+        const response = await axios.get(`${API_BASE_URL}/blog/blogs/${slug}`);
         setBlog(response.data);
-        setHeroImage(response.data.imageUrl || '');
+        setBlogKey(response.data.slug || response.data._id);
+        setHeroImage(getImageUrl(response.data.imageUrl || ''));
+        trackEvent('blog_view', {
+          blog_title: response.data.title,
+          blog_slug: response.data.slug || slug
+        });
+
+        if (
+          response.data.slug &&
+          isMongoObjectId(slug) &&
+          slug !== response.data.slug
+        ) {
+          navigate(getBlogPath(response.data), { replace: true });
+        }
       } catch (error) {
         console.error('Error fetching blog:', error);
       }
@@ -45,7 +64,7 @@ const BlogDetail = () => {
 
     const fetchComments = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/blog/${id}/comments`);
+        const response = await axios.get(`${API_BASE_URL}/blog/blogs/${slug}/comments`);
         setComments(response.data);
       } catch (error) {
         console.error('Error fetching comments:', error);
@@ -54,7 +73,7 @@ const BlogDetail = () => {
 
     fetchBlog();
     fetchComments();
-  }, [id]);
+  }, [slug, navigate]);
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,15 +83,19 @@ const BlogDetail = () => {
     }
 
     try {
-      await axios.post(`${API_BASE_URL}/blog/${id}/comments`, {
+      await axios.post(`${API_BASE_URL}/blog/blogs/${blogKey}/comments`, {
         text: newComment,
         author: name
       });
 
       setNewComment('');
       setName('');
-      const response = await axios.get(`${API_BASE_URL}/blog/${id}/comments`);
+      const response = await axios.get(`${API_BASE_URL}/blog/blogs/${blogKey}/comments`);
       setComments(response.data);
+      trackEvent('blog_comment_submit', {
+        blog_title: blog?.title,
+        blog_slug: blog?.slug || blogKey
+      });
     } catch (error) {
       console.error('Error submitting comment:', error);
     }

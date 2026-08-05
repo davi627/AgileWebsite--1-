@@ -5,7 +5,7 @@ import 'slick-carousel/slick/slick-theme.css'
 import SidePadding from 'components/Shared/SidePadding.Component'
 import { useNavigate } from 'react-router-dom'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
+import { API_BASE_URL, getImageUrl } from 'config/api'
 
 interface Comment {
   _id: string
@@ -36,7 +36,13 @@ function Testimonials() {
       const approvedComments = data.filter(
         (comment: Comment) => comment.status === 'approved'
       )
-      setComments(approvedComments)
+      setComments(
+        approvedComments.map((comment: Comment) => ({
+          ...comment,
+          logo: getImageUrl(comment.logo),
+          image: getImageUrl(comment.image)
+        }))
+      )
     } catch (error) {
       console.error('Failed to fetch comments:', error)
       if (error instanceof Error) {

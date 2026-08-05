@@ -5,6 +5,7 @@ import {
   renderQuotationEmailText,
   renderQuotationEmailHtml
 } from '../../templates/emails/QuotationEmail'
+import { useAnalytics } from 'config/useAnalytics'
 
 interface GetQuoteModalProps {
   isOpen: boolean
@@ -22,6 +23,7 @@ const GetQuoteModal: React.FC<GetQuoteModalProps> = ({
   const [phone, setPhone] = useState('')
   const [message, setMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const { sendEvent } = useAnalytics()
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
@@ -40,6 +42,10 @@ const GetQuoteModal: React.FC<GetQuoteModalProps> = ({
         subject: `Quote Request from ${name}`,
         text: renderQuotationEmailText(mailProps),
         html: renderQuotationEmailHtml(mailProps)
+      })
+      sendEvent('generate_lead', {
+        form_name: 'quote_request',
+        enquiry_type: enquiryType || 'general'
       })
       onClose()
     } catch (error) {

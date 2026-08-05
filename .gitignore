@@ -57,6 +57,10 @@ dist/
 .env.development.local
 .env.test.local
 .env.production.local
+packages/apis/.env
+
+# API secrets (use root .env instead)
+packages/apis/config.json
 
 # pnpm state files
 .pnpm-debug.log*

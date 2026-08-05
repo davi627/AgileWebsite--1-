@@ -8,7 +8,7 @@ interface Logo {
   colorLogoUrl: string
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
+import { API_BASE_URL, getImageUrl } from 'config/api'
 
 export default function Partners() {
   const [logos, setLogos] = useState<Logo[]>([])
@@ -25,17 +25,23 @@ export default function Partners() {
         console.log('API Response Status:', response.status)
         console.log('API Response Data:', response.data)
         if (Array.isArray(response.data)) {
-          setLogos(response.data)
+          setLogos(
+            response.data.map((logo: Logo) => ({
+              ...logo,
+              bwLogoUrl: getImageUrl(logo.bwLogoUrl),
+              colorLogoUrl: getImageUrl(logo.colorLogoUrl)
+            }))
+          )
         } else {
           throw new Error('Invalid data format: Expected an array of logos')
         }
       } catch (error) {
-        console.error('Failed to fetch logos:', error)
-        if (error instanceof Error) {
-          setError(error.message)
-        } else {
-          setError('Failed to fetch logos')
+        if (axios.isAxiosError(error) && error.response?.status === 404) {
+          setLogos([])
+          return
         }
+        console.error('Failed to fetch logos:', error)
+        setError('Failed to fetch logos')
       }
     }
 

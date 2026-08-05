@@ -8,7 +8,7 @@ import BulletList from '@tiptap/extension-bullet-list'
 import OrderedList from '@tiptap/extension-ordered-list'
 import ListItem from '@tiptap/extension-list-item'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000'
+import { API_BASE_URL, getImageUrl } from 'config/api'
 
 interface BlogContent {
   type: 'text' | 'image'
@@ -444,7 +444,7 @@ const ViewBlogs: React.FC = () => {
           <div key={blog._id} className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
             {blog.imageUrl && (
               <img
-                src={blog.imageUrl}
+                src={getImageUrl(blog.imageUrl)}
                 alt="Blog Cover"
                 className="w-full h-48 object-cover"
               />
@@ -499,7 +499,7 @@ const ViewBlogs: React.FC = () => {
             </div>
             {viewingBlog.imageUrl && (
               <img
-                src={viewingBlog.imageUrl}
+                src={getImageUrl(viewingBlog.imageUrl)}
                 alt="Blog Cover"
                 className="w-full h-64 object-cover mb-4 rounded-lg"
               />

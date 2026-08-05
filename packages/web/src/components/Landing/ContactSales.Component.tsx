@@ -17,7 +17,7 @@ function ContactSales() {
       <button
         className="text-primary flex items-center gap-4 sm:gap-6 rounded-md bg-white px-6 sm:px-7 py-2.5 sm:py-3 text-sm sm:text-base md:text-lg"
         onClick={() => {
-          navigate('/contact-us', { replace: false })
+          navigate('/contact', { replace: false })
         }}
       >
         Contact Sales

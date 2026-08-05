@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
+import { API_BASE_URL, getImageUrl } from 'config/api'
+import { getBlogPath } from 'utils/blogUrl'
 
 interface BlogPost {
   _id: string
+  slug?: string
   title: string
   content: { type: string; data: string }[]
   imageUrl: string
@@ -32,7 +34,13 @@ export default function TopBlogs() {
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`)
         const data = await response.json()
         if (Array.isArray(data)) {
-          const sortedBlogs = data.sort((a: BlogPost, b: BlogPost) => b.views - a.views).slice(0, 6)
+          const sortedBlogs = data
+            .sort((a: BlogPost, b: BlogPost) => b.views - a.views)
+            .slice(0, 6)
+            .map((blog: BlogPost) => ({
+              ...blog,
+              imageUrl: getImageUrl(blog.imageUrl)
+            }))
           setBlogs(sortedBlogs)
         } else {
           throw new Error('Invalid data format: Expected an array of blogs')
@@ -97,7 +105,7 @@ export default function TopBlogs() {
                     {getContentPreview(blog.content)}
                   </p>
                   <Link
-                    to={`/blog/${blog._id}`}
+                    to={getBlogPath(blog)}
                     className="text-[#167AA1] text-sm font-medium hover:text-blue-800"
                   >
                     Read More

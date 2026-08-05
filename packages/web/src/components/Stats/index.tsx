@@ -6,7 +6,7 @@ import FaintLogo from '../../assets/faint-agile-logo.svg';
 import pointer from '../../assets/pointer.png';
 import Mesh from '../../assets/Mesh Background.png'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/stats';
+import { API_BASE_URL } from 'config/api';
 
 interface Stat {
   id: number;
@@ -25,7 +25,7 @@ export default function Stats() {
   // Fetching statistics from the backend
   const fetchStatistics = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/statistics`);
+      const response = await axios.get(`${API_BASE_URL}/stats/statistics`);
       const stats = response.data;
 
       const formattedStats: Stat[] = [

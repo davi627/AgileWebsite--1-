@@ -4,6 +4,7 @@ import multer from 'multer'
 import path from 'path'
 import fs from 'fs'
 import Logo from '../Models/Logo.js'
+import { constructPublicUrl } from '../utils/publicUrl.js'
 
 const router = express.Router()
 
@@ -33,26 +34,6 @@ const uploadLogo = multer({
   }
 })
 
-// Helper function to construct full image URL
-const constructImageUrl = (req, imagePath) => {
-  if (!imagePath) return ''
-  
-  // If it's already a full URL, return as is
-  if (imagePath.startsWith('http')) {
-    return imagePath
-  }
-  
-  // Construct full URL with protocol, host, and path
-  const protocol = req.protocol
-  const host = req.get('host')
-  const baseUrl = `${protocol}://${host}`
-  
-  // Remove leading slash if present to avoid double slashes
-  const cleanPath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath
-  
-  return `${baseUrl}/${cleanPath}`
-}
-
 // Get all logos
 router.get('/logo', async (req, res) => {
   try {
@@ -61,13 +42,9 @@ router.get('/logo', async (req, res) => {
     // Transform logos to include full image URLs
     const logosWithFullUrls = logos.map(logo => ({
       ...logo.toObject(),
-      bwLogoUrl: constructImageUrl(req, logo.bwLogoUrl),
-      colorLogoUrl: constructImageUrl(req, logo.colorLogoUrl)
+      bwLogoUrl: constructPublicUrl(req, logo.bwLogoUrl),
+      colorLogoUrl: constructPublicUrl(req, logo.colorLogoUrl)
     }))
-    
-    if (!logosWithFullUrls.length) {
-      return res.status(404).json({ message: 'No logos found' })
-    }
     
     res.status(200).json(logosWithFullUrls)
   } catch (err) {
@@ -93,8 +70,8 @@ router.post('/logo', uploadLogo.fields([{ name: 'bwLogo' }, { name: 'colorLogo' 
     // Return logo with full image URLs
     const logoWithFullUrls = {
       ...savedLogo.toObject(),
-      bwLogoUrl: constructImageUrl(req, savedLogo.bwLogoUrl),
-      colorLogoUrl: constructImageUrl(req, savedLogo.colorLogoUrl)
+      bwLogoUrl: constructPublicUrl(req, savedLogo.bwLogoUrl),
+      colorLogoUrl: constructPublicUrl(req, savedLogo.colorLogoUrl)
     }
 
     res.status(201).json(logoWithFullUrls)
@@ -141,8 +118,8 @@ router.put('/logo/:id', uploadLogo.fields([{ name: 'bwLogo' }, { name: 'colorLog
 
     const logoWithFullUrls = {
       ...updatedLogo.toObject(),
-      bwLogoUrl: constructImageUrl(req, updatedLogo.bwLogoUrl),
-      colorLogoUrl: constructImageUrl(req, updatedLogo.colorLogoUrl)
+      bwLogoUrl: constructPublicUrl(req, updatedLogo.bwLogoUrl),
+      colorLogoUrl: constructPublicUrl(req, updatedLogo.colorLogoUrl)
     }
 
     res.json(logoWithFullUrls)

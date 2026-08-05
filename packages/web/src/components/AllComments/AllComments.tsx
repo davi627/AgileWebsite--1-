@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000'
+import { API_BASE_URL, getImageUrl } from 'config/api'
 
 interface Comment {
   _id: string
@@ -25,7 +24,12 @@ function AllCommentsPage() {
       const approvedComments = data.filter(
         (comment: Comment) => comment.status === 'approved'
       )
-      setComments(approvedComments)
+      setComments(
+        approvedComments.map((comment: Comment) => ({
+          ...comment,
+          logo: getImageUrl(comment.logo)
+        }))
+      )
     } catch (error) {
       console.error('Failed to fetch comments:', error)
     }
@@ -46,7 +50,7 @@ function AllCommentsPage() {
           >
             <div>
               <img
-                src={`${API_BASE_URL}${comment.logo}`}
+                src={getImageUrl(comment.logo)}
                 alt="logo"
                 className="h-10 w-auto mb-2"
               />

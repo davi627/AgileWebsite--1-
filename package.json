@@ -11,7 +11,12 @@
     "dev": "concurrently \"pnpm run dev:apis\" \"pnpm run dev:web\"",
     "build:apis": "pnpm --filter apis build",
     "build:web": "pnpm --filter web build",
-    "build": "pnpm run build:apis && pnpm run build:web"
+    "build": "pnpm run build:web",
+    "build:all": "pnpm run build:apis && pnpm run build:web",
+    "docker:up": "docker compose up -d --build",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f app",
+    "docker:ps": "docker compose ps"
   },
   "workspaces": [
     "packages/*"

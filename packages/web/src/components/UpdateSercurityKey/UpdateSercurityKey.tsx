@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000'
+import { API_BASE_URL } from 'config/api'
 
 const UpdateSecurityKey: React.FC = () => {
   const [newKey, setNewKey] = useState('')

@@ -5,8 +5,21 @@ import fs from 'fs'
 import Blogs from '../Models/Blogs.js'
 import Comments from '../Models/Comments.js'
 import mongoose from 'mongoose'
+import { constructPublicUrl } from '../utils/publicUrl.js'
+import {
+  findBlogByIdOrSlug,
+  generateUniqueSlug,
+  ensureBlogSlugs
+} from '../utils/blogSlug.js'
 
 const router = express.Router()
+
+function formatBlog(req, blog) {
+  return {
+    ...blog.toObject(),
+    imageUrl: constructPublicUrl(req, blog.imageUrl)
+  }
+}
 
 // Configure Multer for file uploads
 const storage = multer.diskStorage({
@@ -25,24 +38,13 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage })
 
-// Helper function to construct full image URL
-const constructImageUrl = (req, imagePath) => {
-  if (!imagePath) return ''
-  if (imagePath.startsWith('http')) return imagePath
-  const protocol = req.protocol
-  const host = req.get('host')
-  const baseUrl = `${protocol}://${host}`
-  const cleanPath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath
-  return `${baseUrl}/${cleanPath}`
-}
-
 // Endpoint to handle image uploads
 router.post('/upload-image', upload.single('image'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' })
   }
   const imageUrl = `/uploads/blogs/${req.file.filename}`
-  res.json({ imageUrl: constructImageUrl(req, imageUrl) })
+  res.json({ imageUrl: constructPublicUrl(req, imageUrl) })
 })
 
 // Create new blog post
@@ -63,19 +65,17 @@ router.post('/blogs', async (req, res) => {
   }
 
   try {
+    const slug = await generateUniqueSlug(title)
     const newBlog = new Blogs({
       title,
+      slug,
       content,
       imageUrl,
       author: { name: author.name }
     })
 
     const savedBlog = await newBlog.save()
-    const blogWithFullUrls = {
-      ...savedBlog.toObject(),
-      imageUrl: constructImageUrl(req, savedBlog.imageUrl)
-    }
-    res.status(201).json(blogWithFullUrls)
+    res.status(201).json(formatBlog(req, savedBlog))
   } catch (error) {
     res.status(400).json({ message: error.message })
   }
@@ -84,12 +84,9 @@ router.post('/blogs', async (req, res) => {
 // Get all blog posts
 router.get('/blogs', async (req, res) => {
   try {
-    const blogs = await Blogs.find().sort({ date: -1 })
-    const blogsWithFullUrls = blogs.map(blog => ({
-      ...blog.toObject(),
-      imageUrl: constructImageUrl(req, blog.imageUrl)
-    }))
-    res.json(blogsWithFullUrls)
+    let blogs = await Blogs.find().sort({ date: -1 })
+    blogs = await ensureBlogSlugs(blogs)
+    res.json(blogs.map((blog) => formatBlog(req, blog)))
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
@@ -98,29 +95,28 @@ router.get('/blogs', async (req, res) => {
 router.get('/blogs/top', async (req, res) => {
   try {
     const limit = Math.min(parseInt(req.query.limit) || 8, 8) // Max limit of 8
-    const blogs = await Blogs.find().sort({ views: -1 }).limit(limit)
-    const blogsWithFullUrls = blogs.map(blog => ({
-      ...blog.toObject(),
-      imageUrl: constructImageUrl(req, blog.imageUrl)
-    }))
-    res.json(blogsWithFullUrls)
+    let blogs = await Blogs.find().sort({ views: -1 }).limit(limit)
+    blogs = await ensureBlogSlugs(blogs)
+    res.json(blogs.map((blog) => formatBlog(req, blog)))
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
 })
 
-// Get single blog post by ID
+// Get single blog post by slug or legacy ID
 router.get('/blogs/:id', async (req, res) => {
   try {
-    const blog = await Blogs.findById(req.params.id)
+    let blog = await findBlogByIdOrSlug(req.params.id)
     if (!blog) {
       return res.status(404).json({ message: 'Blog not found' })
     }
-    const blogWithFullUrl = {
-      ...blog.toObject(),
-      imageUrl: constructImageUrl(req, blog.imageUrl)
+
+    if (!blog.slug) {
+      blog.slug = await generateUniqueSlug(blog.title, blog._id)
+      await blog.save()
     }
-    res.json(blogWithFullUrl)
+
+    res.json(formatBlog(req, blog))
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
@@ -129,21 +125,15 @@ router.get('/blogs/:id', async (req, res) => {
 // Increment views for a blog
 router.patch('/blogs/:id/view', async (req, res) => {
   try {
-    const blog = await Blogs.findByIdAndUpdate(
-      req.params.id,
-      { $inc: { views: 1 } },
-      { new: true }
-    )
-
+    const blog = await findBlogByIdOrSlug(req.params.id)
     if (!blog) {
       return res.status(404).json({ message: 'Blog not found' })
     }
 
-    const blogWithFullUrl = {
-      ...blog.toObject(),
-      imageUrl: constructImageUrl(req, blog.imageUrl)
-    }
-    res.json(blogWithFullUrl)
+    blog.views = (blog.views || 0) + 1
+    await blog.save()
+
+    res.json(formatBlog(req, blog))
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
@@ -152,8 +142,13 @@ router.patch('/blogs/:id/view', async (req, res) => {
 // Get approved comments for a blog
 router.get('/blogs/:id/comments', async (req, res) => {
   try {
+    const blog = await findBlogByIdOrSlug(req.params.id)
+    if (!blog) {
+      return res.status(404).json({ message: 'Blog not found' })
+    }
+
     const comments = await Comments.find({
-      blogId: req.params.id,
+      blogId: blog._id,
       status: 'approved'
     }).sort({ date: -1 })
     res.json(comments)
@@ -167,15 +162,16 @@ router.post('/blogs/:id/comments', async (req, res) => {
   const { text, author } = req.body
   const { id } = req.params
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ message: 'Invalid blog ID' })
-  }
-
   try {
+    const blog = await findBlogByIdOrSlug(id)
+    if (!blog) {
+      return res.status(404).json({ message: 'Blog not found' })
+    }
+
     const newComment = new Comments({
       text,
       author,
-      blogId: id,
+      blogId: blog._id,
       status: 'pending',
       date: req.body.date || new Date()
     })
@@ -334,14 +330,20 @@ router.put('/blogs/:id', async (req, res) => {
   }
 
   try {
+    const update = {
+      ...(content && { content }),
+      ...(imageUrl && { imageUrl }),
+      ...(author?.name && { author: { name: author.name } })
+    }
+
+    if (title) {
+      update.title = title
+      update.slug = await generateUniqueSlug(title, id)
+    }
+
     const updatedBlog = await Blogs.findByIdAndUpdate(
       id,
-      {
-        ...(title && { title }),
-        ...(content && { content }),
-        ...(imageUrl && { imageUrl }),
-        ...(author?.name && { author: { name: author.name } })
-      },
+      update,
       { new: true, runValidators: true }
     )
 
@@ -349,11 +351,7 @@ router.put('/blogs/:id', async (req, res) => {
       return res.status(404).json({ message: 'Blog not found' })
     }
 
-    const blogWithFullUrl = {
-      ...updatedBlog.toObject(),
-      imageUrl: constructImageUrl(req, updatedBlog.imageUrl)
-    }
-    res.json(blogWithFullUrl)
+    res.json(formatBlog(req, updatedBlog))
   } catch (error) {
     res.status(500).json({ message: 'Failed to update blog', error: error.message })
   }

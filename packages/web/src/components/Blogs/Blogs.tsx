@@ -3,10 +3,12 @@ import { Link } from 'react-router-dom'
 import Navbar from 'components/Navbar'
 import Footer from 'components/Footer'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:5000'
+import { API_BASE_URL, getImageUrl } from 'config/api'
+import { getBlogPath } from 'utils/blogUrl'
 
 interface BlogPost {
   _id: string
+  slug?: string
   title: string
   content: { type: string; data: string }[]
   imageUrl: string
@@ -34,7 +36,10 @@ export default function Blog() {
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`)
         const data = await response.json()
         if (Array.isArray(data)) {
-          setBlogs(data)
+          setBlogs(data.map((blog: BlogPost) => ({
+            ...blog,
+            imageUrl: getImageUrl(blog.imageUrl)
+          })))
         } else {
           throw new Error('Invalid data format: Expected an array of blogs')
         }
@@ -49,16 +54,17 @@ export default function Blog() {
     fetchBlogs()
   }, [])
 
-  const handleViewBlog = async (blogId: string) => {
+  const handleViewBlog = async (blog: BlogPost) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/blog/blogs/${blogId}/view`, {
+      const blogRef = blog.slug || blog._id
+      const response = await fetch(`${API_BASE_URL}/blog/blogs/${blogRef}/view`, {
         method: 'PATCH',
       })
       if (!response.ok) throw new Error('Failed to update views')
       const updatedBlog = await response.json()
       setBlogs((prevBlogs) =>
-        prevBlogs.map((blog) =>
-          blog._id === blogId ? { ...blog, views: updatedBlog.views } : blog
+        prevBlogs.map((item) =>
+          item._id === blog._id ? { ...item, views: updatedBlog.views } : item
         )
       )
     } catch (error) {
@@ -144,9 +150,9 @@ export default function Blog() {
                       {blog.formattedDate} • {blog.views} views
                     </p>
                     <Link
-                      to={`/blog/${blog._id}`}
+                      to={getBlogPath(blog)}
                       className="text-[#167AA1] text-sm font-medium hover:text-blue-800"
-                      onClick={() => handleViewBlog(blog._id)}
+                      onClick={() => handleViewBlog(blog)}
                     >
                       Read More
                     </Link>

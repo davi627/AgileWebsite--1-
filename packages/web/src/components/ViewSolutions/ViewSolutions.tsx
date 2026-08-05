@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import SecurityKeyModal from 'components/SercurityKeyModal/SercurityKeyModal'
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
+import { API_BASE_URL } from 'config/api'
 const ViewSolutions: React.FC = () => {
   const [solutions, setSolutions] = useState<{ _id: string; title: string }[]>(
     []

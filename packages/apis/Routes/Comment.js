@@ -1,5 +1,6 @@
 import express from 'express'
 import Comment from '../Models/Comment.js'
+import { constructPublicUrl } from '../utils/publicUrl.js'
 import multer from 'multer'
 import path from 'path'
 import fs from 'fs'
@@ -25,25 +26,14 @@ const uploadCommentFiles = multer({ storage: commentStorage }).fields([
   { name: 'image', maxCount: 1 }
 ])
 
-// Helper function to construct full image URL
-const constructImageUrl = (req, imagePath) => {
-  if (!imagePath) return ''
-  if (imagePath.startsWith('http')) return imagePath
-  const protocol = req.protocol
-  const host = req.get('host')
-  const baseUrl = `${protocol}://${host}`
-  const cleanPath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath
-  return `${baseUrl}/${cleanPath}`
-}
-
 // Get all comments
 router.get('/comments', async (req, res) => {
   try {
     const comments = await Comment.find({}).sort({ createdAt: -1 })
     const commentsWithFullUrls = comments.map(comment => ({
       ...comment.toObject(),
-      logo: constructImageUrl(req, comment.logo),
-      image: constructImageUrl(req, comment.image)
+      logo: constructPublicUrl(req, comment.logo),
+      image: constructPublicUrl(req, comment.image)
     }))
     res.json(commentsWithFullUrls)
   } catch (error) {
@@ -95,8 +85,8 @@ router.post('/comments', uploadCommentFiles, async (req, res) => {
     const savedComment = await newComment.save()
     const commentWithFullUrls = {
       ...savedComment.toObject(),
-      logo: constructImageUrl(req, savedComment.logo),
-      image: constructImageUrl(req, savedComment.image)
+      logo: constructPublicUrl(req, savedComment.logo),
+      image: constructPublicUrl(req, savedComment.image)
     }
     res.status(201).json(commentWithFullUrls)
   } catch (error) {
@@ -118,8 +108,8 @@ router.put('/comments/:id/approve', async (req, res) => {
     if (!comment) return res.status(404).json({ message: 'Comment not found' })
     const commentWithFullUrls = {
       ...comment.toObject(),
-      logo: constructImageUrl(req, comment.logo),
-      image: constructImageUrl(req, comment.image)
+      logo: constructPublicUrl(req, comment.logo),
+      image: constructPublicUrl(req, comment.image)
     }
     res.json(commentWithFullUrls)
   } catch (error) {
@@ -139,8 +129,8 @@ router.put('/comments/:id/reject', async (req, res) => {
     if (!comment) return res.status(404).json({ message: 'Comment not found' })
     const commentWithFullUrls = {
       ...comment.toObject(),
-      logo: constructImageUrl(req, comment.logo),
-      image: constructImageUrl(req, comment.image)
+      logo: constructPublicUrl(req, comment.logo),
+      image: constructPublicUrl(req, comment.image)
     }
     res.json(commentWithFullUrls)
   } catch (error) {

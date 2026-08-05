@@ -55,7 +55,7 @@ const ProductsSection = () => {
               {solution.subtext2}
             </p>
             <button
-              onClick={() => navigate('/contact-us', { replace: false })}
+              onClick={() => navigate('/contact', { replace: false })}
               className="mt-6 sm:mt-8 bg-[#e6f0fa] text-[#167AA1] border border-[#167AA1] px-6 py-2 rounded-2xl cursor-pointer hover:bg-gray-100 transition-colors"
             >
               {solution.buttonText} <span className="ml-2">→</span>

@@ -2,9 +2,7 @@ import axios from 'axios'
 import { User } from '../types/User'
 
 // Define the base URL for the API
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  'https://webtest-api.agilebiz.co.ke:5000/api'
+import { API_URL as API_BASE_URL } from 'config/api'
 
 // Define a type for user roles
 type Role = 'Admin' | 'User'

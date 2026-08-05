@@ -28,7 +28,7 @@ const TalkPage: React.FC<TalkPageProps> = () => {
   };
 
   const handleSubmit = () => {
-    navigate('/contact-us', { state: { selectedServices } });
+    navigate('/contact', { state: { selectedServices } });
   };
 
   return (

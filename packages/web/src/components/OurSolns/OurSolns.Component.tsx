@@ -7,14 +7,7 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { BsArrowRight } from 'react-icons/bs';
 import Mesh from '../../assets/Mesh Background.png';
 import './faq.css';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
-
-const getImageUrl = (imageUrl: string): string => {
-  if (!imageUrl) return '';
-  if (imageUrl.startsWith('http')) return imageUrl;
-  return `${API_BASE_URL}/${imageUrl.startsWith('/') ? imageUrl.slice(1) : imageUrl}`;
-};
+import { API_BASE_URL, getImageUrl } from 'config/api';
 
 // Function to decode HTML entities
 const decodeHtmlEntities = (text: string): string => {
@@ -54,6 +47,7 @@ function OurSolns() {
           ...category,
           title: decodeHtmlEntities(category.title),
           description: decodeHtmlEntities(category.description),
+          imageUrl: getImageUrl(category.imageUrl),
           solutions: category.solutions?.map(solution => ({
             ...solution,
             name: decodeHtmlEntities(solution.name),

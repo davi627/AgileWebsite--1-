@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { sendMail } from '../../services/MailService';
+import { useAnalytics } from 'config/useAnalytics';
 
 const ContactForm: React.FC = () => {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
@@ -8,6 +9,7 @@ const ContactForm: React.FC = () => {
   const [isSent, setIsSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const location = useLocation();
+  const { sendEvent } = useAnalytics();
   const { selectedServices } = location.state || { selectedServices: [] };
 
   useEffect(() => {
@@ -36,6 +38,10 @@ const ContactForm: React.FC = () => {
         subject: `New message from ${formData.name}`,
         text: formData.message,
         html: `<p>${formData.message}</p><p>From: ${formData.name} (${formData.email})</p>`
+      });
+      sendEvent('contact_form_submit', {
+        form_name: 'contact_us',
+        page_path: location.pathname
       });
       setIsSent(true);
       setFormData({ name: '', email: '', message: '' });

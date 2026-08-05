@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000';
+import { API_BASE_URL } from 'config/api'
 
 const handleApiError = (error: unknown): never => {
   if (axios.isAxiosError(error)) {

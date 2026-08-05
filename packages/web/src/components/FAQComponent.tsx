@@ -10,7 +10,7 @@ import HeroImage from '../assets/Hero.png';
 import SectionImage from '../assets/section2.png';
 import Footer from 'components/Footer';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+import { API_BASE_URL, getImageUrl } from 'config/api';
 
 const decodeHtmlEntities = (text: string): string => {
   if (!text) return '';
@@ -44,20 +44,6 @@ interface ISolutionFAQ {
   imageUrl?: string;
 }
 
-const getImageUrl = (imageUrl: string): string => {
-  if (!imageUrl) {
-    console.warn('Empty imageUrl provided');
-    return '/images/placeholder.png';
-  }
-  if (imageUrl.startsWith('data:') || imageUrl.startsWith('http')) {
-    return imageUrl;
-  }
-  const normalizedPath = imageUrl.startsWith('/') ? imageUrl.slice(1) : imageUrl;
-  const fullUrl = `${API_BASE_URL}/Uploads/${normalizedPath}`;
-  console.log('Constructed image URL:', fullUrl);
-  return fullUrl;
-};
-
 const FAQComponent: React.FC = () => {
   const { categoryId } = useParams<{ categoryId: string }>();
   const navigate = useNavigate();
@@ -79,12 +65,14 @@ const FAQComponent: React.FC = () => {
           ...response.data,
           title: decodeHtmlEntities(response.data.title),
           description: decodeHtmlEntities(response.data.description),
+          imageUrl: getImageUrl(response.data.imageUrl),
           solutions: response.data.solutions?.map((solution: ISolution) => ({
             ...solution,
             name: decodeHtmlEntities(solution.name),
             shortDesc: decodeHtmlEntities(solution.shortDesc),
             fullDesc: decodeHtmlEntities(solution.fullDesc),
             implementation: decodeHtmlEntities(solution.implementation),
+            imageUrl: solution.imageUrl ? getImageUrl(solution.imageUrl) : solution.imageUrl,
             features: solution.features?.map(feature => ({
               ...feature,
               text: decodeHtmlEntities(feature.text)
@@ -112,12 +100,14 @@ const FAQComponent: React.FC = () => {
           ...category,
           title: decodeHtmlEntities(category.title),
           description: decodeHtmlEntities(category.description),
+          imageUrl: getImageUrl(category.imageUrl),
           solutions: category.solutions?.map(solution => ({
             ...solution,
             name: decodeHtmlEntities(solution.name),
             shortDesc: decodeHtmlEntities(solution.shortDesc),
             fullDesc: decodeHtmlEntities(solution.fullDesc),
             implementation: decodeHtmlEntities(solution.implementation),
+            imageUrl: solution.imageUrl ? getImageUrl(solution.imageUrl) : solution.imageUrl,
             features: solution.features?.map(feature => ({
               ...feature,
               text: decodeHtmlEntities(feature.text)
@@ -375,7 +365,7 @@ const FAQComponent: React.FC = () => {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.3 }}
-                  onClick={() => navigate('/contact-us')}
+                  onClick={() => navigate('/contact')}
                   className="mt-4 sm:mt-6 4xl:mt-8 flex h-10 sm:h-12 4xl:h-14 px-4 sm:px-6 4xl:px-8 justify-center items-center gap-2 sm:gap-3 4xl:gap-4 rounded-full bg-[#FCB040] hover:bg-[#E0A738] text-white font-medium text-xs sm:text-sm md:text-base lg:text-base 4xl:text-lg transition-all duration-300 group shadow-lg hover:shadow-xl"
                   style={{
                     fontFamily: 'Poppins, sans-serif',

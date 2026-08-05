@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Footer from 'components/Footer'
 import Navbar from 'components/Navbar'
 import { Link } from 'react-router-dom'
+import { API_BASE_URL } from 'config/api'
 
 interface SolutionFeature {
   text: string
@@ -41,9 +42,6 @@ const Soltns = () => {
   useEffect(() => {
     const fetchSolutionCategories = async () => {
       try {
-        const API_BASE_URL =
-          import.meta.env.VITE_API_BASE_URL ||
-          'http://localhost:5000'
         const response = await fetch(`${API_BASE_URL}/api/solution-categories`)
 
         if (!response.ok) {
@@ -265,7 +263,7 @@ const Soltns = () => {
                 roadmap for your organization
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <Link to="/contact-us">
+                <Link to="/contact">
                   <button className="bg-white hover:bg-gray-100 text-[#167AA0] font-bold py-3 px-8 rounded-lg shadow-lg transition duration-300">
                     Request Demo
                   </button>

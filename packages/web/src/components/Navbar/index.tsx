@@ -8,7 +8,7 @@ import SidePadding from 'components/Shared/SidePadding.Component';
 import Logo from 'assets/Agile Logo.png';
 import call from '../../assets/call.png'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost5000';
+import { API_BASE_URL } from 'config/api';
 
 interface ISolutionCategory {
   _id: string;
@@ -138,7 +138,7 @@ export default function Navbar() {
               Careers
             </a>
             <button
-              onClick={() => handleNavigation({ href: '/contact-us' })}
+              onClick={() => handleNavigation({ href: '/contact' })}
               className="bg-primary hover:bg-primary/90 focus-visible:outline-primary rounded-3xl px-6 py-2.5 text-sm font-regular text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 flex items-center"
             >
               <span>Contact Us</span>
@@ -239,7 +239,7 @@ export default function Navbar() {
                 </a>
                 <button
                   onClick={() => {
-                    handleNavigation({ href: '/contact-us' });
+                    handleNavigation({ href: '/contact' });
                     setMobileMenuOpen(false);
                   }}
                   className="bg-primary hover:bg-primary-dark focus-visible:outline-primary w-auto mx-auto rounded-3xl px-6 py-2.5 text-sm font-regular text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 flex items-center"

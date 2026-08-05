@@ -1,0 +1,39 @@
+# Dependencies
+node_modules
+.pnpm
+.pnpm-store
+
+# Git
+.git
+.gitignore
+
+# Environment and secrets
+.env
+.env.*
+packages/apis/config.json
+
+# Build outputs (rebuilt inside Docker)
+packages/web/dist
+packages/web/build
+
+# Logs and temp files
+*.log
+tmp-*
+*.zip
+packages/apis.zip
+
+# IDE
+.idea
+.vscode
+.cursor
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test and coverage
+coverage
+.nyc_output
+
+# Agent transcripts
+agent-transcripts

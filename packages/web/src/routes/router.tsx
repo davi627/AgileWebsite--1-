@@ -31,11 +31,14 @@ import SolutionDetail from 'components/Solutions/SolutionsDetails'
 import SolutionsDetails from 'components/SolutionsDetails/SolutionsDetails'
 import FAQComponent from 'components/FAQComponent'
 import Privacy from 'components/Privacy/Privacy'
+import QualitySecurityPolicy from 'components/QualitySecurityPolicy/QualitySecurityPolicy'
 import OurSolns from 'components/OurSolns/OurSolns.Component'
+import GoogleAnalyticsPageTracker from 'config/GoogleAnalyticsPageTracker'
 
 const AppRouter: React.FC = () => {
   return (
     <Router>
+      <GoogleAnalyticsPageTracker />
       <Suspense
         fallback={
           <div className="flex h-screen items-center justify-center">
@@ -49,18 +52,23 @@ const AppRouter: React.FC = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/careers" element={<Careers />} />
           <Route path="/about-us" element={<AboutUsPage />} />
-          <Route path="/contact-us" element={<ContactUsPage />} />
+          <Route path="/contact" element={<ContactUsPage />} />
+          <Route path="/contact-us" element={<Navigate to="/contact" replace />} />
           <Route path="/access-denied" element={<AccessDenied />} />
           <Route path="/blogs" element={<Blogs />} />
           <Route path="/dashboard" element={<AdminDashboard />} />
           <Route path="/all-comments" element={<AllCommentsPage />} />
-          <Route path="/blog/:id" element={<BlogDetail />} />
+          <Route path="/blog/:slug" element={<BlogDetail />} />
           <Route path="/reset" element={<Reset />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/solns" element={<OurSolns />} />
           <Route path="/solutions/:categoryId" element={<FAQComponent />} />
           <Route path="/patners" element={<Partners />} />
           <Route path ="/privacy-policy-2" element={<Privacy />} />
+          <Route
+            path="/quality-security-policy"
+            element={<QualitySecurityPolicy />}
+          />
           <Route path="/solutionsdetails" element={<SolutionsDetails />} />
           <Route
             path="/solns/:categoryId/:solutionId"

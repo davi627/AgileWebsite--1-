@@ -1,10 +1,7 @@
 import axios from 'axios'
 import { jwtDecode } from 'jwt-decode'
 import { useNavigate } from 'react-router-dom'
-
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  'https://webtest-api.agilebiz.co.ke:5000/api'
+import { API_URL } from 'config/api'
 
 // Define response and payload interfaces
 export interface LoginResponse {
@@ -63,7 +60,7 @@ export const login = async (
 
   try {
     const response = await axios.post<LoginResponse>(
-      `${API_BASE_URL}/login`,
+      `${API_URL}/login`,
       payload,
       { withCredentials: true }
     )
@@ -93,7 +90,7 @@ export const register = async (
 
   try {
     const response = await axios.post<RegisterResponse>(
-      `${API_BASE_URL}/register`,
+      `${API_URL}/register`,
       payload
     )
     return response.data
@@ -119,7 +116,7 @@ export const getUserRole = (): string | null => {
 // Fetch the authenticated user's profile
 export const getAuthenticatedUser = async (): Promise<AuthenticatedUser> => {
   try {
-    const response = await axios.get<AuthenticatedUser>(`${API_BASE_URL}/me`, {
+    const response = await axios.get<AuthenticatedUser>(`${API_URL}/me`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
     })
     return response.data

@@ -1,7 +1,5 @@
-import React, { createContext, useEffect, useState, ReactNode } from 'react'
-import ReactGA from 'react-ga4'
-
-const GA_TRACKING_ID = process.env.VITE_GA_TRACKING_ID as string
+import React, { createContext, ReactNode } from 'react'
+import { trackEvent } from './analytics'
 
 interface GoogleAnalyticsProviderProps {
   children: ReactNode
@@ -18,22 +16,9 @@ export const AnalyticsContext = createContext<AnalyticsContextProps>({
 const GoogleAnalyticsProvider: React.FC<GoogleAnalyticsProviderProps> = ({
   children
 }) => {
-  const [initialized, setInitialized] = useState(false)
-
   const sendEvent = (eventName: string, params?: Record<string, unknown>) => {
-    if (ReactGA && initialized) {
-      ReactGA.event(eventName, params)
-    } else {
-      console.error('Google Analytics is not initialized or not available.')
-    }
+    trackEvent(eventName, params)
   }
-
-  useEffect(() => {
-    if (!initialized && GA_TRACKING_ID) {
-      ReactGA.initialize(GA_TRACKING_ID)
-      setInitialized(true)
-    }
-  }, [])
 
   return (
     <AnalyticsContext.Provider value={{ sendEvent }}>

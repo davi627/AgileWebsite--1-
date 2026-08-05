@@ -5,6 +5,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import SolutionCategory from '../Models/Solutions.js';
+import { constructPublicUrl } from '../utils/publicUrl.js';
 
 const router = express.Router();
 
@@ -41,17 +42,6 @@ const uploadFields = upload.fields([
   { name: 'solutionImages', maxCount: 10 },
 ]);
 
-// Helper function to construct full image URL
-const constructImageUrl = (req, imagePath) => {
-  if (!imagePath) return '';
-  if (imagePath.startsWith('http') || imagePath.startsWith('data:')) return imagePath;
-  const protocol = req.protocol;
-  const host = req.get('host');
-  const baseUrl = `${protocol}://${host}`;
-  const cleanPath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath;
-  return `${baseUrl}/${cleanPath}`;
-};
-
 // Middleware to catch invalid data:image requests
 router.use((req, res, next) => {
   if (req.originalUrl.startsWith('/data:image')) {
@@ -67,11 +57,11 @@ router.get('/', async (req, res) => {
     const categories = await SolutionCategory.find();
     const categoriesWithFullUrls = categories.map((category) => ({
       ...category.toObject(),
-      imageUrl: constructImageUrl(req, category.imageUrl),
-      sectionImageUrl: constructImageUrl(req, category.sectionImageUrl),
+      imageUrl: constructPublicUrl(req, category.imageUrl),
+      sectionImageUrl: constructPublicUrl(req, category.sectionImageUrl),
       solutions: category.solutions.map((solution) => ({
         ...solution.toObject(),
-        imageUrl: constructImageUrl(req, solution.imageUrl),
+        imageUrl: constructPublicUrl(req, solution.imageUrl),
       })),
     }));
     res.json(categoriesWithFullUrls);
@@ -94,11 +84,11 @@ router.get('/:id', async (req, res) => {
     }
     const categoryWithFullUrl = {
       ...category.toObject(),
-      imageUrl: constructImageUrl(req, category.imageUrl),
-      sectionImageUrl: constructImageUrl(req, category.sectionImageUrl),
+      imageUrl: constructPublicUrl(req, category.imageUrl),
+      sectionImageUrl: constructPublicUrl(req, category.sectionImageUrl),
       solutions: category.solutions.map((solution) => ({
         ...solution.toObject(),
-        imageUrl: constructImageUrl(req, solution.imageUrl),
+        imageUrl: constructPublicUrl(req, solution.imageUrl),
       })),
     };
     res.json(categoryWithFullUrl);
@@ -158,11 +148,11 @@ router.post('/', uploadFields, async (req, res) => {
     const newCategory = await category.save();
     const categoryWithFullUrl = {
       ...newCategory.toObject(),
-      imageUrl: constructImageUrl(req, newCategory.imageUrl),
-      sectionImageUrl: constructImageUrl(req, newCategory.sectionImageUrl),
+      imageUrl: constructPublicUrl(req, newCategory.imageUrl),
+      sectionImageUrl: constructPublicUrl(req, newCategory.sectionImageUrl),
       solutions: newCategory.solutions.map((solution) => ({
         ...solution.toObject(),
-        imageUrl: constructImageUrl(req, solution.imageUrl),
+        imageUrl: constructPublicUrl(req, solution.imageUrl),
       })),
     };
 
@@ -256,11 +246,11 @@ router.put('/:id', uploadFields, async (req, res) => {
 
     const categoryWithFullUrl = {
       ...updatedCategory.toObject(),
-      imageUrl: constructImageUrl(req, updatedCategory.imageUrl),
-      sectionImageUrl: constructImageUrl(req, updatedCategory.sectionImageUrl),
+      imageUrl: constructPublicUrl(req, updatedCategory.imageUrl),
+      sectionImageUrl: constructPublicUrl(req, updatedCategory.sectionImageUrl),
       solutions: updatedCategory.solutions.map((solution) => ({
         ...solution.toObject(),
-        imageUrl: constructImageUrl(req, solution.imageUrl),
+        imageUrl: constructPublicUrl(req, solution.imageUrl),
       })),
     };
 

@@ -3,7 +3,7 @@ import StarterKit from '@tiptap/starter-kit';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+import { API_BASE_URL, getImageUrl } from 'config/api';
 
 interface Feature {
   text: string;
@@ -33,13 +33,6 @@ const cleanHtmlContent = (html: string) => {
   let cleaned = html.replace(/<p>/g, '<p class="mb-4">');
   cleaned = cleaned.replace(/<p class="mb-4"><\/p>/g, '').replace(/<p>(<br>|\s)*<\/p>/g, '');
   return cleaned;
-};
-
-const getImageUrl = (imageUrl: string): string => {
-  if (!imageUrl) return '';
-  if (imageUrl.startsWith('data:')) return imageUrl;
-  if (imageUrl.startsWith('http')) return imageUrl;
-  return `${API_BASE_URL}/${imageUrl.startsWith('/') ? imageUrl.slice(1) : imageUrl}`;
 };
 
 interface FeatureItemProps {

@@ -50,7 +50,12 @@ router.get('/statistics', async (req, res) => {
   try {
     const statistic = await Statistic.findOne()
     if (!statistic) {
-      return res.status(404).json({ message: 'No statistics found' })
+      return res.status(200).json({
+        successfulProjects: '0',
+        happyCustomers: '0',
+        customerSatisfaction: '0',
+        experience: '0'
+      })
     }
     res.status(200).json(statistic)
   } catch (error) {

@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios'
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'https://webtest-api.agilebiz.co.ke:5000/api'
+import { API_URL as API_BASE_URL } from 'config/api'
 
 const getAuthHeaders = () => ({
   Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -19,9 +18,9 @@ const handleApiError = (error: unknown): never => {
 }
 
 /**
- * Function to upload a file to the backend for Cloudinary upload
+ * Upload a file to the backend.
  * @param file - The file to upload (from a file input or drag-and-drop)
- * @param folder - Optional: the folder in Cloudinary where the file will be stored
+ * @param folder - Optional upload folder/category on the server
  * @returns The uploaded file URL
  */
 export const uploadFile = async (

@@ -8,8 +8,7 @@ import ViewSolutions from 'components/ViewSolutions/ViewSolutions'
 import UpdateSecurityKey from 'components/UpdateSercurityKey/UpdateSercurityKey'
 import SolutionCategoryForm from 'components/SolutionCategoryForm/SolutionCategoryForm'
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
+import { API_BASE_URL } from 'config/api'
 
 interface BlogContent {
   type: 'text' | 'image'

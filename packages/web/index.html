@@ -2,12 +2,15 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PMVRVNGQ43"></script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-51YEB8BF9E"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-PMVRVNGQ43');
+      if (location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+        gtag('config', 'G-51YEB8BF9E');
+      }
     </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
